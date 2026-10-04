@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { qrCodes, type QrId } from "../data/contacts";
+import { fmt, useI18n } from "../i18n";
 import "./QrCode.css";
 
 const FINDER = 7;
@@ -12,6 +13,7 @@ const QUIET = 3;
  */
 export function QrCode({ id, className }: { id: QrId; className?: string }) {
   const { size, rows, text } = qrCodes[id];
+  const { t } = useI18n();
 
   const cells = useMemo(() => {
     const inFinder = (x: number, y: number) =>
@@ -34,7 +36,7 @@ export function QrCode({ id, className }: { id: QrId; className?: string }) {
       className={`qr ${className ?? ""}`}
       viewBox={`${-QUIET} ${-QUIET} ${size + QUIET * 2} ${size + QUIET * 2}`}
       role="img"
-      aria-label={`QR code: ${text}`}
+      aria-label={fmt(t.qr.label, { text })}
     >
       <rect x={-QUIET} y={-QUIET} width={size + QUIET * 2} height={size + QUIET * 2} className="qr__paper" />
       {cells.map(({ x, y }) => (

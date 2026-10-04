@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { rich, useI18n } from "../i18n";
 import { useInView } from "../lib/motion";
 import "./WatchClock.css";
 
@@ -127,6 +128,7 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
   const pct = useRef<HTMLSpanElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
   const showPost = variant !== "card";
+  const { t } = useI18n();
 
   // Tick once a second while visible.
   useEffect(() => {
@@ -162,7 +164,7 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
 
   return (
     <div className={`bigben bigben--${variant}`} ref={ref}>
-      <button type="button" className="watch" onClick={bong} aria-label="Ring the bell" title="Ring the bell">
+      <button type="button" className="watch" onClick={bong} aria-label={t.bigben.ring} title={t.bigben.ring}>
         <svg viewBox="-200 -200 400 400" aria-hidden>
           <Face />
           <g className="watch__hand watch__hand--hour" style={rot(hands.h)}>
@@ -199,10 +201,14 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
           </div>
           <div className="yearbar">
             <p className="yearbar__label">
-              <strong>
-                <span ref={pct}>{(yearProgress(Date.now(), chime.year) * 100).toFixed(7)}</span>%
-              </strong>{" "}
-              of {chime.year} has quietly slipped away.
+              {rich(t.bigben.slipped, {
+                year: chime.year,
+                pct: (
+                  <strong>
+                    <span ref={pct}>{(yearProgress(Date.now(), chime.year) * 100).toFixed(7)}</span>%
+                  </strong>
+                ),
+              })}
             </p>
             <span className="yearbar__track">
               <span ref={bar} />

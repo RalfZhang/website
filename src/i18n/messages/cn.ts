@@ -1,0 +1,81 @@
+import type { Messages } from "./en";
+
+/** Interface copy in Simplified Chinese. Typed against en, so a missing or misspelt key fails the build. */
+export const cn: Messages = {
+  meta: {
+    description: "Ralf Zhang 的个人网站：InkCity、File Template、大笨钟，以及我做过的其他东西。",
+    contact: "联系 Ralf Zhang：GitHub、Telegram、微信等。",
+    title: "{page} — {name}",
+  },
+  nav: {
+    home: "首页",
+    works: "作品",
+    blog: "博客",
+    contact: "联系",
+    primary: "主导航",
+    menu: "菜单",
+    openMenu: "打开菜单",
+    closeMenu: "关闭菜单",
+    toLight: "切换到浅色主题",
+    toDark: "切换到深色主题",
+  },
+  footer: {
+    label: "页脚",
+    copyright: "Copyright © {year} {name}。地图数据 © OpenStreetMap 贡献者。",
+  },
+  home: {
+    seeWork: "看看作品",
+    learnMore: "了解更多",
+    sayHello: "打个招呼",
+  },
+  works: {
+    lead: "应用、扩展和机器人，还有更早的那些试验。",
+    selected: "精选作品",
+    more: "更多",
+    moreLead: "早些年的作品，仍在 GitHub 上。",
+  },
+  work: {
+    year: "年份",
+    type: "类型",
+    builtWith: "技术栈",
+    runsOn: "平台",
+    highlights: "亮点",
+    inNumbers: "数字",
+    details: "详情",
+    links: "链接",
+    credits: "致谢",
+    next: "下一个",
+    list: "、",
+  },
+  contact: {
+    title: "联系我",
+    hint: "在这些地方都能找到我。",
+    rowLabel: "我在这些平台",
+    showQr: "{name}：显示二维码",
+    qr: "二维码",
+  },
+  qr: {
+    label: "二维码：{text}",
+    close: "关闭",
+    open: "打开{name}",
+    original: "原图",
+    scan: "用手机相机扫一扫。",
+    scanWith: { wechat: "用微信扫一扫" },
+  },
+  notFound: {
+    title: "页面不存在",
+    headline: "地图上没有这里",
+    text: "这里没有路。你要找的页面可能已经搬走了。",
+    home: "回到首页",
+  },
+  inkcity: {
+    wallpaper: "壁纸",
+    light: "浅色",
+    dark: "深色",
+    caption: "西安，以钟楼为中心。",
+  },
+  bigben: {
+    ring: "敲钟",
+    slipped: "{year} 年已悄悄溜走 {pct}。",
+  },
+};

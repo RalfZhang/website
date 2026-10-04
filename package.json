@@ -6,7 +6,7 @@
   "packageManager": "pnpm@11.11.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/route-shells.mjs",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "data:map": "node scripts/build-map.mjs",
     "data:qr": "node scripts/build-qr.mjs",

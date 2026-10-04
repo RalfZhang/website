@@ -1,3 +1,4 @@
+import type { Lang } from "../i18n/locales";
 import qr from "./qr.json";
 
 export type QrId = keyof typeof qr;
@@ -27,3 +28,11 @@ export const contacts: Contact[] = [
 ];
 
 export const qrCodes = qr;
+
+/**
+ * A platform's name for the given language. English pages keep the Chinese
+ * name alongside ("WeChat 微信") — that's what the app is called on the phone;
+ * Chinese pages need only the one.
+ */
+export const contactName = (c: Contact, lang: Lang) => (lang === "cn" ? (c.nameZh ?? c.name) : c.name);
+export const contactAside = (c: Contact, lang: Lang) => (lang === "cn" ? undefined : c.nameZh);

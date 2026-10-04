@@ -2,8 +2,10 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { Footer } from "../../components/Footer";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "../../components/icons";
 import { SocialRow } from "../../components/SocialRow";
+import { WorkName } from "../../components/WorkName";
 import { site } from "../../data/site";
-import { featuredWorks, type Work } from "../../data/works";
+import type { Work } from "../../data/works";
+import { useI18n } from "../../i18n";
 import { prefersReducedMotion, useReveal } from "../../lib/motion";
 import { Link } from "../../lib/router";
 import { WorkVisual } from "../../visuals/WorkVisual";
@@ -12,6 +14,7 @@ import "./Home.css";
 const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 function Feature({ work }: { work: Work }) {
+  const { t } = useI18n();
   const primary = work.links[0];
   return (
     <section id={work.slug} className={`screen feature feature--${work.slug}`} aria-labelledby={`${work.slug}-title`}>
@@ -21,15 +24,14 @@ function Feature({ work }: { work: Work }) {
             {work.kind} · {work.year}
           </p>
           <h2 id={`${work.slug}-title`} className="t-headline" data-reveal style={d(40)}>
-            {work.title}
-            {work.titleZh && <span className="muted"> {work.titleZh}</span>}
+            <WorkName work={work} />
           </h2>
           <p className="t-lead muted" data-reveal style={d(80)}>
             {work.tagline}
           </p>
           <div className="feature__ctas" data-reveal style={d(120)}>
             <Link to={`/works/${work.slug}`} className="button">
-              Learn more <ArrowRight />
+              {t.home.learnMore} <ArrowRight />
             </Link>
             {primary && (
               <a className="button button--quiet" href={primary.href} target="_blank" rel="noreferrer">
@@ -54,6 +56,7 @@ function Feature({ work }: { work: Work }) {
  */
 export function Home() {
   const root = useRef<HTMLElement>(null);
+  const { t, works } = useI18n();
   useReveal(root);
 
   useEffect(() => {
@@ -65,7 +68,7 @@ export function Home() {
     return () => html.classList.remove("fullpage");
   }, []);
 
-  const first = featuredWorks[0]?.slug;
+  const first = works.featured[0]?.slug;
 
   return (
     <main className="page home" ref={root}>
@@ -75,7 +78,7 @@ export function Home() {
           <a
             className="hero__next"
             href={`#${first}`}
-            aria-label="See the work"
+            aria-label={t.home.seeWork}
             onClick={(e) => {
               e.preventDefault();
               document.getElementById(first)?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
@@ -86,14 +89,14 @@ export function Home() {
         )}
       </section>
 
-      {featuredWorks.map((w) => (
+      {works.featured.map((w) => (
         <Feature key={w.slug} work={w} />
       ))}
 
       <section id="contact" className="screen home-contact" aria-labelledby="contact-title">
         <div className="wrap home-contact__inner">
           <h2 id="contact-title" className="t-headline" data-reveal>
-            Say hello
+            {t.home.sayHello}
           </h2>
           <div className="home-contact__row" data-reveal style={d(60)}>
             <SocialRow />

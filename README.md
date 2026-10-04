@@ -38,16 +38,36 @@
 ```bash
 pnpm install
 pnpm dev        # http://localhost:5173
-pnpm build      # 类型检查 + 打包到 dist/ + 生成各路由的 index.html
+pnpm build      # 类型检查 + 打包到 dist/ + 生成各语言、各路由的 index.html
 pnpm preview    # 本地预览 dist/
 ```
+
+## 多语言
+
+中英双语，语言写在 URL 里：每个页面都有 `/en/…` 和 `/cn/…` 两个地址（`/cn` 是简体中文）。
+
+- **URL 是唯一依据**：打开 `/en/works` 就是英文，不看浏览器语言、也不看上次的选择。
+- **没带语言的地址**（`/`，以及旧链接 `/works`、`/contact`…）由 `index.html` 里的内联脚本在首屏绘制前跳转：
+  访客在切换按钮上选过语言就用那个（存在 `localStorage` 的 `lang`），否则看浏览器的语言列表，第一个是中文
+  （任何繁简地区）就去 `/cn`，是英文就去 `/en`，都不是则 `/en`。逻辑和 [src/i18n/locales.ts](src/i18n/locales.ts) 保持一致。
+- **切换按钮**在导航栏，用目标语言自己的名字（English / 中文）显示。切换后停在同一页面、同一位置。
+- **站内链接不写语言**：`<Link to="/works">` 自动加上当前语言前缀。
+- **SEO**：`<html lang>`（`en` / `zh-CN`）、标题、描述、`canonical`、`hreflang`（`en`、`zh`、`x-default`）
+  在构建时写进每个页面的静态 HTML，客户端路由时同步更新。`x-default` 指向不带语言的地址，即按语言跳转的入口。
+  绝对地址的域名取自 [src/data/site.ts](src/data/site.ts) 的 `origin`，换成 HTTPS 时记得改。
+
+界面文案在 [src/i18n/messages/](src/i18n/messages/)：`en.ts` 是源语言，它的结构就是类型，`cn.ts` 少一个键都过不了
+类型检查。占位符写成 `{name}`，纯文本用 `fmt`，需要嵌入元素（比如加粗的百分比）用 `rich`，语序由各语言自己的文案决定。
+作品的文案和作品数据放在一起（见下面「改内容」）。数字用 `Intl.NumberFormat` 按语言格式化。没有用 i18n 库，
+两种语言的文案加起来只有几 KB，一起打包。
 
 ## 部署
 
 把 `dist/` 里的全部内容上传到 nginx 的站点根目录即可。
 
-构建时会把 `index.html` 复制到每个路由目录（`works/`、`works/<slug>/`、`contact/`），并生成 `404.html`，
-所以 nginx **不改配置**也能直接打开深链接。想让未知路径也显示站内的 404 页，可以加：
+构建时（[scripts/route-shells.ts](scripts/route-shells.ts)，一个 Vite 插件）会给每种语言的每个路由生成一份 `index.html`
+（`en/`、`cn/works/`、`cn/works/<slug>/`…，各带自己的 lang、标题和 hreflang），给不带语言的旧地址
+（`works/`、`contact/`…）生成负责跳转的副本，再生成 `404.html`，所以 nginx **不改配置**也能直接打开深链接。想让未知路径也显示站内的 404 页，可以加：
 
 ```nginx
 error_page 404 /404.html;
@@ -67,7 +87,10 @@ location / {
 
 - 作品：[src/data/works.ts](src/data/works.ts)。`featured: true` 的作品按顺序出现在首页；
   `visual` 决定用哪个动态视觉（`roadmap` / `code` / `clock`），不填则显示一张以作品名为主体的海报。
-- 联系方式：[src/data/contacts.ts](src/data/contacts.ts)。
+  需要翻译的字段写成 `{ en, cn }`，各语言相同的（名字、品牌）直接写字符串；`title` 两种语言不同时，
+  另一种语言的名字会以灰色跟在标题后面（Big Ben 大笨钟 / 大笨钟 Big Ben）。页面里用 `useI18n().works` 取当前语言的版本。
+- 联系方式：[src/data/contacts.ts](src/data/contacts.ts)。`nameZh` 是中文页面上显示的平台名。
+- 界面文案：[src/i18n/messages/](src/i18n/messages/)。
 - 站点信息（名字、博客地址）：[src/data/site.ts](src/data/site.ts)。
 
 ## 给某个作品做单独的页面
@@ -81,7 +104,7 @@ export const customPages = {
 };
 ```
 
-组件会收到 `{ work }`，即 works.ts 里对应的数据。
+组件会收到 `{ work }`，即 works.ts 里对应的、已经是当前语言的数据；其余文案用 `useI18n()` 取。
 
 ## 数据脚本
 
@@ -97,12 +120,13 @@ export const customPages = {
 
 ```
 src/
-  lib/          路由、主题（切换时交叉淡化）、淡入与可见性 hook
+  lib/          路由（routes.ts 不含 React，构建脚本也用）、主题（切换时交叉淡化）、淡入与可见性 hook
+  i18n/         语言定义与检测、界面文案、各页面的 head 信息
   components/   导航、页脚、图标、联系方式图标行、二维码与弹窗
   visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（编辑器演示）、WatchClock（大笨钟）、Poster
   pages/        home、works、work（作品详情）、contact、404
   data/         作品、联系方式、生成的数据
-scripts/        数据生成和构建后处理
+scripts/        数据生成；route-shells.ts 是生成各路由 HTML 的 Vite 插件
 ```
 
 ## 备注

@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
-import { contacts, type Contact } from "../data/contacts";
+import { contactAside, contactName, contacts, type Contact } from "../data/contacts";
+import { fmt, useI18n } from "../i18n";
 import { ArrowUpRight, BrandIcon, type BrandId } from "./icons";
 import { QrSheet } from "./QrSheet";
 import "./SocialRow.css";
@@ -10,14 +11,15 @@ import "./SocialRow.css";
  * as the hint). Linked platforms open in a new tab; WeChat has no web link,
  * so it opens its QR code instead.
  */
-export function SocialRow({ size = "md", hint = "Find me on any of these." }: { size?: "md" | "lg"; hint?: string }) {
+export function SocialRow({ size = "md", hint }: { size?: "md" | "lg"; hint?: string }) {
+  const { lang, t } = useI18n();
   const [active, setActive] = useState<Contact | null>(null);
   const [sheet, setSheet] = useState<Contact | null>(null);
   const close = useCallback(() => setSheet(null), []);
 
   return (
     <div className={`social social--${size}${active ? " is-pointing" : ""}`}>
-      <ul className="social__row" aria-label="Find me on" onPointerLeave={() => setActive(null)}>
+      <ul className="social__row" aria-label={t.contact.rowLabel} onPointerLeave={() => setActive(null)}>
         {contacts.map((c) => {
           const props = {
             className: `social__link${active?.id === c.id ? " is-active" : ""}`,
@@ -29,11 +31,11 @@ export function SocialRow({ size = "md", hint = "Find me on any of these." }: { 
           return (
             <li key={c.id}>
               {c.href ? (
-                <a {...props} href={c.href} target="_blank" rel="noreferrer" aria-label={[c.name, c.handle].filter(Boolean).join(" ")}>
+                <a {...props} href={c.href} target="_blank" rel="noreferrer" aria-label={[contactName(c, lang), c.handle].filter(Boolean).join(" ")}>
                   {icon}
                 </a>
               ) : (
-                <button {...props} type="button" onClick={() => setSheet(c)} aria-label={`${c.name} — show QR code`}>
+                <button {...props} type="button" onClick={() => setSheet(c)} aria-label={fmt(t.contact.showQr, { name: contactName(c, lang) })}>
                   {icon}
                 </button>
               )}
@@ -45,13 +47,13 @@ export function SocialRow({ size = "md", hint = "Find me on any of these." }: { 
       <p className="social__caption" aria-hidden>
         {active ? (
           <span className="social__now" key={active.id}>
-            {active.name}
-            {active.nameZh && ` ${active.nameZh}`}
+            {contactName(active, lang)}
+            {contactAside(active, lang) && ` ${contactAside(active, lang)}`}
             {active.handle && <span className="muted"> {active.handle}</span>}
-            {active.href ? <ArrowUpRight className="social__ext" /> : <span className="muted"> QR code</span>}
+            {active.href ? <ArrowUpRight className="social__ext" /> : <span className="muted"> {t.contact.qr}</span>}
           </span>
         ) : (
-          <span className="muted">{hint}</span>
+          <span className="muted">{hint ?? t.contact.hint}</span>
         )}
       </p>
 

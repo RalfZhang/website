@@ -1,7 +1,9 @@
 import { useRef, type CSSProperties } from "react";
 import { Footer } from "../../components/Footer";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "../../components/icons";
-import { nextWork, type Work } from "../../data/works";
+import { WorkName } from "../../components/WorkName";
+import type { Work } from "../../data/works";
+import { useI18n } from "../../i18n";
 import { useReveal } from "../../lib/motion";
 import { Link } from "../../lib/router";
 import { WorkVisual } from "../../visuals/WorkVisual";
@@ -14,28 +16,28 @@ const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 export function DefaultWorkPage({ work }: { work: Work }) {
   const root = useRef<HTMLElement>(null);
   useReveal(root, work.slug);
-  const next = nextWork(work.slug);
+  const { t, works, formatNumber } = useI18n();
+  const next = works.next(work.slug);
   const [primary, ...others] = work.links;
 
   const specs: [string, string][] = [
-    ["Year", work.year],
-    ["Type", work.kind],
-    ["Built with", work.stack.join(", ")],
+    [t.work.year, work.year],
+    [t.work.type, work.kind],
+    [t.work.builtWith, work.stack.join(t.work.list)],
   ];
-  if (work.platforms) specs.push(["Runs on", work.platforms.replaceAll(" · ", ", ")]);
+  if (work.platforms) specs.push([t.work.runsOn, work.platforms.replaceAll(" · ", t.work.list)]);
 
   return (
     <main className="page detail" ref={root}>
       <section className="wrap detail__hero">
         <Link to="/works" className="detail__crumb t-label" data-reveal>
-          <ArrowLeft /> Works
+          <ArrowLeft /> {t.nav.works}
         </Link>
         <p className="t-label" data-reveal style={d(30)}>
           {work.kind} · {work.year}
         </p>
         <h1 className="t-headline" data-reveal style={d(60)}>
-          {work.title}
-          {work.titleZh && <span className="muted"> {work.titleZh}</span>}
+          <WorkName work={work} />
         </h1>
         <p className="t-lead muted detail__tagline" data-reveal style={d(90)}>
           {work.tagline}
@@ -69,7 +71,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
       {work.features && (
         <section className="wrap detail__section" aria-labelledby="highlights">
           <h2 id="highlights" className="t-section" data-reveal>
-            Highlights
+            {t.work.highlights}
           </h2>
           <ul className="highlights" style={{ "--cols": work.features.length % 2 === 0 ? 2 : 3 } as CSSProperties}>
             {work.features.map((f, i) => (
@@ -83,11 +85,11 @@ export function DefaultWorkPage({ work }: { work: Work }) {
       )}
 
       {work.stats && (
-        <section className="wrap detail__section" aria-label="In numbers">
+        <section className="wrap detail__section" aria-label={t.work.inNumbers}>
           <ul className="numbers">
             {work.stats.map((s, i) => (
               <li key={s.label} className="number" data-reveal style={d(i * 50)}>
-                <span className="number__value">{formatStat(s)}</span>
+                <span className="number__value">{formatStat(s, formatNumber)}</span>
                 <span className="number__label muted">{s.label}</span>
               </li>
             ))}
@@ -97,7 +99,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
 
       <section className="wrap detail__section" aria-labelledby="details">
         <h2 id="details" className="t-section" data-reveal>
-          Details
+          {t.work.details}
         </h2>
         <dl className="specs" data-reveal>
           {specs.map(([k, v]) => (
@@ -107,7 +109,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
             </div>
           ))}
           <div>
-            <dt>Links</dt>
+            <dt>{t.work.links}</dt>
             <dd className="specs__links">
               {work.links.map((l) => (
                 <a key={l.href} className="text-link" href={l.href} target="_blank" rel="noreferrer">
@@ -118,7 +120,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
           </div>
           {work.credits && (
             <div>
-              <dt>Credits</dt>
+              <dt>{t.work.credits}</dt>
               <dd>{work.credits}</dd>
             </div>
           )}
@@ -127,7 +129,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
 
       <section className="wrap detail__section detail__next-wrap">
         <Link to={`/works/${next.slug}`} className="next" data-reveal>
-          <span className="t-label next__label">Next</span>
+          <span className="t-label next__label">{t.work.next}</span>
           <span className="next__row">
             <span className="t-headline">{next.title}</span>
             <ArrowRight className="next__go" />

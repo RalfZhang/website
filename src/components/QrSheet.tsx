@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Contact } from "../data/contacts";
+import { contactAside, contactName, type Contact } from "../data/contacts";
+import { fmt, useI18n } from "../i18n";
 import { ArrowUpRight, BrandIcon, Close, type BrandId } from "./icons";
 import { QrCode } from "./QrCode";
 import "./QrSheet.css";
-
-const HINT: Record<string, string> = {
-  wechat: "Scan with WeChat · 用微信扫一扫",
-};
 
 /** The QR code dialog. Portalled to <body>; closes on Esc, the backdrop, or the button. */
 export function QrSheet({ contact, onClose }: { contact: Contact | null; onClose: () => void }) {
@@ -15,6 +12,7 @@ export function QrSheet({ contact, onClose }: { contact: Contact | null; onClose
   const [open, setOpen] = useState(false);
   const closeBtn = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLElement | null>(null);
+  const { lang, t } = useI18n();
 
   // Mount, then open on the next frame so the fade runs; close, then unmount.
   useEffect(() => {
@@ -46,6 +44,8 @@ export function QrSheet({ contact, onClose }: { contact: Contact | null; onClose
   }, [open, onClose]);
 
   if (!shown?.qr) return null;
+  const name = contactName(shown, lang);
+  const aside = contactAside(shown, lang);
 
   return createPortal(
     <div className={`sheet${open ? " is-open" : ""}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -53,26 +53,26 @@ export function QrSheet({ contact, onClose }: { contact: Contact | null; onClose
         <div className="sheet__head">
           <BrandIcon id={shown.id as BrandId} className="sheet__logo" />
           <h2 id="sheet-title" className="sheet__title">
-            {shown.name}
-            {shown.nameZh && <span className="muted"> {shown.nameZh}</span>}
+            {name}
+            {aside && <span className="muted"> {aside}</span>}
           </h2>
-          <button type="button" className="sheet__close" onClick={onClose} ref={closeBtn} aria-label="Close">
+          <button type="button" className="sheet__close" onClick={onClose} ref={closeBtn} aria-label={t.qr.close}>
             <Close />
           </button>
         </div>
         <div className="sheet__qr">
           <QrCode id={shown.qr} />
         </div>
-        <p className="sheet__hint muted">{HINT[shown.id] ?? "Scan with your phone’s camera."}</p>
+        <p className="sheet__hint muted">{t.qr.scanWith[shown.id] ?? t.qr.scan}</p>
         <div className="sheet__actions">
           {shown.href && (
             <a className="button" href={shown.href} target="_blank" rel="noreferrer">
-              Open {shown.name} <ArrowUpRight />
+              {fmt(t.qr.open, { name })} <ArrowUpRight />
             </a>
           )}
           {shown.image && (
             <a className="button button--quiet" href={shown.image} target="_blank" rel="noreferrer">
-              Original image
+              {t.qr.original}
             </a>
           )}
         </div>

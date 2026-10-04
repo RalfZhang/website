@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "../i18n";
 import { useInView } from "../lib/motion";
 import { useTheme } from "../lib/theme";
 import { RoadMap, WALLPAPER } from "./RoadMap";
@@ -15,6 +16,7 @@ const MODES: Mode[] = ["light", "dark"];
  */
 export function InkCityVisual({ variant = "stage" }: { variant?: "stage" | "card" | "detail" }) {
   const { theme } = useTheme();
+  const { t } = useI18n();
   const [picked, setPicked] = useState<Mode | null>(null);
   const mode = picked ?? theme;
   const first = useRef<Mode>(mode);
@@ -50,7 +52,7 @@ export function InkCityVisual({ variant = "stage" }: { variant?: "stage" | "card
 
       {variant !== "card" && (
         <div className="inkcity__controls">
-          <div className="segmented" role="radiogroup" aria-label="Wallpaper">
+          <div className="segmented" role="radiogroup" aria-label={t.inkcity.wallpaper}>
             {MODES.map((m) => (
               <button
                 key={m}
@@ -60,11 +62,11 @@ export function InkCityVisual({ variant = "stage" }: { variant?: "stage" | "card
                 className={mode === m ? "is-on" : undefined}
                 onClick={() => setPicked(m)}
               >
-                {m === "light" ? "Light" : "Dark"}
+                {t.inkcity[m]}
               </button>
             ))}
           </div>
-          <figcaption className="t-label">Xi’an, centred on the Bell Tower.</figcaption>
+          <figcaption className="t-label">{t.inkcity.caption}</figcaption>
         </div>
       )}
     </figure>

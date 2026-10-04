@@ -73,6 +73,24 @@
   display: none;
 }
 
+/* The other language, by name — sits with the theme switch, 8px apart. */
+.nav__lang {
+  display: grid;
+  place-items: center;
+  height: 36px;
+  padding: 0 8px;
+  margin-right: -20px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  color: var(--text);
+  white-space: nowrap;
+  transition: background-color 0.15s var(--ease);
+}
+
+.nav__lang:hover {
+  background: var(--tile);
+}
+
 /* ------------------------------------------------------------------ menu (phones) */
 .nav__menu {
   position: fixed;
@@ -122,6 +140,9 @@
   }
   .nav__bar {
     gap: 12px;
+  }
+  .nav__lang {
+    margin-right: -4px;
   }
   .nav__burger {
     display: grid;

@@ -1,0 +1,132 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Ralf Zhang" [ref=e5] [cursor=pointer]:
+        - /url: /cn
+      - navigation "主导航" [ref=e6]:
+        - link "首页" [ref=e7] [cursor=pointer]:
+          - /url: /cn
+        - link "作品" [ref=e8] [cursor=pointer]:
+          - /url: /cn/works
+        - link "博客" [ref=e9] [cursor=pointer]:
+          - /url: http://blog.ralfz.com
+        - link "联系" [ref=e12] [cursor=pointer]:
+          - /url: /cn/contact
+      - link "English" [ref=e13] [cursor=pointer]:
+        - /url: /en
+      - button "切换到深色主题" [ref=e14] [cursor=pointer]
+  - main [ref=e18]:
+    - generic [ref=e19]:
+      - heading "Ralf Zhang" [level=1] [ref=e20]
+      - link "看看作品" [ref=e21] [cursor=pointer]:
+        - /url: "#inkcity"
+    - region [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - paragraph [ref=e27]: 桌面应用 · 2026
+          - heading "InkCity" [level=2] [ref=e28]
+          - paragraph [ref=e29]: 你的桌面壁纸，每天换成一座不同城市的路网地图。
+          - generic [ref=e30]:
+            - link "了解更多" [ref=e31] [cursor=pointer]:
+              - /url: /cn/works/inkcity
+            - link "下载" [ref=e34] [cursor=pointer]:
+              - /url: https://github.com/RalfZhang/ink-city/releases/latest
+        - figure [ref=e38]:
+          - generic [ref=e50]:
+            - radiogroup "壁纸" [ref=e51]:
+              - radio "浅色" [checked] [ref=e52] [cursor=pointer]
+              - radio "深色" [ref=e53] [cursor=pointer]
+            - generic [ref=e54]: 西安，以钟楼为中心。
+    - region [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - paragraph [ref=e58]: VS Code 扩展 · 2017 — 2026
+          - heading "File Template" [level=2] [ref=e59]
+          - paragraph [ref=e60]: 每个新文件都从模板开始，文件头和样板代码一应俱全。
+          - generic [ref=e61]:
+            - link "了解更多" [ref=e62] [cursor=pointer]:
+              - /url: /cn/works/file-template
+            - link "扩展市场" [ref=e65] [cursor=pointer]:
+              - /url: https://marketplace.visualstudio.com/items?itemName=RalfZhang.filetemplate
+        - generic [ref=e70]:
+          - generic [ref=e71]: wallpaper.ts
+          - generic [ref=e77]:
+            - list [ref=e78]:
+              - listitem [ref=e79]:
+                - generic [ref=e80]: "1"
+            - generic [ref=e83]:
+              - generic [ref=e84]: ">"
+              - list [ref=e86]
+          - generic [ref=e87]:
+            - generic [ref=e88]: TypeScript
+            - generic [ref=e89]: UTF-8
+    - region [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]:
+          - paragraph [ref=e93]: 社交机器人 · 2017 — 2026
+          - heading "大笨钟 Big Ben" [level=2] [ref=e94]:
+            - text: 大笨钟
+            - generic [ref=e95]: Big Ben
+          - paragraph [ref=e96]: 社交网络上的钟楼。每到整点：咣！
+          - generic [ref=e97]:
+            - link "了解更多" [ref=e98] [cursor=pointer]:
+              - /url: /cn/works/big-ben
+            - link "GitHub" [ref=e101] [cursor=pointer]:
+              - /url: https://github.com/RalfZhang/big-ben
+        - generic [ref=e105]:
+          - button "敲钟" [ref=e106] [cursor=pointer]:
+            - img [aria-hidden] [ref=e107]:
+              - generic [ref=e169]: XII
+              - generic [ref=e170]: III
+              - generic [ref=e171]: VI
+              - generic [ref=e172]: IX
+              - generic [ref=e173]: 北京时间
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - generic [aria-hidden] [ref=e186]: 钟
+              - generic [ref=e187]:
+                - generic [ref=e188]:
+                  - generic [ref=e189]: 豆瓣大笨钟
+                  - generic [ref=e190]: 05:00
+                - paragraph [ref=e191]: 咣！咣！咣！咣！咣！豆瓣大笨钟提醒您：北京时间 5 点整，2026 年已悄悄溜走 76.769%。
+            - paragraph [ref=e193]:
+              - text: 2026 年已悄悄溜走
+              - strong [ref=e194]: 76.7731528%
+              - text: 。
+    - region [ref=e196]:
+      - generic [ref=e197]:
+        - heading "打个招呼" [level=2] [ref=e198]
+        - generic [ref=e200]:
+          - list "我在这些平台" [ref=e201]:
+            - listitem [ref=e202]:
+              - link "GitHub @RalfZhang" [ref=e203] [cursor=pointer]:
+                - /url: https://github.com/RalfZhang
+            - listitem [ref=e206]:
+              - link "Telegram @RalfZhang" [ref=e207] [cursor=pointer]:
+                - /url: https://t.me/RalfZhang
+            - listitem [ref=e210]:
+              - link "WhatsApp" [ref=e211] [cursor=pointer]:
+                - /url: https://wa.me/qr/ZUWG4TFNPUZOL1
+            - listitem [ref=e214]:
+              - button "微信：显示二维码" [ref=e215] [cursor=pointer]
+            - listitem [ref=e218]:
+              - link "Instagram @ralf_zhang" [ref=e219] [cursor=pointer]:
+                - /url: https://www.instagram.com/ralf_zhang/
+            - listitem [ref=e222]:
+              - link "豆瓣 RalfZ" [ref=e223] [cursor=pointer]:
+                - /url: https://www.douban.com/people/RalfZ/
+            - listitem [ref=e226]:
+              - link "Duolingo KangZhang" [ref=e227] [cursor=pointer]:
+                - /url: https://www.duolingo.com/profile/KangZhang
+          - paragraph [aria-hidden] [ref=e230]: 在这些地方都能找到我。
+      - generic [ref=e232]:
+        - paragraph [ref=e233]: Copyright © 2026 Ralf Zhang。地图数据 © OpenStreetMap 贡献者。
+        - navigation "页脚" [ref=e234]:
+          - link "作品" [ref=e235] [cursor=pointer]:
+            - /url: /cn/works
+          - link "博客" [ref=e236] [cursor=pointer]:
+            - /url: http://blog.ralfz.com
+          - link "GitHub" [ref=e237] [cursor=pointer]:
+            - /url: https://github.com/RalfZhang
+          - link "联系" [ref=e238] [cursor=pointer]:
+            - /url: /cn/contact

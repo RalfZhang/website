@@ -10,7 +10,7 @@ export function Poster({ work, variant = "detail" }: { work: Work; variant?: "ca
       </span>
       <span className="poster__title">
         {work.title}
-        {work.titleZh && <span className="poster__zh">{work.titleZh}</span>}
+        {work.aside && <span className="poster__aside">{work.aside}</span>}
       </span>
       <span className="poster__stack">{work.stack.join(" · ")}</span>
     </div>

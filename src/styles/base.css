@@ -175,6 +175,11 @@ canvas {
   color: var(--muted);
 }
 
+/* A name that mustn't break across lines, e.g. the "Big Ben" after 大笨钟. */
+.nowrap {
+  white-space: nowrap;
+}
+
 .wrap {
   width: min(100% - 2 * var(--gutter), var(--wrap));
   margin-inline: auto;

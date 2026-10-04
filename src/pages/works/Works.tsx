@@ -1,7 +1,9 @@
 import { useRef, type CSSProperties } from "react";
 import { Footer } from "../../components/Footer";
 import { ArrowRight, ArrowUpRight } from "../../components/icons";
-import { featuredWorks, otherWorks, type Stat, type Work } from "../../data/works";
+import { WorkName } from "../../components/WorkName";
+import type { Stat, Work } from "../../data/works";
+import { useI18n } from "../../i18n";
 import { useReveal } from "../../lib/motion";
 import { Link } from "../../lib/router";
 import { WorkVisual } from "../../visuals/WorkVisual";
@@ -9,10 +11,11 @@ import "./Works.css";
 
 const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
-export const formatStat = (s: Stat) =>
-  `${s.prefix ?? ""}${s.format === "plain" ? s.value : s.value.toLocaleString("en-US")}${s.suffix ?? ""}`;
+export const formatStat = (s: Stat, formatNumber: (n: number) => string) =>
+  `${s.prefix ?? ""}${s.format === "plain" ? s.value : formatNumber(s.value)}${s.suffix ?? ""}`;
 
 function FeaturedCard({ work, i }: { work: Work; i: number }) {
+  const { t, formatNumber } = useI18n();
   const primary = work.links[0];
   return (
     <article className="fcard" data-reveal style={d(i * 60)}>
@@ -28,14 +31,14 @@ function FeaturedCard({ work, i }: { work: Work; i: number }) {
         <p className="fcard__stats">
           {work.stats.map((s) => (
             <span key={s.label}>
-              <strong>{formatStat(s)}</strong> {s.label}
+              <strong>{formatStat(s, formatNumber)}</strong> {s.label}
             </span>
           ))}
         </p>
       )}
       <div className="fcard__ctas">
         <Link to={`/works/${work.slug}`} className="button">
-          Learn more <ArrowRight />
+          {t.home.learnMore} <ArrowRight />
         </Link>
         {primary && (
           <a className="button button--quiet" href={primary.href} target="_blank" rel="noreferrer">
@@ -49,17 +52,18 @@ function FeaturedCard({ work, i }: { work: Work; i: number }) {
 
 export function Works() {
   const root = useRef<HTMLElement>(null);
+  const { t, works } = useI18n();
   useReveal(root);
 
   return (
     <main className="page works" ref={root}>
       <header className="wrap page-head" data-reveal>
-        <h1 className="t-section">Works</h1>
-        <p className="t-lead muted">Apps, extensions and bots — and the experiments before them.</p>
+        <h1 className="t-section">{t.nav.works}</h1>
+        <p className="t-lead muted">{t.works.lead}</p>
       </header>
 
-      <section className="wrap lineup" aria-label="Selected works">
-        {featuredWorks.map((w, i) => (
+      <section className="wrap lineup" aria-label={t.works.selected}>
+        {works.featured.map((w, i) => (
           <FeaturedCard key={w.slug} work={w} i={i} />
         ))}
       </section>
@@ -67,12 +71,12 @@ export function Works() {
       <section className="wrap more" aria-labelledby="more-title">
         <div className="more__head" data-reveal>
           <h2 id="more-title" className="t-section">
-            More
+            {t.works.more}
           </h2>
-          <p className="t-lead muted">Older things, still on GitHub.</p>
+          <p className="t-lead muted">{t.works.moreLead}</p>
         </div>
         <ul className="more__grid">
-          {otherWorks.map((w, i) => (
+          {works.other.map((w, i) => (
             <li key={w.slug} data-reveal style={d(i * 40)}>
               <Link to={`/works/${w.slug}`} className="more__tile">
                 <span className="more__top">
@@ -82,8 +86,7 @@ export function Works() {
                   <ArrowRight className="more__go" />
                 </span>
                 <span className="t-title">
-                  {w.title}
-                  {w.titleZh && <span className="muted"> {w.titleZh}</span>}
+                  <WorkName work={w} />
                 </span>
                 <span className="more__tagline muted">{w.tagline}</span>
               </Link>
