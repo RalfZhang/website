@@ -1,11 +1,32 @@
-/* Every section is (at least) one screen tall. */
+/* ------------------------------------------------------------------ full-page scrolling
+ * The standard way, and entirely the browser's: the page is a mandatory snap
+ * container and every section a screen that snaps at its start, with
+ * scroll-snap-stop: always so a gesture never skips a work. A mouse-wheel
+ * tick, a trackpad or touch swipe, ↑ ↓ / Page / Space and the scrollbar all
+ * page natively — no script listens to or throttles any of it.
+ *
+ * Mandatory snapping is only safe when every screen's content fits, so it's
+ * on where the layout below guarantees that (viewports ≥ 600px tall, i.e.
+ * phones in portrait and up). Shorter ones scroll as an ordinary page.
+ */
 .screen {
+  position: relative;
   min-height: 100svh;
+}
+
+@media (min-height: 600px) {
+  html.fullpage {
+    scroll-snap-type: y mandatory;
+  }
+  .screen {
+    height: 100svh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
 }
 
 /* ------------------------------------------------------------------ hero */
 .hero {
-  position: relative;
   display: grid;
   place-items: center;
   padding: var(--nav-h) var(--gutter);
@@ -50,15 +71,19 @@
 }
 
 /* ------------------------------------------------------------------ featured work
- * Words on the left, the work itself on the right.
+ * Words on the left, the work itself on the right; stacked on narrow screens.
+ * When a screen has a fixed height, the visual takes exactly the room the
+ * words leave (size container + cqw/cqh), so nothing ever spills over.
  */
 .feature {
-  display: grid;
-  align-items: center;
-  padding-block: calc(var(--nav-h) + 24px) 40px;
+  display: flex;
+  flex-direction: column;
+  padding-block: calc(var(--nav-h) + 24px) 32px;
 }
 
 .feature__grid {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
   align-items: center;
@@ -82,22 +107,68 @@
 }
 
 .feature__media {
-  display: flex;
-  justify-content: center;
   min-width: 0;
+  display: grid;
+  place-items: center;
+  container: media / inline-size;
 }
 
-/* The visuals never grow taller than the screen leaves room for. */
+/* Ordinary page (short screens): visuals sized by width. */
 .feature--inkcity .inkcity {
-  width: min(100%, calc((100svh - var(--nav-h) - 170px) * 1.38));
+  width: min(100%, 900px);
 }
 
 .feature--file-template .editor {
-  width: min(100%, calc((100svh - var(--nav-h) - 110px) * 2));
+  width: min(100%, 880px);
 }
 
 .feature--big-ben .bigben {
-  --watch-size: min(46%, calc(100svh - var(--nav-h) - 120px), 380px);
+  --watch-size: min(42cqw, 360px);
+}
+
+@media (min-height: 600px) {
+  .feature__grid {
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .feature__media {
+    align-self: stretch;
+    min-height: 0;
+    container: media / size;
+  }
+  /* monitor ≈ 0.725 × its width tall, plus the switch below it */
+  .feature--inkcity .inkcity {
+    width: min(100cqw, 1000px, calc((100cqh - 60px) * 1.37));
+  }
+  /* the editor is ≈ 0.45 × its width tall */
+  .feature--file-template .editor {
+    width: min(100cqw, 900px, calc(100cqh * 2.2));
+  }
+  /* the dial, with the post beside it */
+  .feature--big-ben .bigben {
+    --watch-size: min(100cqh, 400px, calc(100cqw - 330px));
+  }
+}
+
+/* Narrow: the dial over the year bar; the post moves to the work's own page. */
+@container media (max-width: 640px) {
+  .feature--big-ben .bigben {
+    --watch-size: min(78cqw, calc(100cqh - 80px), 360px);
+    flex-direction: column;
+    gap: 16px;
+  }
+  .feature--big-ben .notif {
+    display: none;
+  }
+  .feature--big-ben .bigben__side {
+    width: 100%;
+    max-width: 360px;
+  }
+}
+
+@container media (max-width: 520px) {
+  .feature--inkcity figcaption {
+    display: none;
+  }
 }
 
 /* ------------------------------------------------------------------ contact */
@@ -111,27 +182,29 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-block: calc(var(--nav-h) + 40px) 48px;
+  padding-block: calc(var(--nav-h) + 40px) 40px;
 }
 
-.home-contact__lead {
-  margin: 10px 0 36px;
+.home-contact__row {
+  margin-top: 28px;
 }
 
+/* ------------------------------------------------------------------ narrow screens */
 @media (max-width: 900px) {
   .feature__grid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
+    align-items: start;
+    gap: 24px;
   }
   .feature {
-    padding-top: calc(var(--nav-h) + 32px);
+    padding-top: calc(var(--nav-h) + 20px);
+    padding-bottom: 24px;
   }
-  .feature--inkcity .inkcity,
-  .feature--file-template .editor {
-    width: 100%;
-  }
-  .feature--big-ben .bigben {
-    --watch-size: min(72vw, 320px);
+}
+
+@media (max-width: 900px) and (min-height: 600px) {
+  .feature__grid {
+    grid-template-rows: auto minmax(0, 1fr);
   }
 }
 

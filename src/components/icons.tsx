@@ -59,15 +59,6 @@ export const Contrast = (p: P) => (
   </svg>
 );
 
-export const QrIcon = (p: P) => (
-  <svg viewBox="0 0 16 16" aria-hidden {...p}>
-    <path
-      fill="currentColor"
-      d="M2 2h5v5H2zm1.5 1.5v2h2v-2zM9 2h5v5H9zm1.5 1.5v2h2v-2zM2 9h5v5H2zm1.5 1.5v2h2v-2zM9 9h2v2H9zm3 0h2v2h-2zm-3 3h2v2H9zm3 0h2v2h-2z"
-    />
-  </svg>
-);
-
 export type BrandId = keyof typeof brands;
 
 /** A platform's logo (Simple Icons, CC0 paths), drawn in the current text colour. */

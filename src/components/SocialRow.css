@@ -1,0 +1,82 @@
+.social {
+  --box: 52px; /* hit area */
+  --glyph: 28px; /* logo */
+  --gap: 4px;
+}
+
+.social--lg {
+  --box: 64px;
+  --glyph: 36px;
+}
+
+.social__row {
+  display: flex;
+  gap: var(--gap);
+  /* pull the first logo onto the text's left edge */
+  margin-inline-start: calc((var(--glyph) - var(--box)) / 2);
+}
+
+.social__row li {
+  flex: 0 1 var(--box); /* shrinks to stay one row on the narrowest phones */
+  min-width: 0;
+}
+
+.social__link {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  color: var(--text);
+  transition: color 0.15s var(--ease);
+}
+
+.social__link svg {
+  width: min(var(--glyph), 72%);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+/* Pointing at one quiets the rest. */
+.social.is-pointing .social__link {
+  color: var(--muted);
+}
+
+.social.is-pointing .social__link.is-active {
+  color: var(--text);
+}
+
+.social__caption {
+  min-height: 1.5em;
+  margin-top: 12px;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.social__now {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  animation: social-now 0.15s var(--ease) both;
+}
+
+.social__ext {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+}
+
+@keyframes social-now {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .social,
+  .social--lg {
+    --box: 46px;
+    --glyph: 26px;
+    --gap: 2px;
+  }
+}

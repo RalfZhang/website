@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /**
  * Builds src/data/qr.json — module matrices for the contact QR codes, so the
- * site can draw them as ink-on-paper SVG (and animate the modules) instead of
- * shipping three differently-styled screenshots.
+ * site can draw them as ink-on-paper SVG instead of shipping screenshots.
  *
  * The payloads were decoded from the QR images on the old site
  * (/telegram.png, /whatsapp.png, /wechat.png, still served from public/).
@@ -17,9 +16,9 @@ import QRCode from "qrcode";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.resolve(ROOT, "src/data/qr.json");
 
+// Only platforms reached by scanning need one — WeChat has no web link.
+// (Telegram: https://t.me/RalfZhang, WhatsApp: https://wa.me/qr/ZUWG4TFNPUZOL1.)
 const CODES = {
-  telegram: "https://t.me/RalfZhang",
-  whatsapp: "https://wa.me/qr/ZUWG4TFNPUZOL1",
   wechat: "https://u.wechat.com/EHMlkrVRbJX5_VxB4IUvuyQ",
 };
 

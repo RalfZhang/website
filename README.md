@@ -14,7 +14,14 @@
   [Simple Icons](https://simpleicons.org)（CC0），统一用当前文字颜色单色显示。
 - **动效克制**：装饰性的动效只有一种——元素第一次进入视野时淡入（`data-reveal`，见 [src/lib/motion.ts](src/lib/motion.ts)）。
   其余动的都是内容本身：InkCity 路网从钟楼长出来、File Template 的编辑器演示、大笨钟的表针。
-- **原生滚动**：首页每个作品占一屏，但滚动完全交给浏览器——不吸附、不翻页、不拦截滚轮。
+- **整页滚动，用 CSS 实现**：首页是 `scroll-snap-type: y mandatory` 的吸附容器，每屏 `scroll-snap-align: start` +
+  `scroll-snap-stop: always`。没有任何滚动或滚轮监听，翻页全是浏览器原生行为：鼠标滚轮每格一屏；触控板或触屏
+  滑一下翻一屏，用力甩也只走一屏，轻推不到半屏会弹回；↑ ↓ / PageUp / PageDown / 空格各翻一屏；滚动条照常可拖。
+  强制吸附的前提是每屏内容都完整装得下（装不下的部分会滚不到），所以每屏固定 `100svh` 高，作品图按剩余空间缩放
+  （尺寸容器 + `cqw` / `cqh`）；视口低于 600px（横屏手机）时不吸附，按普通页面滚动。改首页布局后，
+  记得在几个尺寸下确认每屏都没有溢出。
+- **联系方式**：一行平台图标，不用色块。悬停或聚焦某个图标时，其余图标变浅，下方那行文字显示平台名和账号；
+  微信没有网页链接，点击后弹出二维码。
 
 配色只有两套，取自 InkCity 的地图主题：
 
@@ -81,8 +88,8 @@ export const customPages = {
 - `pnpm data:map` — 从 `../ink-city/road-test/json/` 里的西安路网数据裁剪、简化出 `src/data/xian-map.json`
   （约 230 KB，gzip 后约 80 KB，按需加载）。每条路在离钟楼最近的点切开并朝外定向，前端按这个距离依次绘制，
   就形成了墨从中心晕开的效果。地图数据 © OpenStreetMap contributors（ODbL）。
-- `pnpm data:qr` — 生成 `src/data/qr.json`，即联系方式二维码的模块矩阵，前端用 SVG 绘制。
-  内容是从旧站三张二维码图片里解出来的链接。
+- `pnpm data:qr` — 生成 `src/data/qr.json`，即二维码的模块矩阵，前端用 SVG 绘制。现在只有微信需要
+  （其他平台都有网页链接）；内容是从旧站二维码图片里解出来的链接。
 - `pnpm data:icons` — 从 `simple-icons` 里只抽出用到的 7 个平台 logo，生成 `src/data/brands.json`，
   这样网站不用打包整个图标库。新增联系方式时，在 `scripts/build-icons.mjs` 里加上对应的图标再运行一次。
 
@@ -91,7 +98,7 @@ export const customPages = {
 ```
 src/
   lib/          路由、主题（切换时交叉淡化）、淡入与可见性 hook
-  components/   导航、页脚、图标、联系方式色块、二维码与弹窗
+  components/   导航、页脚、图标、联系方式图标行、二维码与弹窗
   visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（编辑器演示）、WatchClock（大笨钟）、Poster
   pages/        home、works、work（作品详情）、contact、404
   data/         作品、联系方式、生成的数据

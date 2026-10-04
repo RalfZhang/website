@@ -1,10 +1,10 @@
 import { useEffect, useRef, type CSSProperties } from "react";
-import { ContactGrid } from "../../components/ContactGrid";
 import { Footer } from "../../components/Footer";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "../../components/icons";
+import { SocialRow } from "../../components/SocialRow";
 import { site } from "../../data/site";
 import { featuredWorks, type Work } from "../../data/works";
-import { useReveal } from "../../lib/motion";
+import { prefersReducedMotion, useReveal } from "../../lib/motion";
 import { Link } from "../../lib/router";
 import { WorkVisual } from "../../visuals/WorkVisual";
 import "./Home.css";
@@ -48,17 +48,21 @@ function Feature({ work }: { work: Work }) {
 
 /**
  * Home: the name alone, then one featured work per screen, then every way to
- * get in touch. Each section is a full screen, but scrolling is left entirely
- * to the browser — no snap points, no paging, nothing to hold it back.
+ * get in touch — scrolled a screen at a time. That's CSS scroll snapping on
+ * the page itself (see Home.css), so the browser does all of it: nothing here
+ * listens to wheel, touch or scroll events.
  */
 export function Home() {
   const root = useRef<HTMLElement>(null);
   useReveal(root);
 
-  // A deep link like /#big-ben: the section didn't exist when the browser
-  // looked for it, so go there now that it does.
   useEffect(() => {
+    const html = document.documentElement;
+    html.classList.add("fullpage");
+    // A deep link like /#big-ben: the section didn't exist when the browser
+    // looked for it, so go there now that it does.
     if (location.hash.length > 1) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+    return () => html.classList.remove("fullpage");
   }, []);
 
   const first = featuredWorks[0]?.slug;
@@ -74,7 +78,7 @@ export function Home() {
             aria-label="See the work"
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById(first)?.scrollIntoView({ behavior: "smooth" });
+              document.getElementById(first)?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
             }}
           >
             <ArrowDown />
@@ -91,10 +95,9 @@ export function Home() {
           <h2 id="contact-title" className="t-headline" data-reveal>
             Say hello
           </h2>
-          <p className="t-lead muted home-contact__lead" data-reveal style={d(40)}>
-            Find me on any of these.
-          </p>
-          <ContactGrid compact />
+          <div className="home-contact__row" data-reveal style={d(60)}>
+            <SocialRow />
+          </div>
         </div>
         <Footer />
       </section>

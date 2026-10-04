@@ -1,46 +1,14 @@
-.contactpage__codes {
-  padding-block: clamp(80px, 12vh, 140px);
-}
-
-.contactpage__head {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 28px;
-}
-
-.qrtiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
-}
-
-.qrtile {
-  display: grid;
-  gap: 16px;
-  justify-items: start;
-  padding: 20px;
-  border-radius: var(--radius);
-  background: var(--tile);
-}
-
-.qrtile__head {
+/* Title, one row of icons, and the footer at the bottom of the screen. */
+.contactpage {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  min-height: 100svh;
 }
 
-.qrtile__logo {
-  width: 22px;
-  height: 22px;
+.contactpage__inner {
+  flex: 1;
 }
 
-.qrtile__name {
-  font-size: 19px;
-  font-weight: 500;
-}
-
-.qrtile__code {
-  width: min(220px, 100%);
-  overflow: hidden;
-  border-radius: 2px;
+.contactpage__row {
+  margin-top: 28px;
 }
