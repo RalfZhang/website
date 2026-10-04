@@ -179,36 +179,6 @@ export const works: Work[] = [
     stack: ["JavaScript"],
     links: [{ label: "GitHub", href: "https://github.com/RalfZhang/Zender" }],
   },
-  {
-    slug: "sort-problem",
-    title: "Sort Problem",
-    kind: "Visualization",
-    year: "2016",
-    tagline: "Sorting algorithms, explained and animated.",
-    summary: "An introduction to the classic sorting algorithms, each one shown step by step as an animation. 介绍排序算法并展示动画。",
-    stack: ["HTML", "JavaScript"],
-    links: [{ label: "GitHub", href: "https://github.com/RalfZhang/sort-problem" }],
-  },
-  {
-    slug: "jrender",
-    title: "JRender",
-    kind: "Library",
-    year: "2016",
-    tagline: "A small but complete front-end template engine.",
-    summary: "A lightweight JavaScript template engine with the features you actually reach for. 前端轻量并功能齐备的 JS 模板。",
-    stack: ["JavaScript"],
-    links: [{ label: "GitHub", href: "https://github.com/RalfZhang/JRender" }],
-  },
-  {
-    slug: "ingress-passcode",
-    title: "Ingress Passcode",
-    kind: "Tool",
-    year: "2016",
-    tagline: "Look up Ingress materials by passcode.",
-    summary: "A small helper from the Ingress days: enter a passcode and see which materials it gives.",
-    stack: ["JavaScript"],
-    links: [{ label: "GitHub", href: "https://github.com/RalfZhang/ingress-passcode" }],
-  },
 ];
 
 export const featuredWorks = works.filter((w) => w.featured);
