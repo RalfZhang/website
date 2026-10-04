@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { site } from "../data/site";
 import { Link, useRouter, type Route } from "../lib/router";
 import { useTheme } from "../lib/theme";
-import { ArrowUpRight, Moon, Sun } from "./icons";
+import { ArrowUpRight, Close, Contrast, Menu } from "./icons";
 import "./Nav.css";
 
 type Item = { label: string; to?: string; href?: string; match?: Route["name"][] };
@@ -14,56 +14,10 @@ const ITEMS: Item[] = [
   { label: "Contact", to: "/contact", match: ["contact"] },
 ];
 
-function ThemeButton() {
-  const { theme, toggle } = useTheme();
-  const next = theme === "dark" ? "light" : "dark";
-  return (
-    <button type="button" className="nav__icon" onClick={toggle} aria-label={`Switch to ${next} appearance`} title={`Switch to ${next} appearance`}>
-      {theme === "dark" ? <Sun /> : <Moon />}
-    </button>
-  );
-}
-
-/** True while a dark band (.section--ink) is under the bar, so the glass can darken with it. */
-function useOverDark(pathname: string) {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    let io: IntersectionObserver | null = null;
-    const setup = () => {
-      io?.disconnect();
-      const hits = new Set<Element>();
-      // The root shrinks to a 1px line behind the bar's middle. (A strip from the very
-      // top would count a band whose bottom edge merely touches it — IO treats
-      // edge-adjacent as intersecting, which is exactly where snapped sections sit.)
-      const mid = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) / 2 || 26;
-      io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (e.isIntersecting) hits.add(e.target);
-            else hits.delete(e.target);
-          }
-          setDark(hits.size > 0);
-        },
-        { rootMargin: `${-(mid - 1)}px 0px ${-(window.innerHeight - mid)}px 0px` },
-      );
-      document.querySelectorAll(".section--ink").forEach((el) => io!.observe(el));
-      setDark(false);
-    };
-    const id = requestAnimationFrame(setup);
-    window.addEventListener("resize", setup);
-    return () => {
-      cancelAnimationFrame(id);
-      io?.disconnect();
-      window.removeEventListener("resize", setup);
-    };
-  }, [pathname]);
-  return dark;
-}
-
 export function Nav() {
   const { route, pathname } = useRouter();
+  const { theme, toggle } = useTheme();
   const [open, setOpen] = useState(false);
-  const overDark = useOverDark(pathname);
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -91,8 +45,10 @@ export function Nav() {
     );
   };
 
+  const next = theme === "dark" ? "light" : "dark";
+
   return (
-    <header className={`nav${open ? " is-open" : ""}${overDark && !open ? " is-dark" : ""}`}>
+    <header className={`nav${open ? " is-open" : ""}`}>
       <div className="nav__bar">
         <Link to="/" className="nav__brand">
           {site.name}
@@ -100,20 +56,19 @@ export function Nav() {
         <nav className="nav__links" aria-label="Primary">
           {ITEMS.map((item) => link(item, "nav__link"))}
         </nav>
-        <div className="nav__tools">
-          <ThemeButton />
-          <button
-            type="button"
-            className="nav__icon nav__burger"
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-            aria-controls="nav-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
-          >
-            <span />
-            <span />
-          </button>
-        </div>
+        <button type="button" className="nav__icon" onClick={toggle} aria-label={`Switch to ${next} theme`} title={`Switch to ${next} theme`}>
+          <Contrast />
+        </button>
+        <button
+          type="button"
+          className="nav__icon nav__burger"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls="nav-menu"
+          aria-label={open ? "Close menu" : "Open menu"}
+        >
+          {open ? <Close /> : <Menu />}
+        </button>
       </div>
       <div className="nav__menu" id="nav-menu" inert={!open}>
         <nav aria-label="Menu">{ITEMS.map((item, i) => link(item, "nav__menu-link", i))}</nav>

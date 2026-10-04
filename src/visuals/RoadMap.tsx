@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { prefersReducedMotion } from "../lib/motion";
 import "./RoadMap.css";
 
@@ -305,6 +305,8 @@ export function RoadMap({ palette, start, grow = true, spanKm = 9, className }: 
   const waterCv = useRef<HTMLCanvasElement>(null);
   const engine = useRef<Engine | null>(null);
   const want = useRef<"grow" | "still" | null>(null);
+  // State, not a class toggled by hand: React owns className and would wipe it.
+  const [done, setDone] = useState(false);
 
   const kick = () => {
     const e = engine.current;
@@ -315,7 +317,7 @@ export function RoadMap({ palette, start, grow = true, spanKm = 9, className }: 
 
   useEffect(() => {
     const el = wrap.current!;
-    const e = new Engine(roadCv.current!, waterCv.current!, palette, spanKm, () => el.classList.add("is-done"));
+    const e = new Engine(roadCv.current!, waterCv.current!, palette, spanKm, () => setDone(true));
     engine.current = e;
     const ro = new ResizeObserver(([entry]) => {
       e.resize(Math.round(entry.contentRect.width), Math.round(entry.contentRect.height));
@@ -343,7 +345,7 @@ export function RoadMap({ palette, start, grow = true, spanKm = 9, className }: 
   }, [start, grow]); // kick() only reads refs
 
   return (
-    <div className={`roadmap ${className ?? ""}`} ref={wrap} style={{ background: palette.bg }} aria-hidden>
+    <div className={`roadmap${done ? " is-done" : ""} ${className ?? ""}`} ref={wrap} style={{ background: palette.bg }} aria-hidden>
       <canvas className="roadmap__water" ref={waterCv} />
       <canvas className="roadmap__roads" ref={roadCv} />
     </div>

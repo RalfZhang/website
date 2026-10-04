@@ -4,15 +4,17 @@
 
 ## 设计约定
 
-风格参考 Apple 的产品介绍页：
+风格贴近 InkCity：墨印在纸上，扁平、简单。
 
-- **一种字体**：用系统字体（Apple 设备上是 SF Pro + 苹方，Windows 上是 Segoe UI + 微软雅黑），字号阶梯和字距按 SF Pro 的规范设置。
+- **两种颜色加一个灰**：纸色、墨色，再加一个灰色用于次要文字、一个淡色用于色块底。没有阴影、渐变和毛玻璃。
+- **两档字重**：正文 400，标题 500。一种字体，用系统字体（Apple 设备上是 SF Pro + 苹方，Windows 上是 Segoe UI + 微软雅黑）；
   代码演示里用系统等宽字体。
-- **实心，不用细线**：用半粗体标题、灰色延续句（"**Works.** Apps, extensions…"）、圆角色块来组织内容，不用 1px 分隔线。
-- **动效克制**：装饰性的动效只有一种——元素第一次进入视野时淡入上浮（`data-reveal`，见 [src/lib/motion.ts](src/lib/motion.ts)）。
+- **4px 圆角**：卡片、按钮、色块统一 `--radius: 4px`。
+- **图标**：自己画的线性图标（→ ↗ ↓ ✕ 等），方头线端、尖角转折，和地图线条一致。联系方式的平台 logo 来自
+  [Simple Icons](https://simpleicons.org)（CC0），统一用当前文字颜色单色显示。
+- **动效克制**：装饰性的动效只有一种——元素第一次进入视野时淡入（`data-reveal`，见 [src/lib/motion.ts](src/lib/motion.ts)）。
   其余动的都是内容本身：InkCity 路网从钟楼长出来、File Template 的编辑器演示、大笨钟的表针。
-- **原生滚动**：首页用 CSS scroll-snap 一屏一页。普通鼠标滚轮单格滚动距离太短，强制吸附会把它弹回去，
-  所以只有滚轮额外做了"一格翻一页"（调用浏览器自己的平滑滚动）；触屏、键盘、滚动条都完全交给浏览器。
+- **原生滚动**：首页每个作品占一屏，但滚动完全交给浏览器——不吸附、不翻页、不拦截滚轮。
 
 配色只有两套，取自 InkCity 的地图主题：
 
@@ -21,7 +23,7 @@
 | light | `#eee8d6` | `#2d2d2d` |
 | dark | `#000000` | `#5e5d58` |
 
-暗色下 `#5e5d58` 对黑底只有约 3.2:1，所以它只用于路网线条和次要的大字。标题和正文用纸色 `#eee8d6` 及其变暗的色调。
+暗色下 `#5e5d58` 对黑底只有约 3.2:1，所以它只用于画出来的物体（显示器、路网）。文字用纸色 `#eee8d6` 和一个灰色。
 所有颜色 token 定义在 [src/styles/base.css](src/styles/base.css)。
 
 ## 开发
@@ -81,14 +83,16 @@ export const customPages = {
   就形成了墨从中心晕开的效果。地图数据 © OpenStreetMap contributors（ODbL）。
 - `pnpm data:qr` — 生成 `src/data/qr.json`，即联系方式二维码的模块矩阵，前端用 SVG 绘制。
   内容是从旧站三张二维码图片里解出来的链接。
+- `pnpm data:icons` — 从 `simple-icons` 里只抽出用到的 7 个平台 logo，生成 `src/data/brands.json`，
+  这样网站不用打包整个图标库。新增联系方式时，在 `scripts/build-icons.mjs` 里加上对应的图标再运行一次。
 
 ## 结构
 
 ```
 src/
-  lib/          路由、主题（切换时交叉淡化）、淡入上浮与可见性 hook
-  components/   导航、页脚、联系方式色块、二维码与弹窗
-  visuals/      InkCityVisual（笔记本 + 路网壁纸）、CodeWindow（编辑器演示）、WatchClock（大笨钟）、Poster
+  lib/          路由、主题（切换时交叉淡化）、淡入与可见性 hook
+  components/   导航、页脚、图标、联系方式色块、二维码与弹窗
+  visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（编辑器演示）、WatchClock（大笨钟）、Poster
   pages/        home、works、work（作品详情）、contact、404
   data/         作品、联系方式、生成的数据
 scripts/        数据生成和构建后处理
@@ -97,4 +101,4 @@ scripts/        数据生成和构建后处理
 ## 备注
 
 - 站点目前是 HTTP。剪贴板、`crypto.randomUUID` 这类只在安全上下文里可用的 API 不要直接依赖。
-- 尊重系统的「减弱动态效果」设置：淡入、路网生长、打字演示都会退化为静态，首页吸附也会关闭。
+- 尊重系统的「减弱动态效果」设置：淡入、路网生长、打字演示都会退化为静态。

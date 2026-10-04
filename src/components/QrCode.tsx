@@ -8,7 +8,7 @@ const QUIET = 3;
 
 /**
  * A QR code drawn in ink on paper — always dark-on-light, whatever the theme,
- * because inverted codes don't scan everywhere. Verified to decode at 120–400px.
+ * because inverted codes don't scan everywhere.
  */
 export function QrCode({ id, className }: { id: QrId; className?: string }) {
   const { size, rows, text } = qrCodes[id];
@@ -36,14 +36,15 @@ export function QrCode({ id, className }: { id: QrId; className?: string }) {
       role="img"
       aria-label={`QR code: ${text}`}
     >
-      <rect x={-QUIET} y={-QUIET} width={size + QUIET * 2} height={size + QUIET * 2} rx="3" className="qr__paper" />
+      <rect x={-QUIET} y={-QUIET} width={size + QUIET * 2} height={size + QUIET * 2} className="qr__paper" />
       {cells.map(({ x, y }) => (
-        <rect key={`${x}-${y}`} className="qr__m" x={x + 0.04} y={y + 0.04} width="0.92" height="0.92" rx="0.22" />
+        // a hair over one module, so neighbours fuse without seams
+        <rect key={`${x}-${y}`} className="qr__m" x={x} y={y} width="1.02" height="1.02" />
       ))}
       {finders.map(([x, y]) => (
         <g key={`${x}-${y}`}>
-          <rect className="qr__ring" x={x + 0.5} y={y + 0.5} width="6" height="6" rx="1.3" />
-          <rect className="qr__m" x={x + 2} y={y + 2} width="3" height="3" rx="0.6" />
+          <rect className="qr__ring" x={x + 0.5} y={y + 0.5} width="6" height="6" />
+          <rect className="qr__m" x={x + 2} y={y + 2} width="3" height="3" />
         </g>
       ))}
     </svg>

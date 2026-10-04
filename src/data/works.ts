@@ -107,7 +107,7 @@ export const works: Work[] = [
     stack: ["TypeScript", "VS Code API"],
     stats: [
       { value: 36000, suffix: "+", label: "installs", format: "grouped" },
-      { value: 2017, label: "since", format: "plain" },
+      { value: 2017, prefix: "since ", label: "first released", format: "plain" },
       { value: 11, label: "templates" },
     ],
     links: [
@@ -141,7 +141,7 @@ export const works: Work[] = [
     stats: [
       { value: 300, label: "咣 a day" },
       { value: 3, label: "platforms" },
-      { value: 2017, label: "since", format: "plain" },
+      { value: 2017, prefix: "since ", label: "first released", format: "plain" },
     ],
     links: [
       { label: "GitHub", href: "https://github.com/RalfZhang/big-ben" },

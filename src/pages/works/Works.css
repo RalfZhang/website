@@ -1,163 +1,134 @@
-/* ------------------------------------------------------------------ lineup */
+/* ------------------------------------------------------------------ featured */
 .lineup {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(24px, 3vw, 40px);
+  gap: 24px;
 }
 
-.lineup__card {
+.fcard {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
 }
 
-.lineup__media {
+.fcard__media {
   position: relative;
   display: grid;
   place-items: center;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  margin-bottom: 30px;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 20px;
   overflow: hidden;
-  border-radius: var(--r-tile);
+  border-radius: var(--radius);
   background: var(--tile);
   container-type: size;
 }
 
-.lineup__media--inkcity .inkcity {
-  width: 88%;
+.fcard__media--inkcity .inkcity {
+  width: 78%;
 }
 
-.lineup__media--file-template .editor {
+.fcard__media--file-template .editor {
   width: 86%;
 }
 
-.lineup__media--big-ben .bigben {
-  --watch-size: 64cqw;
+.fcard__media--big-ben .bigben {
+  --watch-size: 64cqh;
+  justify-content: center;
 }
 
-.lineup__kind {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.016em;
-  color: var(--text-2);
+.fcard__kind {
+  margin-bottom: 4px;
 }
 
-.lineup__card .t-title {
-  margin-top: 6px;
+.fcard__tagline {
+  margin-top: 8px;
 }
 
-.lineup__tagline {
-  max-width: 22em;
-  margin-top: 10px;
-}
-
-.lineup__stats {
-  display: grid;
-  gap: 14px;
-  margin-top: 28px;
-}
-
-.lineup__stats li {
-  display: grid;
-  gap: 2px;
-}
-
-.lineup__stats strong {
-  font-size: 28px;
-  line-height: 1.14;
-  font-weight: 600;
-  letter-spacing: 0.007em;
-}
-
-.lineup__stats span {
-  font-size: 14px;
-  color: var(--text-2);
-}
-
-.lineup__ctas {
+.fcard__stats {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 12px 22px;
-  margin-top: 32px;
+  gap: 4px 16px;
+  margin-top: 14px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.fcard__stats strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.fcard__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
 }
 
 /* ------------------------------------------------------------------ more */
 .more {
-  margin-top: clamp(100px, 16vh, 180px);
+  padding-block: clamp(80px, 12vh, 140px);
 }
 
-.more .t-section {
-  margin-bottom: 36px;
+.more__head {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 28px;
 }
 
 .more__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
 }
 
 .more__tile {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 250px;
-  padding: 30px 30px 26px;
-  border-radius: var(--r-tile);
+  min-height: 180px;
+  padding: 20px;
+  border-radius: var(--radius);
   background: var(--tile);
-  transition: background-color 0.25s var(--ease);
+  transition: background-color 0.15s var(--ease);
 }
 
 .more__tile:hover {
   background: var(--tile-hover);
 }
 
-.more__year {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.016em;
-  color: var(--text-2);
+.more__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: auto;
+  padding-bottom: 28px;
 }
 
-.more__title {
-  margin-top: 8px;
-  font-size: 32px;
-  line-height: 1.125;
-  font-weight: 600;
-  letter-spacing: 0.004em;
+.more__go {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  transition:
+    color 0.15s var(--ease),
+    transform 0.15s var(--ease);
+}
+
+.more__tile:hover .more__go {
+  color: var(--text);
+  transform: translateX(2px);
 }
 
 .more__tagline {
-  margin-top: 10px;
-  color: var(--text-2);
-}
-
-.more__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: auto;
-  padding-top: 24px;
-  font-size: 17px;
-}
-
-.more__cta svg {
-  width: 7px;
-  height: 11px;
-  transition: transform 0.25s var(--ease);
-}
-
-.more__tile:hover .more__cta svg {
-  transform: translateX(2px);
+  margin-top: 6px;
+  font-size: 15px;
 }
 
 @media (max-width: 1000px) {
   .lineup {
     grid-template-columns: minmax(0, 1fr);
-    gap: 80px;
-    max-width: 560px;
+    gap: 64px;
+    max-width: 620px;
   }
 }

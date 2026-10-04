@@ -1,7 +1,7 @@
 import { useRef, type CSSProperties } from "react";
 import { ContactGrid } from "../../components/ContactGrid";
 import { Footer } from "../../components/Footer";
-import { ChevronRight } from "../../components/icons";
+import { ArrowUpRight, BrandIcon, type BrandId } from "../../components/icons";
 import { QrCode } from "../../components/QrCode";
 import { contacts } from "../../data/contacts";
 import { useReveal } from "../../lib/motion";
@@ -16,10 +16,9 @@ export function Contact() {
 
   return (
     <main className="page contactpage" ref={root}>
-      <header className="wrap page-head">
-        <h1 className="t-section two-tone" data-reveal>
-          <strong>Contact.</strong> Find me on any of these — tap through, or scan a code.
-        </h1>
+      <header className="wrap page-head" data-reveal>
+        <h1 className="t-section">Contact</h1>
+        <p className="t-lead muted">Find me on any of these — tap through, or scan a code.</p>
       </header>
 
       <section className="wrap" aria-label="Platforms">
@@ -27,25 +26,31 @@ export function Contact() {
       </section>
 
       <section className="wrap contactpage__codes" aria-labelledby="codes-title">
-        <h2 id="codes-title" className="t-section two-tone" data-reveal>
-          <strong>Scan to chat.</strong> 扫码添加。
-        </h2>
+        <div className="contactpage__head" data-reveal>
+          <h2 id="codes-title" className="t-section">
+            Scan to chat
+          </h2>
+          <p className="t-lead muted">扫码添加</p>
+        </div>
         <ul className="qrtiles">
           {withQr.map((c, i) => (
-            <li key={c.id} className="qrtile" data-reveal style={d(i * 80)}>
+            <li key={c.id} className="qrtile" data-reveal style={d(i * 50)}>
+              <div className="qrtile__head">
+                <BrandIcon id={c.id as BrandId} className="qrtile__logo" />
+                <span className="qrtile__name">
+                  {c.name}
+                  {c.nameZh && <span className="muted"> {c.nameZh}</span>}
+                </span>
+              </div>
               <div className="qrtile__code">
                 <QrCode id={c.qr!} />
               </div>
-              <p className="qrtile__name">
-                {c.name}
-                {c.nameZh && <span className="muted"> {c.nameZh}</span>}
-              </p>
               {c.href ? (
-                <a className="chevron-link" href={c.href} target="_blank" rel="noreferrer">
-                  Open {c.name} <ChevronRight />
+                <a className="text-link" href={c.href} target="_blank" rel="noreferrer">
+                  Open {c.name} <ArrowUpRight />
                 </a>
               ) : (
-                <p className="muted">Scan with WeChat</p>
+                <p className="t-label">Scan with WeChat</p>
               )}
             </li>
           ))}

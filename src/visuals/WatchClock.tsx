@@ -95,14 +95,7 @@ const NUMERALS: [string, number][] = [
 function Face() {
   return (
     <>
-      <defs>
-        <radialGradient id="watch-gloss" cx="30%" cy="22%" r="85%">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.09" />
-          <stop offset="0.6" stopColor="#fff" stopOpacity="0" />
-        </radialGradient>
-      </defs>
       <circle className="watch__face" r="200" />
-      <circle r="200" fill="url(#watch-gloss)" />
       {Array.from({ length: 60 }, (_, i) =>
         i % 5 === 0 ? (
           <rect key={i} className="watch__marker" x="-4.5" y="-184" width="9" height="30" rx="4.5" transform={`rotate(${i * 6})`} />

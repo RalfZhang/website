@@ -8,32 +8,25 @@ html.sheet-open {
   z-index: 200;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 20px;
   background: rgba(0, 0, 0, 0);
-  transition:
-    background-color 0.3s var(--ease),
-    backdrop-filter 0.3s var(--ease);
+  transition: background-color 0.2s var(--ease);
 }
 
 .sheet.is-open {
-  background: rgba(0, 0, 0, 0.36);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.45);
 }
 
 .sheet__panel {
-  position: relative;
-  width: min(100%, 400px);
-  padding: 48px 36px 34px;
-  border-radius: var(--r-tile);
+  width: min(100%, 360px);
+  padding: 20px;
+  border-radius: var(--radius);
   background: var(--bg);
-  text-align: center;
-  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.5);
   opacity: 0;
-  transform: translateY(18px) scale(0.97);
+  transform: translateY(8px);
   transition:
-    opacity 0.3s var(--ease),
-    transform 0.45s var(--ease-out);
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--ease);
 }
 
 .sheet.is-open .sheet__panel {
@@ -41,45 +34,59 @@ html.sheet-open {
   transform: none;
 }
 
+.sheet__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.sheet__logo {
+  width: 22px;
+  height: 22px;
+}
+
+.sheet__title {
+  margin-right: auto;
+  font-size: 19px;
+}
+
 .sheet__close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--tile);
-  color: var(--text-2);
-  transition: color 0.2s var(--ease);
+  width: 32px;
+  height: 32px;
+  margin-right: -6px;
+  border-radius: var(--radius);
+  color: var(--muted);
+  transition:
+    background-color 0.15s var(--ease),
+    color 0.15s var(--ease);
 }
 
 .sheet__close:hover {
+  background: var(--tile);
   color: var(--text);
 }
 
 .sheet__close svg {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
 }
 
 .sheet__qr {
-  width: min(240px, 100%);
-  margin: 0 auto 26px;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: var(--radius);
 }
 
 .sheet__hint {
-  margin-top: 8px;
+  margin-top: 14px;
+  font-size: 15px;
 }
 
 .sheet__actions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 14px 22px;
-  margin-top: 26px;
+  gap: 8px;
+  margin-top: 16px;
 }

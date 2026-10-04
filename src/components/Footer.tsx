@@ -5,7 +5,7 @@ import "./Footer.css";
 export function Footer() {
   return (
     <footer className="footer">
-      <div className="wrap footer__inner t-small">
+      <div className="wrap footer__inner">
         <p>
           Copyright © {new Date().getFullYear()} {site.name}. Map data © OpenStreetMap contributors.
         </p>

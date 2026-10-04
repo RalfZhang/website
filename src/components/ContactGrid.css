@@ -1,12 +1,11 @@
 .cgrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .cgrid--compact {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
 }
 
 .cgrid__item {
@@ -18,87 +17,82 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  min-height: 168px;
-  padding: 26px 26px 22px;
-  border-radius: var(--r-card);
+  height: 100%;
+  min-height: 150px;
+  padding: 20px;
+  border-radius: var(--radius);
   background: var(--tile);
   text-align: left;
-  transition: background-color 0.25s var(--ease);
-}
-
-.cgrid--compact .ctile {
-  min-height: 140px;
-  padding: 22px 22px 18px;
+  transition: background-color 0.15s var(--ease);
 }
 
 .ctile:hover {
   background: var(--tile-hover);
 }
 
-.ctile__name {
-  font-size: 24px;
-  line-height: 1.17;
-  font-weight: 600;
-  letter-spacing: 0.009em;
+.ctile__top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: auto;
+  padding-bottom: 28px;
+}
+
+.ctile__logo {
+  width: 26px;
+  height: 26px;
   color: var(--text);
 }
 
-.ctile__zh {
-  color: var(--text-2);
+.ctile__go {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  transition: color 0.15s var(--ease);
+}
+
+.ctile:hover .ctile__go {
+  color: var(--text);
+}
+
+.ctile__name {
+  font-size: 19px;
+  line-height: 1.25;
   font-weight: 500;
+  color: var(--text);
 }
 
 .ctile__handle {
-  margin-top: 4px;
-  font-size: 14px;
-  letter-spacing: -0.016em;
-  color: var(--text-2);
+  margin-top: 2px;
+  font-size: 15px;
+  color: var(--muted);
 }
 
-.ctile__action {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: auto;
-  padding-top: 18px;
-  font-size: 14px;
-  letter-spacing: -0.016em;
-  color: var(--text);
-}
-
-.ctile__action svg {
-  width: 6px;
-  height: 10px;
-  transition: transform 0.25s var(--ease);
-}
-
-.ctile:hover .ctile__action svg {
-  transform: translateX(2px);
-}
-
+/* Sits in the tile's top row, left of the ↗ — clear of the name and handle. */
 .ctile__qr {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 12px;
+  right: 44px;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: var(--text-2);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
   transition:
-    background-color 0.2s var(--ease),
-    color 0.2s var(--ease);
+    background-color 0.15s var(--ease),
+    color 0.15s var(--ease);
 }
 
 .ctile__qr:hover {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--fill);
+  color: var(--on-fill);
 }
 
 .ctile__qr svg {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
 }
 
 @media (max-width: 900px) {
@@ -108,11 +102,15 @@
 }
 
 @media (max-width: 420px) {
-  .cgrid--compact .ctile {
-    min-height: 120px;
-    padding: 18px 18px 16px;
+  .ctile {
+    min-height: 132px;
+    padding: 16px;
+  }
+  .ctile__qr {
+    top: 8px;
+    right: 38px;
   }
   .ctile__name {
-    font-size: 21px;
+    font-size: 17px;
   }
 }

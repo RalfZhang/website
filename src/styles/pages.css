@@ -1,23 +1,16 @@
 /* Shared by the scrolling pages: Works, a work, Contact, 404. */
 .page:not(.home) {
-  padding-top: calc(var(--nav-h) + clamp(56px, 11vh, 120px));
+  padding-top: calc(var(--nav-h) + clamp(48px, 9vh, 96px));
 }
 
 .page-head {
-  margin-bottom: clamp(48px, 8vh, 80px);
+  display: grid;
+  gap: 10px;
+  margin-bottom: clamp(36px, 6vh, 56px);
 }
 
-.page-head .t-section {
-  max-width: 21em;
-}
-
-.works,
-.contactpage {
-  padding-bottom: 0;
-}
-
-.works .more {
-  padding-bottom: clamp(80px, 12vh, 140px);
+.page-head .t-lead {
+  max-width: 32em;
 }
 
 /* 404 */
@@ -31,12 +24,11 @@
   flex: 1;
   display: grid;
   align-content: center;
-  justify-items: center;
-  gap: 8px;
-  text-align: center;
+  justify-items: start;
+  gap: 12px;
   padding-bottom: 80px;
 }
 
 .lost__home {
-  margin-top: 28px;
+  margin-top: 16px;
 }

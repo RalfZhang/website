@@ -1,6 +1,6 @@
 .footer {
-  background: var(--bg-alt);
-  color: var(--text-2);
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .footer__inner {
@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px 24px;
-  padding-block: 20px calc(20px + env(safe-area-inset-bottom));
+  padding-block: 24px calc(24px + env(safe-area-inset-bottom));
 }
 
 .footer__links {
@@ -19,10 +19,10 @@
 }
 
 .footer__links a {
-  color: var(--text-2);
+  color: var(--muted);
+  transition: color 0.15s var(--ease);
 }
 
 .footer__links a:hover {
   color: var(--text);
-  text-decoration: underline;
 }

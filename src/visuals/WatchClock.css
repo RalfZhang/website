@@ -1,23 +1,17 @@
 .bigben {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: clamp(28px, 5vw, 72px);
+  gap: clamp(24px, 3vw, 40px);
   width: 100%;
 }
 
-/* ------------------------------------------------------------------ watch */
+/* ------------------------------------------------------------------ the dial
+ * Flat: an ink disc, paper markers and hands. */
 .watch {
   flex: none;
-  width: var(--watch-size, min(100%, 420px));
+  width: var(--watch-size, min(100%, 400px));
   aspect-ratio: 1;
   border-radius: 50%;
-  box-shadow: 0 40px 70px -36px rgba(0, 0, 0, 0.55);
-  transition: transform 0.2s var(--ease);
-}
-
-.watch:active {
-  transform: scale(0.985);
 }
 
 .watch svg {
@@ -27,7 +21,11 @@
 }
 
 .watch__face {
-  fill: var(--watch);
+  fill: var(--watch-face, #2d2d2d);
+}
+
+:root[data-theme="dark"] .watch__face {
+  fill: #1c1c1a;
 }
 
 .watch__marker {
@@ -35,15 +33,14 @@
 }
 
 .watch__tick {
-  fill: rgba(238, 232, 214, 0.32);
+  fill: rgba(238, 232, 214, 0.35);
 }
 
 .watch__numeral {
   fill: var(--paper);
   font-family: var(--font);
-  font-size: 38px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-size: 36px;
+  font-weight: 500;
   text-anchor: middle;
 }
 
@@ -51,8 +48,7 @@
   fill: rgba(238, 232, 214, 0.55);
   font-family: var(--font);
   font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-anchor: middle;
 }
 
@@ -66,13 +62,12 @@
 .watch__hand--hour,
 .watch__hand--minute {
   fill: var(--paper);
-  transition: transform 0.4s var(--ease);
+  transition: transform 0.3s var(--ease);
 }
 
 .watch__hand--second {
-  fill: #c9c1a9;
-  /* a tick with a little spring in it */
-  transition: transform 0.32s cubic-bezier(0.4, 2.2, 0.55, 1);
+  fill: rgba(238, 232, 214, 0.65);
+  transition: transform 0.2s var(--ease);
 }
 
 .watch__pin {
@@ -80,43 +75,38 @@
 }
 
 .watch__pin-dot {
-  fill: var(--watch);
+  fill: #2d2d2d;
 }
 
 /* ------------------------------------------------------------------ the post */
 .bigben__side {
   display: grid;
-  gap: 22px;
-  width: min(100%, 400px);
+  gap: 18px;
+  flex: 1;
+  min-width: 220px;
+  max-width: 380px;
 }
 
 .notif {
   display: grid;
-  grid-template-columns: 38px 1fr;
+  grid-template-columns: 36px 1fr;
   gap: 12px;
-  padding: 14px 16px 16px;
-  border-radius: 22px;
+  padding: 14px;
+  border-radius: var(--radius);
   background: var(--tile);
   text-align: left;
-  box-shadow: 0 24px 40px -28px rgba(0, 0, 0, 0.45);
 }
 
 .notif__icon {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 9px;
-  background: var(--ink);
-  color: var(--paper);
-  font-size: 19px;
-  font-weight: 600;
-}
-
-:root[data-theme="dark"] .notif__icon,
-.section--ink .notif__icon {
-  background: var(--paper);
-  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius);
+  background: var(--fill);
+  color: var(--on-fill);
+  font-size: 18px;
+  font-weight: 500;
 }
 
 .notif__head {
@@ -124,58 +114,53 @@
   justify-content: space-between;
   gap: 10px;
   font-size: 14px;
-  letter-spacing: -0.016em;
 }
 
 .notif__app {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text);
 }
 
 .notif__time {
-  color: var(--text-2);
+  color: var(--muted);
 }
 
 .notif__text {
   margin-top: 2px;
   font-size: 15px;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
+  line-height: 1.45;
   color: var(--text);
 }
 
 .yearbar {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   text-align: left;
 }
 
 .yearbar__label {
-  font-size: 15px;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .yearbar__label strong {
   color: var(--text);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .yearbar__track {
   position: relative;
   display: block;
-  height: 6px;
+  height: 4px;
   overflow: hidden;
-  border-radius: 3px;
   background: var(--tile);
 }
 
 .yearbar__track > span {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
   background: var(--text);
   transform: scaleX(0);
   transform-origin: 0 50%;
@@ -184,5 +169,12 @@
 @media (max-width: 760px) {
   .bigben {
     flex-direction: column;
+    align-items: stretch;
+  }
+  .watch {
+    align-self: center;
+  }
+  .bigben__side {
+    max-width: none;
   }
 }

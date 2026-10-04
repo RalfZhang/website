@@ -1,6 +1,6 @@
 import { useRef, type CSSProperties } from "react";
 import { Footer } from "../../components/Footer";
-import { ChevronRight } from "../../components/icons";
+import { ArrowLeft, ArrowRight, ArrowUpRight } from "../../components/icons";
 import { nextWork, type Work } from "../../data/works";
 import { useReveal } from "../../lib/motion";
 import { Link } from "../../lib/router";
@@ -10,18 +10,11 @@ import "./DefaultWorkPage.css";
 
 const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
-/** "First sentence. The rest…" → the first sentence is set dark, the rest grey. */
-function splitLead(text: string): [string, string] {
-  const i = text.search(/[.。]\s/);
-  return i < 0 ? [text, ""] : [text.slice(0, i + 1), text.slice(i + 2)];
-}
-
 /** The page every work gets until it has a bespoke one (see ./custom). */
 export function DefaultWorkPage({ work }: { work: Work }) {
   const root = useRef<HTMLElement>(null);
   useReveal(root, work.slug);
   const next = nextWork(work.slug);
-  const [lead, rest] = splitLead(work.summary);
   const [primary, ...others] = work.links;
 
   const specs: [string, string][] = [
@@ -34,53 +27,55 @@ export function DefaultWorkPage({ work }: { work: Work }) {
   return (
     <main className="page detail" ref={root}>
       <section className="wrap detail__hero">
-        <Link to="/works" className="detail__crumb" data-reveal>
-          Works
+        <Link to="/works" className="detail__crumb t-label" data-reveal>
+          <ArrowLeft /> Works
         </Link>
+        <p className="t-label" data-reveal style={d(30)}>
+          {work.kind} · {work.year}
+        </p>
         <h1 className="t-headline" data-reveal style={d(60)}>
           {work.title}
           {work.titleZh && <span className="muted"> {work.titleZh}</span>}
         </h1>
-        <p className="t-sub detail__tagline" data-reveal style={d(120)}>
+        <p className="t-lead muted detail__tagline" data-reveal style={d(90)}>
           {work.tagline}
         </p>
-        <div className="detail__ctas" data-reveal style={d(180)}>
+        <div className="detail__ctas" data-reveal style={d(120)}>
           {primary && (
             <a className="button" href={primary.href} target="_blank" rel="noreferrer">
-              {primary.label}
+              {primary.label} <ArrowUpRight />
             </a>
           )}
           {others.map((l) => (
-            <a key={l.href} className="chevron-link" href={l.href} target="_blank" rel="noreferrer">
-              {l.label} <ChevronRight />
+            <a key={l.href} className="button button--quiet" href={l.href} target="_blank" rel="noreferrer">
+              {l.label} <ArrowUpRight />
             </a>
           ))}
         </div>
       </section>
 
       <section className="wrap">
-        <div className={`detail__media detail__media--${work.visual ?? "poster"}`} data-reveal="media" style={d(220)}>
+        <div className={`detail__media detail__media--${work.visual ?? "poster"}`} data-reveal style={d(120)}>
           <WorkVisual work={work} variant="detail" />
         </div>
       </section>
 
       <section className="wrap detail__intro">
-        <p className="t-intro two-tone" data-reveal>
-          <strong>{lead}</strong> {rest}
+        <p className="t-lead" data-reveal>
+          {work.summary}
         </p>
       </section>
 
       {work.features && (
         <section className="wrap detail__section" aria-labelledby="highlights">
           <h2 id="highlights" className="t-section" data-reveal>
-            Highlights.
+            Highlights
           </h2>
           <ul className="highlights" style={{ "--cols": work.features.length % 2 === 0 ? 2 : 3 } as CSSProperties}>
             {work.features.map((f, i) => (
-              <li key={f.title} className="highlight" data-reveal style={d(i * 70)}>
-                <p className="two-tone">
-                  <strong>{f.title}</strong> {f.text}
-                </p>
+              <li key={f.title} className="highlight" data-reveal style={d(i * 50)}>
+                <h3 className="highlight__title">{f.title}</h3>
+                <p className="muted">{f.text}</p>
               </li>
             ))}
           </ul>
@@ -91,9 +86,9 @@ export function DefaultWorkPage({ work }: { work: Work }) {
         <section className="wrap detail__section" aria-label="In numbers">
           <ul className="numbers">
             {work.stats.map((s, i) => (
-              <li key={s.label} className="number" data-reveal style={d(i * 70)}>
+              <li key={s.label} className="number" data-reveal style={d(i * 50)}>
                 <span className="number__value">{formatStat(s)}</span>
-                <span className="number__label">{s.label}</span>
+                <span className="number__label muted">{s.label}</span>
               </li>
             ))}
           </ul>
@@ -102,7 +97,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
 
       <section className="wrap detail__section" aria-labelledby="details">
         <h2 id="details" className="t-section" data-reveal>
-          Details.
+          Details
         </h2>
         <dl className="specs" data-reveal>
           {specs.map(([k, v]) => (
@@ -115,8 +110,8 @@ export function DefaultWorkPage({ work }: { work: Work }) {
             <dt>Links</dt>
             <dd className="specs__links">
               {work.links.map((l) => (
-                <a key={l.href} className="chevron-link" href={l.href} target="_blank" rel="noreferrer">
-                  {l.label} <ChevronRight />
+                <a key={l.href} className="text-link" href={l.href} target="_blank" rel="noreferrer">
+                  {l.label}
                 </a>
               ))}
             </dd>
@@ -132,12 +127,12 @@ export function DefaultWorkPage({ work }: { work: Work }) {
 
       <section className="wrap detail__section detail__next-wrap">
         <Link to={`/works/${next.slug}`} className="next" data-reveal>
-          <span className="next__label">Next</span>
-          <span className="t-headline next__title">{next.title}</span>
-          <span className="next__tagline">{next.tagline}</span>
-          <span className="chevron-link next__cta">
-            See it <ChevronRight />
+          <span className="t-label next__label">Next</span>
+          <span className="next__row">
+            <span className="t-headline">{next.title}</span>
+            <ArrowRight className="next__go" />
           </span>
+          <span className="next__tagline">{next.tagline}</span>
         </Link>
       </section>
 

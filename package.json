@@ -9,7 +9,8 @@
     "build": "tsc --noEmit && vite build && node scripts/route-shells.mjs",
     "preview": "vite preview",
     "data:map": "node scripts/build-map.mjs",
-    "data:qr": "node scripts/build-qr.mjs"
+    "data:qr": "node scripts/build-qr.mjs",
+    "data:icons": "node scripts/build-icons.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",
@@ -21,6 +22,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "qrcode": "^1.5.4",
+    "simple-icons": "^16.34.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.3"
   }

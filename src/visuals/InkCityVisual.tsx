@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useInView } from "../lib/motion";
 import { useTheme } from "../lib/theme";
 import { RoadMap, WALLPAPER } from "./RoadMap";
@@ -8,10 +8,10 @@ type Mode = "light" | "dark";
 const MODES: Mode[] = ["light", "dark"];
 
 /**
- * InkCity as it's meant to be seen: today's wallpaper on a laptop. The first
- * time it scrolls into view the roads grow out from the Bell Tower; the
- * switch flips between InkCity's light and dark wallpapers (it follows the
- * site's appearance until it's touched).
+ * InkCity as it's meant to be seen: today's wallpaper on a monitor, drawn flat
+ * like the app's own icon. The first time it scrolls into view the roads grow
+ * out from the Bell Tower; the switch flips between InkCity's light and dark
+ * wallpapers (following the site's theme until it's touched).
  */
 export function InkCityVisual({ variant = "stage" }: { variant?: "stage" | "card" | "detail" }) {
   const { theme } = useTheme();
@@ -20,35 +20,37 @@ export function InkCityVisual({ variant = "stage" }: { variant?: "stage" | "card
   const first = useRef<Mode>(mode);
   const ref = useRef<HTMLElement>(null);
   const seen = useInView(ref, { once: true, threshold: 0.35 });
-  const span = variant === "card" ? 7 : 9;
+  // The other palette is drawn only once it's asked for — drawing it in one go
+  // takes a frame or three, which mustn't land while the page is scrolling.
+  const [other, setOther] = useState(false);
+  useEffect(() => {
+    if (mode !== first.current) setOther(true);
+  }, [mode]);
 
   return (
     <figure className={`inkcity inkcity--${variant}`} ref={ref}>
-      <div className="laptop">
-        <div className="laptop__lid">
-          <div className="laptop__screen">
+      <div className="monitor">
+        <div className="monitor__screen">
+          <div className="monitor__display">
             {MODES.map((m) => (
               <RoadMap
                 key={m}
                 palette={WALLPAPER[m]}
-                start={seen}
+                start={seen && (m === first.current || other)}
                 grow={m === first.current}
-                spanKm={span}
+                spanKm={variant === "card" ? 7 : 9}
                 className={m === mode ? "is-shown" : undefined}
               />
             ))}
-            <span className="laptop__notch" />
           </div>
         </div>
-        <div className="laptop__base">
-          <span className="laptop__groove" />
-        </div>
+        <div className="monitor__neck" />
+        <div className="monitor__foot" />
       </div>
 
       {variant !== "card" && (
         <div className="inkcity__controls">
           <div className="segmented" role="radiogroup" aria-label="Wallpaper">
-            <span className="segmented__thumb" style={{ transform: `translateX(${mode === "dark" ? 100 : 0}%)` }} />
             {MODES.map((m) => (
               <button
                 key={m}
@@ -62,7 +64,7 @@ export function InkCityVisual({ variant = "stage" }: { variant?: "stage" | "card
               </button>
             ))}
           </div>
-          <figcaption className="t-caption muted">Xi’an, centred on the Bell Tower.</figcaption>
+          <figcaption className="t-label">Xi’an, centred on the Bell Tower.</figcaption>
         </div>
       )}
     </figure>

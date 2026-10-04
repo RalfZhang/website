@@ -30,6 +30,9 @@ importers:
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
+      simple-icons:
+        specifier: ^16.34.0
+        version: 16.34.0
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
@@ -499,6 +502,10 @@ packages:
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
 
+  simple-icons@16.34.0:
+    resolution: {integrity: sha512-UTxKn0PVspk84B2hHF3Dqiqht1yDjJmDc/t4cO7PyCQxCMk6OjEu95pnpGjhLaGeQ4qBrGASbefTIe/+czrX7g==}
+    engines: {node: '>=0.12.18'}
+
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
     engines: {node: '>=0.10.0'}
@@ -878,6 +885,8 @@ snapshots:
   scheduler@0.28.0: {}
 
   set-blocking@2.0.0: {}
+
+  simple-icons@16.34.0: {}
 
   source-map-js@1.2.2: {}
 

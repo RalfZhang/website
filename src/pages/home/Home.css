@@ -1,6 +1,5 @@
-.snap {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
+/* Every section is (at least) one screen tall. */
+.screen {
   min-height: 100svh;
 }
 
@@ -14,137 +13,91 @@
 }
 
 .hero__name {
-  animation: hero-in 1.6s var(--ease-out) both;
+  animation: hero-in 0.8s var(--ease) both;
 }
 
 .hero__next {
   position: absolute;
-  bottom: max(28px, env(safe-area-inset-bottom));
+  bottom: max(24px, env(safe-area-inset-bottom));
   left: 50%;
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   translate: -50% 0;
-  color: var(--text-3);
-  animation: fade-in 1s var(--ease) 1.2s both;
-  transition: color 0.2s var(--ease);
+  border-radius: var(--radius);
+  color: var(--muted);
+  transition:
+    color 0.15s var(--ease),
+    background-color 0.15s var(--ease);
 }
 
 .hero__next:hover {
   color: var(--text);
+  background: var(--tile);
 }
 
 .hero__next svg {
-  width: 22px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
 }
 
 @keyframes hero-in {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.985);
-    filter: blur(12px);
+    transform: translateY(12px);
   }
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-/* ------------------------------------------------------------------ featured work */
+/* ------------------------------------------------------------------ featured work
+ * Words on the left, the work itself on the right.
+ */
 .feature {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   align-items: center;
-  gap: clamp(28px, 5vh, 56px);
-  padding: calc(var(--nav-h) + clamp(28px, 6.5vh, 80px)) var(--gutter) clamp(36px, 6vh, 72px);
-  overflow: clip;
-  text-align: center;
+  padding-block: calc(var(--nav-h) + 24px) 40px;
+}
+
+.feature__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 80px);
 }
 
 .feature__copy {
   display: grid;
-  justify-items: center;
-  gap: 4px;
-  max-width: 900px;
+  gap: 14px;
 }
 
-.feature__eyebrow {
-  color: var(--text-2);
-}
-
-.feature__zh {
-  color: var(--text-2);
-}
-
-.feature__sub {
-  margin-top: 6px;
-  max-width: 30em;
-  color: var(--text-2);
+.feature__copy .t-lead {
+  max-width: 24em;
 }
 
 .feature__ctas {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px;
-  margin-top: 22px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .feature__media {
   display: flex;
   justify-content: center;
-  width: 100%;
+  min-width: 0;
 }
 
-/* On desktop every section is exactly one screen, and each visual takes
-   whatever height the copy leaves (container units on the media box). */
-@media (min-width: 761px) and (min-height: 620px) {
-  .feature {
-    height: 100svh;
-    padding-bottom: clamp(24px, 4vh, 48px);
-  }
-  .feature__media {
-    flex: 1;
-    min-height: 0;
-    align-items: center;
-    container-type: size;
-  }
-  .feature--inkcity .inkcity {
-    /* laptop ≈ 0.6 × its width tall, plus the switch and caption below */
-    width: min(100cqw, 1000px, calc((100cqh - 96px) * 1.62));
-  }
-  .feature--file-template .editor {
-    width: min(100cqw, 880px, calc((100cqh - 24px) * 2));
-  }
-  .feature--big-ben .bigben {
-    --watch-size: min(100cqh, 480px);
-  }
+/* The visuals never grow taller than the screen leaves room for. */
+.feature--inkcity .inkcity {
+  width: min(100%, calc((100svh - var(--nav-h) - 170px) * 1.38));
 }
 
-/* Short screens (laptops at 720–800px): smaller copy, so the visual keeps its size. */
-@media (min-width: 761px) and (max-height: 820px) {
-  .feature {
-    gap: 24px;
-    padding-top: calc(var(--nav-h) + 24px);
-  }
-  .feature .t-headline {
-    font-size: clamp(40px, 7.4vh, 64px);
-  }
-  .feature .t-eyebrow,
-  .feature__sub {
-    font-size: 19px;
-  }
-  .feature__ctas {
-    margin-top: 16px;
-  }
-  .feature__ctas .button {
-    padding: 9px 18px;
-    font-size: 15px;
-  }
+.feature--file-template .editor {
+  width: min(100%, calc((100svh - var(--nav-h) - 110px) * 2));
+}
+
+.feature--big-ben .bigben {
+  --watch-size: min(46%, calc(100svh - var(--nav-h) - 120px), 380px);
 }
 
 /* ------------------------------------------------------------------ contact */
@@ -158,20 +111,24 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-block: calc(var(--nav-h) + 40px) 56px;
+  padding-block: calc(var(--nav-h) + 40px) 48px;
 }
 
-.home-contact__sub {
-  margin: 8px 0 clamp(32px, 6vh, 56px);
+.home-contact__lead {
+  margin: 10px 0 36px;
 }
 
-@media (max-width: 760px), (max-height: 619px) {
+@media (max-width: 900px) {
+  .feature__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
   .feature {
-    padding-top: calc(var(--nav-h) + 40px);
+    padding-top: calc(var(--nav-h) + 32px);
   }
   .feature--inkcity .inkcity,
   .feature--file-template .editor {
-    width: min(100%, 720px);
+    width: 100%;
   }
   .feature--big-ben .bigben {
     --watch-size: min(72vw, 320px);
@@ -179,8 +136,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__name,
-  .hero__next {
+  .hero__name {
     animation: none;
   }
 }
