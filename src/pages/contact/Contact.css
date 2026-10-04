@@ -1,0 +1,37 @@
+.contactpage__codes {
+  padding-block: clamp(100px, 16vh, 180px) clamp(80px, 12vh, 140px);
+}
+
+.contactpage__codes .t-section {
+  margin-bottom: 36px;
+}
+
+.qrtiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.qrtile {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 36px 32px 32px;
+  border-radius: var(--r-tile);
+  background: var(--tile);
+  text-align: center;
+}
+
+.qrtile__code {
+  width: min(220px, 100%);
+  margin-bottom: 20px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.qrtile__name {
+  font-size: 24px;
+  line-height: 1.17;
+  font-weight: 600;
+  letter-spacing: 0.009em;
+}

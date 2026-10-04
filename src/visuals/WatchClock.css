@@ -1,0 +1,188 @@
+.bigben {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 5vw, 72px);
+  width: 100%;
+}
+
+/* ------------------------------------------------------------------ watch */
+.watch {
+  flex: none;
+  width: var(--watch-size, min(100%, 420px));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow: 0 40px 70px -36px rgba(0, 0, 0, 0.55);
+  transition: transform 0.2s var(--ease);
+}
+
+.watch:active {
+  transform: scale(0.985);
+}
+
+.watch svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.watch__face {
+  fill: var(--watch);
+}
+
+.watch__marker {
+  fill: var(--paper);
+}
+
+.watch__tick {
+  fill: rgba(238, 232, 214, 0.32);
+}
+
+.watch__numeral {
+  fill: var(--paper);
+  font-family: var(--font);
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-anchor: middle;
+}
+
+.watch__label {
+  fill: rgba(238, 232, 214, 0.55);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+}
+
+/* Rotate about the user-space origin — the dial's centre. (With view-box, the
+   reference box starts at the origin, not at the view box's min-x/min-y.) */
+.watch__hand {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+.watch__hand--hour,
+.watch__hand--minute {
+  fill: var(--paper);
+  transition: transform 0.4s var(--ease);
+}
+
+.watch__hand--second {
+  fill: #c9c1a9;
+  /* a tick with a little spring in it */
+  transition: transform 0.32s cubic-bezier(0.4, 2.2, 0.55, 1);
+}
+
+.watch__pin {
+  fill: var(--paper);
+}
+
+.watch__pin-dot {
+  fill: var(--watch);
+}
+
+/* ------------------------------------------------------------------ the post */
+.bigben__side {
+  display: grid;
+  gap: 22px;
+  width: min(100%, 400px);
+}
+
+.notif {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  border-radius: 22px;
+  background: var(--tile);
+  text-align: left;
+  box-shadow: 0 24px 40px -28px rgba(0, 0, 0, 0.45);
+}
+
+.notif__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .notif__icon,
+.section--ink .notif__icon {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.notif__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  letter-spacing: -0.016em;
+}
+
+.notif__app {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.notif__time {
+  color: var(--text-2);
+}
+
+.notif__text {
+  margin-top: 2px;
+  font-size: 15px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.yearbar {
+  display: grid;
+  gap: 10px;
+  text-align: left;
+}
+
+.yearbar__label {
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.yearbar__label strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.yearbar__track {
+  position: relative;
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--tile);
+}
+
+.yearbar__track > span {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+@media (max-width: 760px) {
+  .bigben {
+    flex-direction: column;
+  }
+}

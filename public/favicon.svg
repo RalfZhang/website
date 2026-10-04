@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .tile { fill: #2d2d2d; }
+    .road { fill: none; stroke: #eee8d6; stroke-linecap: round; stroke-linejoin: round; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #eee8d6; }
+      .road { stroke: #2d2d2d; }
+    }
+  </style>
+  <rect class="tile" x="2" y="2" width="60" height="60" rx="14" />
+  <path class="road" stroke-width="4.5" d="M2 40 C 20 36, 34 30, 62 14" />
+  <path class="road" stroke-width="3" d="M22 2 V62 M2 24 H62 M44 2 V62" />
+  <path class="road" stroke-width="2" d="M2 50 H62 M33 24 V62 M10 2 V24" />
+</svg>

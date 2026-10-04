@@ -1,0 +1,196 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  margin-bottom: calc(-1 * var(--nav-h));
+}
+
+/* The bar itself: translucent paper (or night) over whatever scrolls beneath. */
+.nav__bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: min(100% - 2 * var(--gutter), var(--wrap));
+  height: var(--nav-h);
+  margin-inline: auto;
+}
+
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--glass);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* Over an ink band the glass goes dark with it. */
+.nav.is-dark {
+  --glass: rgba(30, 30, 29, 0.72);
+  --text: #eee8d6;
+  --text-2: #a9a497;
+  --tile: #383837;
+}
+
+.nav::before {
+  transition: background-color 0.3s var(--ease);
+}
+
+.nav__brand {
+  margin-right: auto;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--text);
+}
+
+.nav__links {
+  display: flex;
+  gap: 28px;
+}
+
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+  letter-spacing: -0.016em;
+  color: var(--text-2);
+  transition: color 0.2s var(--ease);
+}
+
+.nav__link:hover,
+.nav__link.is-active {
+  color: var(--text);
+}
+
+.nav__ext {
+  width: 8px;
+  height: 8px;
+}
+
+.nav__tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.nav__icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--text);
+  transition: background-color 0.2s var(--ease);
+}
+
+.nav__icon:hover {
+  background: var(--tile);
+}
+
+.nav__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nav__burger {
+  display: none;
+  position: relative;
+}
+
+.nav__burger span {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  transition: transform 0.3s var(--ease);
+}
+
+.nav__burger span:first-child {
+  transform: translateY(-3.5px);
+}
+
+.nav__burger span:last-child {
+  transform: translateY(3.5px);
+}
+
+.nav.is-open .nav__burger span:first-child {
+  transform: rotate(45deg);
+}
+
+.nav.is-open .nav__burger span:last-child {
+  transform: rotate(-45deg);
+}
+
+/* ------------------------------------------------------------------ menu (phones) */
+.nav__menu {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  padding: calc(var(--nav-h) + 20px) var(--gutter) 40px;
+  background: var(--bg);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s var(--ease),
+    visibility 0s linear 0.3s;
+}
+
+.nav.is-open .nav__menu {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s var(--ease);
+}
+
+.nav__menu nav {
+  display: grid;
+  gap: 6px;
+}
+
+.nav__menu-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.007em;
+  color: var(--text-2);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.35s var(--ease),
+    transform 0.45s var(--ease-out);
+}
+
+.nav__menu-link.is-active {
+  color: var(--text);
+}
+
+.nav.is-open .nav__menu-link {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(60ms + var(--i) * 35ms);
+}
+
+.nav__menu-link .nav__ext {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 760px) {
+  .nav__links {
+    display: none;
+  }
+  .nav__burger {
+    display: grid;
+  }
+}

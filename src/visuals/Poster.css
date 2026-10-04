@@ -1,0 +1,38 @@
+.poster {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(28px, 5cqi, 64px);
+  background: var(--ink);
+  color: var(--paper);
+  container-type: inline-size;
+}
+
+:root[data-theme="dark"] .poster {
+  background: #161615;
+}
+
+.poster__meta,
+.poster__stack {
+  font-size: clamp(14px, 1.6cqi, 19px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(238, 232, 214, 0.6);
+}
+
+.poster__title {
+  font-size: clamp(56px, 15cqi, 200px);
+  line-height: 0.95;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.poster__zh {
+  display: block;
+  margin-top: 0.12em;
+  font-size: 0.32em;
+  letter-spacing: 0;
+  color: rgba(238, 232, 214, 0.6);
+}

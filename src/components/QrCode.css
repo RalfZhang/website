@@ -1,0 +1,19 @@
+.qr {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.qr__paper {
+  fill: var(--paper);
+}
+
+.qr__m {
+  fill: var(--ink);
+}
+
+.qr__ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+}

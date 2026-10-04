@@ -1,0 +1,253 @@
+/* A dark editor window, drawn solid like a screenshot. */
+.editor {
+  --editor: #1c1c1b;
+  --editor-chrome: #262625;
+  --editor-text: #d8d3c4;
+  --editor-dim: #85817a;
+  --editor-faint: #5e5d58;
+  --editor-hi: #eee8d6;
+  position: relative;
+  width: 100%;
+  text-align: left;
+  container-type: inline-size;
+}
+
+:root[data-theme="dark"] .editor {
+  --editor: #1d1d1c;
+  --editor-chrome: #262625;
+}
+
+.editor__window {
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--editor);
+  color: var(--editor-text);
+  font-family: var(--font-mono);
+  font-size: clamp(10px, 2.05cqi, 15px);
+  line-height: 1.7;
+  letter-spacing: 0;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 40px 70px -30px rgba(0, 0, 0, 0.6);
+}
+
+.editor__titlebar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 2.9em;
+  padding: 0 1.1em;
+  background: var(--editor-chrome);
+}
+
+.editor__lights {
+  display: flex;
+  gap: 0.55em;
+}
+
+.editor__lights i {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 50%;
+  background: #4a4946;
+}
+
+.editor__title {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  font-family: var(--font);
+  font-size: 0.9em;
+  color: var(--editor-dim);
+}
+
+.editor__body {
+  position: relative;
+  height: calc(10 * 1.7em + 1.6em);
+  padding: 0.8em 0;
+  overflow: hidden;
+}
+
+.editor__line {
+  display: grid;
+  grid-template-columns: 3.6em 1fr;
+  white-space: pre;
+}
+
+.editor__line.is-current {
+  background: rgba(238, 232, 214, 0.05);
+}
+
+.editor__line.is-new {
+  animation: editor-line-in 0.5s var(--ease-out) both;
+}
+
+.editor__ln {
+  padding-right: 1.3em;
+  text-align: right;
+  color: var(--editor-faint);
+}
+
+.editor__line.is-current .editor__ln {
+  color: var(--editor-dim);
+}
+
+.editor__src.is-comment {
+  color: var(--editor-dim);
+}
+
+.tk-doc,
+.tk-kw {
+  color: var(--editor-hi);
+  font-weight: 600;
+}
+
+.tk-str {
+  color: #bdb6a1;
+}
+
+.editor__sel {
+  background: rgba(238, 232, 214, 0.2);
+  border-radius: 2px;
+}
+
+.editor__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  margin-left: 1px;
+  vertical-align: -0.22em;
+  background: var(--editor-hi);
+  animation: editor-blink 1.05s steps(1) infinite;
+}
+
+/* ---------------------------------------------------- command palette */
+.editor__palette {
+  position: absolute;
+  top: 0.6em;
+  left: 50%;
+  width: min(88%, 40em);
+  overflow: hidden;
+  border-radius: 8px;
+  background: #2b2b2a;
+  box-shadow: 0 1.2em 2.4em -0.8em rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translate(-50%, -0.4em);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.3s var(--ease-out);
+}
+
+.editor__palette.is-open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.editor__query {
+  margin: 0.5em;
+  padding: 0.35em 0.7em;
+  border-radius: 5px;
+  background: var(--editor);
+  color: var(--editor-hi);
+  white-space: pre;
+}
+
+.editor__prompt {
+  margin-right: 0.6em;
+  color: var(--editor-dim);
+}
+
+.editor__results {
+  padding: 0 0.4em 0.45em;
+}
+
+.editor__results li {
+  padding: 0.25em 0.7em;
+  border-radius: 4px;
+  color: var(--editor-dim);
+  white-space: nowrap;
+}
+
+.editor__results li.is-active {
+  background: rgba(238, 232, 214, 0.12);
+  color: var(--editor-hi);
+}
+
+.editor__cat {
+  opacity: 0.75;
+}
+
+.editor__status {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.8em;
+  height: 2.3em;
+  align-items: center;
+  padding: 0 1.2em;
+  background: var(--editor-chrome);
+  font-family: var(--font);
+  font-size: 0.82em;
+  color: var(--editor-dim);
+}
+
+/* ---------------------------------------------------- keycaps */
+.editor__keys {
+  position: absolute;
+  right: 4%;
+  bottom: -1.3em;
+  display: flex;
+  gap: 0.5em;
+  font-size: clamp(14px, 2.4cqi, 20px);
+  pointer-events: none;
+}
+
+.editor__keys kbd {
+  display: grid;
+  place-items: center;
+  min-width: 2.6em;
+  height: 2.6em;
+  padding: 0 0.6em;
+  border-radius: 0.5em;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-weight: 500;
+  box-shadow:
+    0 0.12em 0 rgba(0, 0, 0, 0.18),
+    0 0.6em 1.4em -0.4em rgba(0, 0, 0, 0.45);
+  animation: editor-key 0.3s var(--ease-out) both;
+}
+
+.editor__keys kbd:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.editor__keys kbd:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+@keyframes editor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes editor-line-in {
+  from {
+    opacity: 0;
+    background: rgba(238, 232, 214, 0.1);
+  }
+}
+
+@keyframes editor-key {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor__caret {
+    animation: none;
+  }
+}

@@ -1,0 +1,28 @@
+.footer {
+  background: var(--bg-alt);
+  color: var(--text-2);
+}
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 24px;
+  padding-block: 20px calc(20px + env(safe-area-inset-bottom));
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+
+.footer__links a {
+  color: var(--text-2);
+}
+
+.footer__links a:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
