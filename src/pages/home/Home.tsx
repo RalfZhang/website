@@ -2,7 +2,6 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { Footer } from "../../components/Footer";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "../../components/icons";
 import { SocialRow } from "../../components/SocialRow";
-import { WorkName } from "../../components/WorkName";
 import { site } from "../../data/site";
 import type { Work } from "../../data/works";
 import { useI18n } from "../../i18n";
@@ -24,7 +23,7 @@ function Feature({ work }: { work: Work }) {
             {work.kind} · {work.year}
           </p>
           <h2 id={`${work.slug}-title`} className="t-headline" data-reveal style={d(40)}>
-            <WorkName work={work} />
+            {work.title}
           </h2>
           <p className="t-lead muted" data-reveal style={d(80)}>
             {work.tagline}
@@ -56,8 +55,8 @@ function Feature({ work }: { work: Work }) {
  */
 export function Home() {
   const root = useRef<HTMLElement>(null);
-  const { t, works } = useI18n();
-  useReveal(root);
+  const { lang, t, works } = useI18n();
+  useReveal(root, lang);
 
   useEffect(() => {
     const html = document.documentElement;

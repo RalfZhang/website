@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { contactAside, contactName, contacts, type Contact } from "../data/contacts";
+import { contactName, contacts, type Contact } from "../data/contacts";
 import { fmt, useI18n } from "../i18n";
 import { ArrowUpRight, BrandIcon, type BrandId } from "./icons";
 import { QrSheet } from "./QrSheet";
@@ -48,7 +48,6 @@ export function SocialRow({ size = "md", hint }: { size?: "md" | "lg"; hint?: st
         {active ? (
           <span className="social__now" key={active.id}>
             {contactName(active, lang)}
-            {contactAside(active, lang) && ` ${contactAside(active, lang)}`}
             {active.handle && <span className="muted"> {active.handle}</span>}
             {active.href ? <ArrowUpRight className="social__ext" /> : <span className="muted"> {t.contact.qr}</span>}
           </span>

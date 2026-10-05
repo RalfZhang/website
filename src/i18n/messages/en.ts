@@ -63,7 +63,7 @@ export const en = {
     open: "Open {name}",
     original: "Original image",
     scan: "Scan with your phone’s camera.",
-    scanWith: { wechat: "Scan with WeChat · 用微信扫一扫" } as Record<string, string>,
+    scanWith: { wechat: "Scan with WeChat." } as Record<string, string>,
   },
   notFound: {
     title: "Not found",
@@ -79,6 +79,12 @@ export const en = {
   },
   bigben: {
     ring: "Ring the bell",
+    /** Under the hands: which time the clock keeps. {zone} is the visitor's, e.g. "PDT". */
+    face: "{zone}",
+    app: "Big Ben Bot",
+    /** The post: one {strikes} per hour (24 at midnight), then {time} {zone}, or {hour}; {pct} is to 3 decimals. */
+    strike: "BONG! ",
+    post: "{strikes}Big Ben Bot here: it’s {time} {zone} — {year} is already {pct}% gone.",
     slipped: "{pct} of {year} has quietly slipped away.",
   },
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { contactAside, contactName, type Contact } from "../data/contacts";
+import { contactName, type Contact } from "../data/contacts";
 import { fmt, useI18n } from "../i18n";
 import { ArrowUpRight, BrandIcon, Close, type BrandId } from "./icons";
 import { QrCode } from "./QrCode";
@@ -45,7 +45,6 @@ export function QrSheet({ contact, onClose }: { contact: Contact | null; onClose
 
   if (!shown?.qr) return null;
   const name = contactName(shown, lang);
-  const aside = contactAside(shown, lang);
 
   return createPortal(
     <div className={`sheet${open ? " is-open" : ""}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -54,7 +53,6 @@ export function QrSheet({ contact, onClose }: { contact: Contact | null; onClose
           <BrandIcon id={shown.id as BrandId} className="sheet__logo" />
           <h2 id="sheet-title" className="sheet__title">
             {name}
-            {aside && <span className="muted"> {aside}</span>}
           </h2>
           <button type="button" className="sheet__close" onClick={onClose} ref={closeBtn} aria-label={t.qr.close}>
             <Close />

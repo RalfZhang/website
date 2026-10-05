@@ -51,6 +51,13 @@ export const Menu = (p: P) => (
   </svg>
 );
 
+/** A bell: Big Ben Bot's avatar on the English pages. */
+export const Bell = (p: P) => (
+  <svg {...line} {...p}>
+    <path d="M4 11.5V7a4 4 0 0 1 8 0v4.5M2.5 11.5h11M6.5 14h3" />
+  </svg>
+);
+
 /** Light / dark: a disc, half inked. */
 export const Contrast = (p: P) => (
   <svg viewBox="0 0 16 16" aria-hidden {...p}>

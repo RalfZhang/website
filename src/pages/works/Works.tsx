@@ -1,7 +1,6 @@
 import { useRef, type CSSProperties } from "react";
 import { Footer } from "../../components/Footer";
 import { ArrowRight, ArrowUpRight } from "../../components/icons";
-import { WorkName } from "../../components/WorkName";
 import type { Stat, Work } from "../../data/works";
 import { useI18n } from "../../i18n";
 import { useReveal } from "../../lib/motion";
@@ -29,8 +28,8 @@ function FeaturedCard({ work, i }: { work: Work; i: number }) {
       <p className="fcard__tagline muted">{work.tagline}</p>
       {work.stats && (
         <p className="fcard__stats">
-          {work.stats.map((s) => (
-            <span key={s.label}>
+          {work.stats.map((s, i) => (
+            <span key={i}>
               <strong>{formatStat(s, formatNumber)}</strong> {s.label}
             </span>
           ))}
@@ -52,8 +51,8 @@ function FeaturedCard({ work, i }: { work: Work; i: number }) {
 
 export function Works() {
   const root = useRef<HTMLElement>(null);
-  const { t, works } = useI18n();
-  useReveal(root);
+  const { lang, t, works } = useI18n();
+  useReveal(root, lang);
 
   return (
     <main className="page works" ref={root}>
@@ -86,7 +85,7 @@ export function Works() {
                   <ArrowRight className="more__go" />
                 </span>
                 <span className="t-title">
-                  <WorkName work={w} />
+                  {w.title}
                 </span>
                 <span className="more__tagline muted">{w.tagline}</span>
               </Link>

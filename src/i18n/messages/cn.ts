@@ -76,6 +76,10 @@ export const cn: Messages = {
   },
   bigben: {
     ring: "敲钟",
+    face: "北京时间",
+    app: "豆瓣大笨钟",
+    strike: "咣！",
+    post: "{strikes}豆瓣大笨钟提醒您：北京时间 {hour} 点整，{year} 年已悄悄溜走 {pct}%。",
     slipped: "{year} 年已悄悄溜走 {pct}。",
   },
 };

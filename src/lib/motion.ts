@@ -6,7 +6,7 @@ export const prefersReducedMotion = () =>
 /**
  * Fade-up on first sight: every `[data-reveal]` under `ref` gets `.is-in` once
  * it scrolls into view (CSS in base.css does the rest). Runs again when `key`
- * changes, for pages that swap content in place.
+ * changes, for pages that swap content in place (another work, another language).
  */
 export function useReveal(ref: RefObject<HTMLElement | null>, key?: unknown) {
   useEffect(() => {

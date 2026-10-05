@@ -27,10 +27,3 @@
   letter-spacing: -0.03em;
 }
 
-.poster__aside {
-  display: block;
-  margin-top: 0.15em;
-  font-size: 0.3em;
-  letter-spacing: 0;
-  color: rgba(238, 232, 214, 0.6);
-}

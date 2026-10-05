@@ -7,8 +7,8 @@ import "./Contact.css";
 
 export function Contact() {
   const root = useRef<HTMLElement>(null);
-  const { t } = useI18n();
-  useReveal(root);
+  const { lang, t } = useI18n();
+  useReveal(root, lang);
 
   return (
     <main className="page contactpage" ref={root}>

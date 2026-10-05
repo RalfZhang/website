@@ -8,10 +8,7 @@ export function Poster({ work, variant = "detail" }: { work: Work; variant?: "ca
       <span className="poster__meta">
         {work.kind} · {work.year}
       </span>
-      <span className="poster__title">
-        {work.title}
-        {work.aside && <span className="poster__aside">{work.aside}</span>}
-      </span>
+      <span className="poster__title">{work.title}</span>
       <span className="poster__stack">{work.stack.join(" · ")}</span>
     </div>
   );

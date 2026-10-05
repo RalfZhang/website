@@ -160,11 +160,11 @@ const sources: WorkSource[] = [
     kind: { en: "Social bot", cn: "社交机器人" },
     year: "2017 — 2026",
     tagline: {
-      en: "A clock tower for social media. Every hour, on the hour: 咣！",
+      en: "A clock tower for social media. Every hour, on the hour: BONG!",
       cn: "社交网络上的钟楼。每到整点：咣！",
     },
     summary: {
-      en: "A remake of Renren’s much-missed Big Ben. On the hour it posts the time in Beijing — one 咣 for every hour — and how much of the year has quietly slipped away, to Douban, Threads and Mastodon at once.",
+      en: "A remake of Renren’s much-missed Big Ben. On the hour it posts the time in Beijing — one BONG for every hour — and how much of the year has quietly slipped away, to Douban, Threads and Mastodon at once.",
       cn: "复刻人人网上那个令人怀念的大笨钟。每到整点，它报出北京时间（几点就咣几声），再算算今年已经悄悄溜走了多少，同时发到豆瓣、Threads 和 Mastodon。",
     },
     features: {
@@ -190,7 +190,7 @@ const sources: WorkSource[] = [
     },
     stack: ["Node.js", "Docker"],
     stats: [
-      { value: 300, label: { en: "咣 a day", cn: "声咣 / 天" } },
+      { value: 300, label: { en: "BONGs a day", cn: "声咣 / 天" } },
       { value: 3, label: { en: "platforms", cn: "个平台" } },
       { value: 2017, prefix: { en: "since ", cn: "" }, suffix: { en: "", cn: " 年" }, label: { en: "first released", cn: "首次发布" }, format: "plain" },
     ],
@@ -260,8 +260,6 @@ export interface WorkLink {
 export interface Work {
   slug: string;
   title: string;
-  /** The work's name in the other language, when it has one — set after the title, in grey. */
-  aside?: string;
   kind: string;
   year: string;
   tagline: string;
@@ -280,12 +278,9 @@ const pick = (t: Text, lang: Lang) => (typeof t === "string" ? t : t[lang]);
 const pickOpt = (t: Text | undefined, lang: Lang) => (t === undefined ? undefined : pick(t, lang));
 
 function localize(w: WorkSource, lang: Lang): Work {
-  const title = pick(w.title, lang);
-  const aside = typeof w.title === "string" ? undefined : Object.values(w.title).find((t) => t !== title);
   return {
     ...w,
-    title,
-    aside,
+    title: pick(w.title, lang),
     kind: pick(w.kind, lang),
     tagline: pick(w.tagline, lang),
     summary: pick(w.summary, lang),

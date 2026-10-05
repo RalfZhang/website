@@ -1,46 +1,99 @@
-import { useEffect, useRef, useState } from "react";
-import { rich, useI18n } from "../i18n";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Bell } from "../components/icons";
+import { fmt, rich, useI18n } from "../i18n";
 import { useInView } from "../lib/motion";
 import "./WatchClock.css";
 
 /* ------------------------------------------------------------------ time
- * Big Ben keeps Beijing time (UTC+8, no DST), whoever is looking at it.
+ * The Chinese pages keep Beijing time, as the bot does, whoever is looking. The
+ * English pages keep the visitor's own time, so the year slipping away is theirs.
  */
-const fmt = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "Asia/Shanghai",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-  hourCycle: "h23",
-});
+type Wall = { year: number; month: number; day: number; h: number; m: number; s: number };
 
-function beijing(now = new Date()) {
-  const p = Object.fromEntries(fmt.formatToParts(now).map((x) => [x.type, x.value]));
-  return { year: +p.year, h: +p.hour, m: +p.minute, s: +p.second };
+class Zone {
+  private parts: Intl.DateTimeFormat;
+  private names: Intl.DateTimeFormat;
+
+  constructor(timeZone: string) {
+    const numeric = "numeric" as const;
+    this.parts = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: numeric,
+      month: numeric,
+      day: numeric,
+      hour: numeric,
+      minute: numeric,
+      second: numeric,
+      hourCycle: "h23",
+    });
+    this.names = new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "short" });
+  }
+
+  /** The wall clock in this zone at instant `t`. */
+  wall(t: number): Wall {
+    const p = Object.fromEntries(this.parts.formatToParts(t).map((x) => [x.type, x.value]));
+    return { year: +p.year, month: +p.month, day: +p.day, h: +p.hour, m: +p.minute, s: +p.second };
+  }
+
+  /** "UTC", "PDT", "GMT+8"… — as it stands at instant `t` (daylight saving changes it). */
+  name(t: number) {
+    return this.names.formatToParts(t).find((x) => x.type === "timeZoneName")?.value ?? "";
+  }
+
+  private offset(t: number) {
+    const w = this.wall(t);
+    return Date.UTC(w.year, w.month - 1, w.day, w.h, w.m, w.s) - Math.floor(t / 1000) * 1000;
+  }
+
+  /** The instant the year begins here: local midnight, 1 January. */
+  private yearStart(year: number) {
+    const u = Date.UTC(year, 0, 1);
+    return u - this.offset(u - this.offset(u));
+  }
+
+  /** How much of `year` has gone by at instant `t`, 0–1. */
+  progress(t: number, year: number) {
+    const a = this.yearStart(year);
+    return (t - a) / (this.yearStart(year + 1) - a);
+  }
 }
 
-const OFFSET = 8 * 3600_000;
-const yearProgress = (at: number, year: number) =>
-  (at - (Date.UTC(year, 0, 1) - OFFSET)) / (Date.UTC(year + 1, 0, 1) - Date.UTC(year, 0, 1));
+const zones = new Map<string, Zone>();
+function zoneFor(timeZone: string) {
+  let z = zones.get(timeZone);
+  if (!z) zones.set(timeZone, (z = new Zone(timeZone)));
+  return z;
+}
 
-/** What the bot posted on the most recent hour — same rules as big-ben/lib/text.js. */
-function lastChime(now = Date.now()) {
-  const at = Math.floor((now + OFFSET) / 3600_000) * 3600_000 - OFFSET;
-  const t = beijing(new Date(at));
+const localTimeZone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  } catch {
+    return "UTC";
+  }
+};
+
+/**
+ * What the bot posts on the most recent hour — same rules as big-ben/lib/text.js:
+ * one strike per hour of the 24 (midnight is 24), the year to three decimals.
+ */
+function lastChime(zone: Zone, now = Date.now()) {
+  const w = zone.wall(now);
+  const at = now - ((w.m * 60 + w.s) * 1000 + (now % 1000));
+  const t = zone.wall(at);
   let year = t.year;
-  let progress = Math.round(100000 * yearProgress(at, year)) / 1000;
+  let progress = Math.round(100000 * zone.progress(at, year)) / 1000;
   if (progress === 0) {
     year -= 1;
     progress = 100;
   }
-  return { hour: t.h === 0 ? 24 : t.h, year, progress, hhmm: `${String(t.h).padStart(2, "0")}:00` };
+  return { hour: t.h === 0 ? 24 : t.h, year, progress, hhmm: `${String(t.h).padStart(2, "0")}:00`, zone: zone.name(at) };
 }
 
 /** Hand angles, accumulated so the hands only ever move clockwise (no unwinding at 12 or :00). */
 type Hands = { h: number; m: number; s: number };
-function angles(): Hands {
-  const t = beijing();
+function angles(zone: Zone): Hands {
+  const t = zone.wall(Date.now());
   return { h: ((t.h % 12) + t.m / 60 + t.s / 3600) * 30, m: (t.m + t.s / 60) * 6, s: t.s * 6 };
 }
 const forward = (prev: number, next: number) => prev + ((((next - prev) % 360) + 360) % 360);
@@ -93,7 +146,7 @@ const NUMERALS: [string, number][] = [
   ["IX", 270],
 ];
 
-function Face() {
+function Face({ label }: { label: string }) {
   return (
     <>
       <circle className="watch__face" r="200" />
@@ -113,7 +166,7 @@ function Face() {
         );
       })}
       <text className="watch__label" y="62">
-        北京时间
+        {label}
       </text>
     </>
   );
@@ -123,42 +176,40 @@ function Face() {
 export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" | "detail" }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { threshold: 0.15 });
-  const [hands, setHands] = useState<Hands>(angles);
-  const [chime, setChime] = useState(lastChime);
+  const { lang, t } = useI18n();
+  const zone = useMemo(() => zoneFor(lang === "cn" ? "Asia/Shanghai" : localTimeZone()), [lang]);
+  const [hands, setHands] = useState<Hands>(() => angles(zone));
   const pct = useRef<HTMLSpanElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
   const showPost = variant !== "card";
-  const { t } = useI18n();
+  // Re-read on every render — the hands re-render it once a second while it's on screen.
+  const chime = lastChime(zone);
 
   // Tick once a second while visible.
   useEffect(() => {
     if (!inView) return;
     const tick = () => {
-      const a = angles();
+      const a = angles(zone);
       setHands((p) => ({ h: forward(p.h, a.h), m: forward(p.m, a.m), s: forward(p.s, a.s) }));
-      setChime((c) => {
-        const n = lastChime();
-        return n.hour === c.hour && n.year === c.year ? c : n;
-      });
     };
     tick();
     const id = window.setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [inView]);
+  }, [inView, zone]);
 
   // The year, slipping away to seven decimals.
   useEffect(() => {
     if (!inView || !showPost) return;
     const update = () => {
       const now = Date.now();
-      const p = yearProgress(now, beijing(new Date(now)).year);
+      const p = zone.progress(now, zone.wall(now).year);
       if (pct.current) pct.current.textContent = (p * 100).toFixed(7);
       if (bar.current) bar.current.style.transform = `scaleX(${p})`;
     };
     update();
     const id = window.setInterval(update, 100);
     return () => clearInterval(id);
-  }, [inView, showPost]);
+  }, [inView, showPost, zone]);
 
   const rot = (deg: number) => ({ transform: `rotate(${deg}deg)` });
 
@@ -166,7 +217,7 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
     <div className={`bigben bigben--${variant}`} ref={ref}>
       <button type="button" className="watch" onClick={bong} aria-label={t.bigben.ring} title={t.bigben.ring}>
         <svg viewBox="-200 -200 400 400" aria-hidden>
-          <Face />
+          <Face label={fmt(t.bigben.face, { zone: chime.zone })} />
           <g className="watch__hand watch__hand--hour" style={rot(hands.h)}>
             <rect x="-3" y="-28" width="6" height="30" rx="3" />
             <rect x="-8" y="-112" width="16" height="88" rx="8" />
@@ -187,15 +238,22 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
         <div className="bigben__side">
           <div className="notif">
             <span className="notif__icon" aria-hidden>
-              钟
+              {lang === "cn" ? "钟" : <Bell />}
             </span>
             <div className="notif__body">
               <div className="notif__head">
-                <span className="notif__app">豆瓣大笨钟</span>
+                <span className="notif__app">{t.bigben.app}</span>
                 <span className="notif__time">{chime.hhmm}</span>
               </div>
-              <p className="notif__text" lang="zh-CN">
-                {"咣！".repeat(chime.hour)}豆瓣大笨钟提醒您：北京时间 {chime.hour} 点整，{chime.year} 年已悄悄溜走 {chime.progress}%。
+              <p className="notif__text">
+                {fmt(t.bigben.post, {
+                  strikes: t.bigben.strike.repeat(chime.hour),
+                  hour: chime.hour,
+                  time: chime.hhmm,
+                  zone: chime.zone,
+                  year: chime.year,
+                  pct: chime.progress,
+                })}
               </p>
             </div>
           </div>
@@ -205,7 +263,7 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
                 year: chime.year,
                 pct: (
                   <strong>
-                    <span ref={pct}>{(yearProgress(Date.now(), chime.year) * 100).toFixed(7)}</span>%
+                    <span ref={pct}>{(zone.progress(Date.now(), chime.year) * 100).toFixed(7)}</span>%
                   </strong>
                 ),
               })}

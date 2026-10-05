@@ -12,6 +12,8 @@
 - **4px 圆角**：卡片、按钮、色块统一 `--radius: 4px`。
 - **图标**：自己画的线性图标（→ ↗ ↓ ✕ 等），方头线端、尖角转折，和地图线条一致。联系方式的平台 logo 来自
   [Simple Icons](https://simpleicons.org)（CC0），统一用当前文字颜色单色显示。
+- **大笨钟的表**：中文页面和机器人一样走北京时间；英文页面走访客系统的时区（表盘下写时区名，如 `PDT`、`GMT+8`），
+  年进度也按当地的元旦零点算（夏令时已计入）。帖子文案见 `src/i18n/messages/` 里的 `bigben`。
 - **动效克制**：装饰性的动效只有一种——元素第一次进入视野时淡入（`data-reveal`，见 [src/lib/motion.ts](src/lib/motion.ts)）。
   其余动的都是内容本身：InkCity 路网从钟楼长出来、File Template 的编辑器演示、大笨钟的表针。
 - **整页滚动，用 CSS 实现**：首页是 `scroll-snap-type: y mandatory` 的吸附容器，每屏 `scroll-snap-align: start` +
@@ -58,7 +60,8 @@ pnpm preview    # 本地预览 dist/
 
 界面文案在 [src/i18n/messages/](src/i18n/messages/)：`en.ts` 是源语言，它的结构就是类型，`cn.ts` 少一个键都过不了
 类型检查。占位符写成 `{name}`，纯文本用 `fmt`，需要嵌入元素（比如加粗的百分比）用 `rich`，语序由各语言自己的文案决定。
-作品的文案和作品数据放在一起（见下面「改内容」）。数字用 `Intl.NumberFormat` 按语言格式化。没有用 i18n 库，
+作品的文案和作品数据放在一起（见下面「改内容」）。每种语言只用自己的文字：英文页面上没有中文（只有切换按钮写着“中文”），
+中文页面上的英文只留产品名、品牌这类本来就是英文的词，不做「大笨钟 Big Ben」这样的双语并列。数字用 `Intl.NumberFormat` 按语言格式化。没有用 i18n 库，
 两种语言的文案加起来只有几 KB，一起打包。
 
 ## 部署
@@ -87,8 +90,7 @@ location / {
 
 - 作品：[src/data/works.ts](src/data/works.ts)。`featured: true` 的作品按顺序出现在首页；
   `visual` 决定用哪个动态视觉（`roadmap` / `code` / `clock`），不填则显示一张以作品名为主体的海报。
-  需要翻译的字段写成 `{ en, cn }`，各语言相同的（名字、品牌）直接写字符串；`title` 两种语言不同时，
-  另一种语言的名字会以灰色跟在标题后面（Big Ben 大笨钟 / 大笨钟 Big Ben）。页面里用 `useI18n().works` 取当前语言的版本。
+  需要翻译的字段写成 `{ en, cn }`，各语言相同的（名字、品牌）直接写字符串。页面里用 `useI18n().works` 取当前语言的版本。
 - 联系方式：[src/data/contacts.ts](src/data/contacts.ts)。`nameZh` 是中文页面上显示的平台名。
 - 界面文案：[src/i18n/messages/](src/i18n/messages/)。
 - 站点信息（名字、博客地址）：[src/data/site.ts](src/data/site.ts)。

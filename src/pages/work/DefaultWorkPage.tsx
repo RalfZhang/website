@@ -1,7 +1,6 @@
 import { useRef, type CSSProperties } from "react";
 import { Footer } from "../../components/Footer";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "../../components/icons";
-import { WorkName } from "../../components/WorkName";
 import type { Work } from "../../data/works";
 import { useI18n } from "../../i18n";
 import { useReveal } from "../../lib/motion";
@@ -15,8 +14,8 @@ const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 /** The page every work gets until it has a bespoke one (see ./custom). */
 export function DefaultWorkPage({ work }: { work: Work }) {
   const root = useRef<HTMLElement>(null);
-  useReveal(root, work.slug);
-  const { t, works, formatNumber } = useI18n();
+  const { lang, t, works, formatNumber } = useI18n();
+  useReveal(root, `${lang}/${work.slug}`);
   const next = works.next(work.slug);
   const [primary, ...others] = work.links;
 
@@ -37,7 +36,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
           {work.kind} · {work.year}
         </p>
         <h1 className="t-headline" data-reveal style={d(60)}>
-          <WorkName work={work} />
+          {work.title}
         </h1>
         <p className="t-lead muted detail__tagline" data-reveal style={d(90)}>
           {work.tagline}
@@ -75,7 +74,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
           </h2>
           <ul className="highlights" style={{ "--cols": work.features.length % 2 === 0 ? 2 : 3 } as CSSProperties}>
             {work.features.map((f, i) => (
-              <li key={f.title} className="highlight" data-reveal style={d(i * 50)}>
+              <li key={i} className="highlight" data-reveal style={d(i * 50)}>
                 <h3 className="highlight__title">{f.title}</h3>
                 <p className="muted">{f.text}</p>
               </li>
@@ -88,7 +87,7 @@ export function DefaultWorkPage({ work }: { work: Work }) {
         <section className="wrap detail__section" aria-label={t.work.inNumbers}>
           <ul className="numbers">
             {work.stats.map((s, i) => (
-              <li key={s.label} className="number" data-reveal style={d(i * 50)}>
+              <li key={i} className="number" data-reveal style={d(i * 50)}>
                 <span className="number__value">{formatStat(s, formatNumber)}</span>
                 <span className="number__label muted">{s.label}</span>
               </li>

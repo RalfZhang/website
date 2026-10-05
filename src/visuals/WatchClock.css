@@ -109,6 +109,11 @@
   font-weight: 500;
 }
 
+.notif__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
 .notif__head {
   display: flex;
   justify-content: space-between;
