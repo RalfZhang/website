@@ -17,7 +17,7 @@ type Item = { label: string; to?: string; href?: string; match?: Route["name"][]
  */
 function LangSwitch() {
   const { lang, path, navigate } = useRouter();
-  const other: Lang = lang === "en" ? "cn" : "en";
+  const other: Lang = lang === "en" ? "zh" : "en";
   const href = localePath(other, path);
 
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {

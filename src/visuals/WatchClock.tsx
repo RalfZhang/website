@@ -177,7 +177,7 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { threshold: 0.15 });
   const { lang, t } = useI18n();
-  const zone = useMemo(() => zoneFor(lang === "cn" ? "Asia/Shanghai" : localTimeZone()), [lang]);
+  const zone = useMemo(() => zoneFor(lang === "zh" ? "Asia/Shanghai" : localTimeZone()), [lang]);
   const [hands, setHands] = useState<Hands>(() => angles(zone));
   const pct = useRef<HTMLSpanElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
@@ -238,7 +238,7 @@ export function WatchClock({ variant = "stage" }: { variant?: "stage" | "card" |
         <div className="bigben__side">
           <div className="notif">
             <span className="notif__icon" aria-hidden>
-              {lang === "cn" ? "钟" : <Bell />}
+              {lang === "zh" ? "钟" : <Bell />}
             </span>
             <div className="notif__body">
               <div className="notif__head">

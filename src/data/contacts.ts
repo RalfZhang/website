@@ -30,4 +30,4 @@ export const contacts: Contact[] = [
 export const qrCodes = qr;
 
 /** A platform's name in the given language: 微信 on Chinese pages, WeChat on English ones. */
-export const contactName = (c: Contact, lang: Lang) => (lang === "cn" ? (c.nameZh ?? c.name) : c.name);
+export const contactName = (c: Contact, lang: Lang) => (lang === "zh" ? (c.nameZh ?? c.name) : c.name);

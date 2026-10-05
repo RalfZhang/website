@@ -1,5 +1,5 @@
 /**
- * A tiny history router — the site has five routes, each under /en or /cn.
+ * A tiny history router — the site has five routes, each under /en or /zh.
  * Navigation swaps the page and goes to the top (or to the #hash), the way a
  * normal link would. Links inside the site are written language-free
  * (<Link to="/works">) and stay in the current language.
@@ -35,7 +35,7 @@ function currentPath(): string {
   return full;
 }
 
-/** "/works#x" in Chinese → "/cn/works#x". */
+/** "/works#x" in Chinese → "/zh/works#x". */
 function withLang(lang: Lang, to: string): string {
   const i = to.search(/[?#]/);
   const path = i < 0 ? to : to.slice(0, i);

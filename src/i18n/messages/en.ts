@@ -1,6 +1,6 @@
 /**
  * Interface copy in English — the source language: its shape is the type every
- * other language must match (see ./cn.ts). Placeholders are {name}, filled in
+ * other language must match (see ./zh.ts). Placeholders are {name}, filled in
  * by fmt / rich from ../index.tsx. Work descriptions live with the works, in
  * src/data/works.ts.
  */

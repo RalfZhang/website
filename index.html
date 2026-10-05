@@ -17,29 +17,28 @@
       wrong palette for a frame.
     -->
     <!--
-      Every page lives under /en or /cn. A path without one ("/", or an old
+      Every page lives under /en or /zh. A path without one ("/", or an old
       link like /works) goes on to the visitor's language: their own pick from
       the switcher if they made one, else the first of the browser's languages
-      that's Chinese (any variety → /cn) or English; /en if neither. Mirrors
+      that's Chinese (any variety → /zh) or English; /en if neither. Mirrors
       src/i18n/locales.ts. Pages that have a language just get <html lang>.
     -->
     <script>
       (function () {
-        var tags = { en: "en", cn: "zh-CN" };
-        var m = /^\/(en|cn)(?:\/|$)/.exec(location.pathname);
+        var tags = { en: "en", zh: "zh-CN" };
+        var m = /^\/(en|zh)(?:\/|$)/.exec(location.pathname);
         if (m) {
           document.documentElement.lang = tags[m[1]];
           return;
         }
         var l = null;
         try { l = localStorage.getItem("lang"); } catch (e) {}
-        if (l !== "en" && l !== "cn") {
+        if (l !== "en" && l !== "zh") {
           l = "en";
           var prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""];
           for (var i = 0; i < prefs.length; i++) {
             var p = String(prefs[i]).toLowerCase().split("-")[0];
-            if (p === "zh") { l = "cn"; break; }
-            if (p === "en") break;
+            if (p === "en" || p === "zh") { l = p; break; }
           }
         }
         location.replace("/" + l + location.pathname + location.search + location.hash);
@@ -68,7 +67,7 @@
           <li><a href="http://blog.ralfz.com">Blog</a></li>
           <li><a href="https://github.com/RalfZhang">GitHub</a> · <a href="https://t.me/RalfZhang">Telegram</a> · <a href="https://www.instagram.com/ralf_zhang/">Instagram</a></li>
         </ul>
-        <p><a href="/en/" hreflang="en">English</a> · <a href="/cn/" hreflang="zh" lang="zh-CN">中文</a></p>
+        <p><a href="/en/" hreflang="en">English</a> · <a href="/zh/" hreflang="zh" lang="zh-CN">中文</a></p>
       </main>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>

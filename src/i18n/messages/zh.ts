@@ -1,7 +1,7 @@
 import type { Messages } from "./en";
 
 /** Interface copy in Simplified Chinese. Typed against en, so a missing or misspelt key fails the build. */
-export const cn: Messages = {
+export const zh: Messages = {
   meta: {
     description: "Ralf Zhang 的个人网站：InkCity、File Template、大笨钟，以及我做过的其他东西。",
     contact: "联系 Ralf Zhang：GitHub、Telegram、微信等。",

@@ -46,19 +46,19 @@ pnpm preview    # 本地预览 dist/
 
 ## 多语言
 
-中英双语，语言写在 URL 里：每个页面都有 `/en/…` 和 `/cn/…` 两个地址（`/cn` 是简体中文）。
+中英双语，语言写在 URL 里：每个页面都有 `/en/…` 和 `/zh/…` 两个地址（`/zh` 是简体中文）。
 
 - **URL 是唯一依据**：打开 `/en/works` 就是英文，不看浏览器语言、也不看上次的选择。
 - **没带语言的地址**（`/`，以及旧链接 `/works`、`/contact`…）由 `index.html` 里的内联脚本在首屏绘制前跳转：
   访客在切换按钮上选过语言就用那个（存在 `localStorage` 的 `lang`），否则看浏览器的语言列表，第一个是中文
-  （任何繁简地区）就去 `/cn`，是英文就去 `/en`，都不是则 `/en`。逻辑和 [src/i18n/locales.ts](src/i18n/locales.ts) 保持一致。
+  （任何繁简地区）就去 `/zh`，是英文就去 `/en`，都不是则 `/en`。逻辑和 [src/i18n/locales.ts](src/i18n/locales.ts) 保持一致。
 - **切换按钮**在导航栏，用目标语言自己的名字（English / 中文）显示。切换后停在同一页面、同一位置。
 - **站内链接不写语言**：`<Link to="/works">` 自动加上当前语言前缀。
 - **SEO**：`<html lang>`（`en` / `zh-CN`）、标题、描述、`canonical`、`hreflang`（`en`、`zh`、`x-default`）
   在构建时写进每个页面的静态 HTML，客户端路由时同步更新。`x-default` 指向不带语言的地址，即按语言跳转的入口。
   绝对地址的域名取自 [src/data/site.ts](src/data/site.ts) 的 `origin`，换成 HTTPS 时记得改。
 
-界面文案在 [src/i18n/messages/](src/i18n/messages/)：`en.ts` 是源语言，它的结构就是类型，`cn.ts` 少一个键都过不了
+界面文案在 [src/i18n/messages/](src/i18n/messages/)：`en.ts` 是源语言，它的结构就是类型，`zh.ts` 少一个键都过不了
 类型检查。占位符写成 `{name}`，纯文本用 `fmt`，需要嵌入元素（比如加粗的百分比）用 `rich`，语序由各语言自己的文案决定。
 作品的文案和作品数据放在一起（见下面「改内容」）。每种语言只用自己的文字：英文页面上没有中文（只有切换按钮写着“中文”），
 中文页面上的英文只留产品名、品牌这类本来就是英文的词，不做「大笨钟 Big Ben」这样的双语并列。数字用 `Intl.NumberFormat` 按语言格式化。没有用 i18n 库，
@@ -69,7 +69,7 @@ pnpm preview    # 本地预览 dist/
 把 `dist/` 里的全部内容上传到 nginx 的站点根目录即可。
 
 构建时（[scripts/route-shells.ts](scripts/route-shells.ts)，一个 Vite 插件）会给每种语言的每个路由生成一份 `index.html`
-（`en/`、`cn/works/`、`cn/works/<slug>/`…，各带自己的 lang、标题和 hreflang），给不带语言的旧地址
+（`en/`、`zh/works/`、`zh/works/<slug>/`…，各带自己的 lang、标题和 hreflang），给不带语言的旧地址
 （`works/`、`contact/`…）生成负责跳转的副本，再生成 `404.html`，所以 nginx **不改配置**也能直接打开深链接。想让未知路径也显示站内的 404 页，可以加：
 
 ```nginx
@@ -90,7 +90,7 @@ location / {
 
 - 作品：[src/data/works.ts](src/data/works.ts)。`featured: true` 的作品按顺序出现在首页；
   `visual` 决定用哪个动态视觉（`roadmap` / `code` / `clock`），不填则显示一张以作品名为主体的海报。
-  需要翻译的字段写成 `{ en, cn }`，各语言相同的（名字、品牌）直接写字符串。页面里用 `useI18n().works` 取当前语言的版本。
+  需要翻译的字段写成 `{ en, zh }`，各语言相同的（名字、品牌）直接写字符串。页面里用 `useI18n().works` 取当前语言的版本。
 - 联系方式：[src/data/contacts.ts](src/data/contacts.ts)。`nameZh` 是中文页面上显示的平台名。
 - 界面文案：[src/i18n/messages/](src/i18n/messages/)。
 - 站点信息（名字、博客地址）：[src/data/site.ts](src/data/site.ts)。
