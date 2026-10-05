@@ -1,23 +1,30 @@
 /**
  * The site's two languages. The URL is the source of truth — every page lives
- * under /en or /zh — and `Lang` is that path segment: a bare language code. The
- * fuller tags for `<html lang>`, Open Graph and Intl are kept alongside, since
- * the Chinese pages are, specifically, Simplified Chinese.
+ * under /en or /zh — and `Lang` is that path segment: a bare language code, which
+ * is also its hreflang (every flavour of Chinese is served the Simplified pages,
+ * so the zh pages claim all of "zh"). The fuller tags for `<html lang>`, Open
+ * Graph and Intl are kept alongside, since those pages are, specifically,
+ * Simplified Chinese.
  */
 export const LANGS = ["en", "zh"] as const;
 export type Lang = (typeof LANGS)[number];
 
 export const DEFAULT_LANG: Lang = "en";
 
-export const LOCALES: Record<Lang, { tag: string; hreflang: string; og: string; name: string }> = {
+export const LOCALES: Record<Lang, { tag: string; og: string; name: string }> = {
   // `name` is the language's own name for itself — that's what a reader looks for in a switcher.
-  en: { tag: "en", hreflang: "en", og: "en_US", name: "English" },
-  // Every flavour of Chinese is served the Simplified pages, so hreflang claims all of "zh";
+  en: { tag: "en", og: "en_US", name: "English" },
   // `zh-CN` on <html> picks Simplified glyphs and the right system font.
-  zh: { tag: "zh-CN", hreflang: "zh", og: "zh_CN", name: "中文" },
+  zh: { tag: "zh-CN", og: "zh_CN", name: "中文" },
 };
 
 export const isLang = (s: unknown): s is Lang => LANGS.includes(s as Lang);
+
+export type Localized<T> = Record<Lang, T>;
+/** Text that reads the same in every language, or one string per language. */
+export type Text = string | Localized<string>;
+
+export const pick = (t: Text, lang: Lang) => (typeof t === "string" ? t : t[lang]);
 
 /**
  * The first of the visitor's languages we have decides, by its language alone:

@@ -7,7 +7,7 @@
 import { site } from "../data/site";
 import { worksIn } from "../data/works";
 import { localePath, type Route } from "../lib/routes";
-import { LANGS, LOCALES, type Lang } from "./locales";
+import { LANGS, type Lang } from "./locales";
 import { messages } from "./messages";
 import { fmt } from "./fmt";
 
@@ -49,7 +49,7 @@ export function pageMeta(lang: Lang, route: Route): PageMeta {
  */
 export function alternates(path: string): { hreflang: string; href: string }[] {
   return [
-    ...LANGS.map((l) => ({ hreflang: LOCALES[l].hreflang, href: absoluteUrl(localePath(l, path)) })),
+    ...LANGS.map((l) => ({ hreflang: l, href: absoluteUrl(localePath(l, path)) })),
     { hreflang: "x-default", href: absoluteUrl(path) },
   ];
 }

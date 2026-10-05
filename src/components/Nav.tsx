@@ -1,7 +1,7 @@
 import { useEffect, useState, type CSSProperties, type MouseEvent } from "react";
 import { site } from "../data/site";
 import { useI18n } from "../i18n";
-import { LOCALES, storeLang, type Lang } from "../i18n/locales";
+import { LANGS, LOCALES, storeLang } from "../i18n/locales";
 import { prefersReducedMotion } from "../lib/motion";
 import { isPlainClick, Link, localePath, useRouter, type Route } from "../lib/router";
 import { useTheme } from "../lib/theme";
@@ -17,7 +17,7 @@ type Item = { label: string; to?: string; href?: string; match?: Route["name"][]
  */
 function LangSwitch() {
   const { lang, path, navigate } = useRouter();
-  const other: Lang = lang === "en" ? "zh" : "en";
+  const other = LANGS.find((l) => l !== lang)!;
   const href = localePath(other, path);
 
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -30,7 +30,7 @@ function LangSwitch() {
   };
 
   return (
-    <a className="nav__lang" href={href} hrefLang={LOCALES[other].hreflang} lang={LOCALES[other].tag} onClick={onClick}>
+    <a className="nav__lang" href={href} hrefLang={other} lang={LOCALES[other].tag} onClick={onClick}>
       {LOCALES[other].name}
     </a>
   );

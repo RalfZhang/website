@@ -91,7 +91,7 @@ location / {
 - 作品：[src/data/works.ts](src/data/works.ts)。`featured: true` 的作品按顺序出现在首页；
   `visual` 决定用哪个动态视觉（`roadmap` / `code` / `clock`），不填则显示一张以作品名为主体的海报。
   需要翻译的字段写成 `{ en, zh }`，各语言相同的（名字、品牌）直接写字符串。页面里用 `useI18n().works` 取当前语言的版本。
-- 联系方式：[src/data/contacts.ts](src/data/contacts.ts)。`nameZh` 是中文页面上显示的平台名。
+- 联系方式：[src/data/contacts.ts](src/data/contacts.ts)。有中文名的平台把 `name` 写成 `{ en, zh }`。
 - 界面文案：[src/i18n/messages/](src/i18n/messages/)。
 - 站点信息（名字、博客地址）：[src/data/site.ts](src/data/site.ts)。
 

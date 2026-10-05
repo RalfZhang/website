@@ -26,19 +26,20 @@
     <script>
       (function () {
         var tags = { en: "en", zh: "zh-CN" };
-        var m = /^\/(en|zh)(?:\/|$)/.exec(location.pathname);
-        if (m) {
-          document.documentElement.lang = tags[m[1]];
+        var isLang = function (s) { return Object.prototype.hasOwnProperty.call(tags, s); };
+        var seg = location.pathname.split("/")[1];
+        if (isLang(seg)) {
+          document.documentElement.lang = tags[seg];
           return;
         }
         var l = null;
         try { l = localStorage.getItem("lang"); } catch (e) {}
-        if (l !== "en" && l !== "zh") {
+        if (!isLang(l)) {
           l = "en";
           var prefs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""];
           for (var i = 0; i < prefs.length; i++) {
             var p = String(prefs[i]).toLowerCase().split("-")[0];
-            if (p === "en" || p === "zh") { l = p; break; }
+            if (isLang(p)) { l = p; break; }
           }
         }
         location.replace("/" + l + location.pathname + location.search + location.hash);

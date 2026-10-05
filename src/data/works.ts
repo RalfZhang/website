@@ -8,14 +8,10 @@
  * everywhere — names, brands) or { en, zh }. Pages never see that; they ask for
  * worksIn(lang) and get plain strings back.
  */
-import type { Lang } from "../i18n/locales";
+import { pick, type Lang, type Localized, type Text } from "../i18n/locales";
 
 /** Which live visual a work gets; works without one get a typographic poster. */
 export type VisualKind = "roadmap" | "code" | "clock";
-
-type Localized<T> = Record<Lang, T>;
-/** Text that reads the same in every language, or one string per language. */
-type Text = string | Localized<string>;
 
 /** One highlight: a short lead-in, set dark, followed by the detail, set grey. */
 export interface Feature {
@@ -273,7 +269,6 @@ export interface Work {
   visual?: VisualKind;
 }
 
-const pick = (t: Text, lang: Lang) => (typeof t === "string" ? t : t[lang]);
 const pickOpt = (t: Text | undefined, lang: Lang) => (t === undefined ? undefined : pick(t, lang));
 
 function localize(w: WorkSource, lang: Lang): Work {
