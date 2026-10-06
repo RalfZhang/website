@@ -1,0 +1,14 @@
+// Cloudflare Workers with static assets only — no Worker script. Workers Builds
+// runs `pnpm build`, then `npx wrangler deploy`, on every push to main.
+{
+  "name": "ralfz-www",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Every page is a folder (scripts/route-shells.ts): /en/works redirects to
+    // /en/works/, the URL the canonical links use (src/i18n/head.ts).
+    "html_handling": "auto-trailing-slash",
+    // A path with no file gets 404.html, with a 404 status.
+    "not_found_handling": "404-page"
+  }
+}

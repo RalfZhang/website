@@ -28,23 +28,20 @@ pnpm preview    # 本地预览 dist/
 
 ## 部署
 
-把 `dist/` 里的全部内容上传到 nginx 的站点根目录即可。
+放在 Cloudflare Workers 上，只用静态资源（没有 Worker 脚本，免费套餐够用）。仓库连着 Workers Builds，
+**push 到 main 就自动构建上线**：`pnpm build`，然后 `npx wrangler deploy` 把 `dist/` 传上去，配置见
+[wrangler.jsonc](wrangler.jsonc)。其他分支的 push 只生成预览版本，不影响线上。
+
+首次连接：Cloudflare 控制台 → Workers & Pages → Create application → Import a repository，选这个仓库；
+项目名必须和 `wrangler.jsonc` 里的 `name`（`ralfz-www`）一致，构建命令填 `pnpm build`，部署命令保持默认的 `npx wrangler deploy`。
 
 构建时（[scripts/route-shells.ts](scripts/route-shells.ts)，一个 Vite 插件）会给每种语言的每个路由生成一份 `index.html`
 （`en/`、`zh/works/`、`zh/works/<slug>/`…，各带自己的 lang、标题和 hreflang），给不带语言的旧地址
-（`works/`、`contact/`…）生成负责跳转的副本，再生成 `404.html`，所以 nginx **不改配置**也能直接打开深链接。想让未知路径也显示站内的 404 页，可以加：
+（`works/`、`contact/`…）生成负责跳转的副本，再生成 `404.html`，所以服务器只要按路径返回文件，不需要 SPA 回退。
+在 Cloudflare 上，`/en/works` 会跳到 `/en/works/`（和 canonical 地址一致），找不到文件的路径返回 `404.html`。
 
-```nginx
-error_page 404 /404.html;
-```
-
-或者改成标准的 SPA 回退（这样也就不需要那些路由目录了）：
-
-```nginx
-location / {
-  try_files $uri $uri/ /index.html;
-}
-```
+`dist/` 也能原样放到别的静态服务器上：nginx 不改配置就能打开深链接，想让未知路径也显示站内的 404 页，加一行
+`error_page 404 /404.html;`。
 
 旧站的 `/telegram.png`、`/whatsapp.png`、`/wechat.png` 原样保留在 `public/` 里，老链接不会失效。
 

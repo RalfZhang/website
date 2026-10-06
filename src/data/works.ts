@@ -219,7 +219,7 @@ const sources: WorkSource[] = [
     stats: [{ value: 269, label: { en: "stars", zh: "个 Star" } }],
     links: [
       { label: "GitHub", href: "https://github.com/RalfZhang/Vdo" },
-      { label: { en: "Write-up", zh: "教程" }, href: "http://blog.ralfz.com/2017/04/04/vdo/" },
+      { label: { en: "Write-up", zh: "教程" }, href: "https://blog.ralfz.com/2017/04/04/vdo/" },
     ],
   },
   {
