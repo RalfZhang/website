@@ -37,7 +37,7 @@ pnpm preview    # 本地预览 dist/
 
 构建时（[scripts/route-shells.ts](scripts/route-shells.ts)，一个 Vite 插件）会给每种语言的每个路由生成一份 `index.html`
 （`en/`、`zh/works/`、`zh/works/<slug>/`…，各带自己的 lang、标题和 hreflang），给不带语言的旧地址
-（`works/`、`contact/`…）生成负责跳转的副本，再生成 `404.html`，所以服务器只要按路径返回文件，不需要 SPA 回退。
+（`works/`、`about/`、`contact/`…）生成负责跳转的副本，再生成 `404.html`，所以服务器只要按路径返回文件，不需要 SPA 回退。
 在 Cloudflare 上，`/en/works` 会跳到 `/en/works/`（和 canonical 地址一致），找不到文件的路径返回 `404.html`。
 
 `dist/` 也能原样放到别的静态服务器上：nginx 不改配置就能打开深链接，想让未知路径也显示站内的 404 页，加一行
@@ -50,6 +50,7 @@ pnpm preview    # 本地预览 dist/
 - 作品：[src/data/works.ts](src/data/works.ts)。`featured: true` 的作品按顺序出现在首页；
   `visual` 决定用哪个动态视觉（`roadmap` / `code` / `clock`），不填则显示一张以作品名为主体的海报。
   需要翻译的字段写成 `{ en, zh }`，各语言相同的（名字、品牌）直接写字符串。页面里用 `useI18n().works` 取当前语言的版本。
+- 工作经历（首页第二屏和关于页）：[src/data/experience.ts](src/data/experience.ts)，按时间倒序写，写法同作品。个人介绍在界面文案的 `about.intro`。
 - 联系方式：[src/data/contacts.ts](src/data/contacts.ts)。有中文名的平台把 `name` 写成 `{ en, zh }`。
 - 界面文案：[src/i18n/messages/](src/i18n/messages/)。
 - 站点信息（名字、博客地址）：[src/data/site.ts](src/data/site.ts)。
@@ -85,7 +86,7 @@ src/
   i18n/         语言定义与检测、界面文案、各页面的 head 信息
   components/   导航、页脚、图标、联系方式图标行、二维码与弹窗
   visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（编辑器演示）、WatchClock（大笨钟）、Poster
-  pages/        home、works、work（作品详情）、contact、404
+  pages/        home、works、work（作品详情）、about、contact、404
   data/         作品、联系方式、生成的数据
 scripts/        数据生成；route-shells.ts 是生成各路由 HTML 的 Vite 插件
 ```

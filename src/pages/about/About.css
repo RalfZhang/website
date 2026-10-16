@@ -1,0 +1,11 @@
+/* The intro, the jobs, and the footer at the bottom of the screen. */
+.aboutpage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.aboutpage__jobs {
+  flex: 1;
+  padding-bottom: clamp(64px, 10vh, 120px);
+}

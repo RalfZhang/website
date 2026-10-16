@@ -1,0 +1,23 @@
+.jobs__title {
+  margin-bottom: 16px;
+}
+
+/* Company on the left, team · role beside it; stacked on narrow screens. */
+.jobs__list {
+  display: grid;
+  gap: 20px;
+  max-width: 760px;
+}
+
+.job {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px 24px;
+}
+
+@media (max-width: 640px) {
+  .job {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

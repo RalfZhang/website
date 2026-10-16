@@ -54,6 +54,7 @@ export function Nav() {
 
   const items: Item[] = [
     { label: t.nav.home, to: "/", match: ["home"] },
+    { label: t.nav.about, to: "/about", match: ["about"] },
     { label: t.nav.works, to: "/works", match: ["works", "work"] },
     { label: t.nav.blog, href: site.blog },
     { label: t.nav.contact, to: "/contact", match: ["contact"] },

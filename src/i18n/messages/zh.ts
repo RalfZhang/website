@@ -5,11 +5,13 @@ export const zh: Messages = {
   meta: {
     description: "Ralf Zhang 的个人网站：InkCity、File Template、大笨钟，以及我做过的其他东西。",
     contact: "联系 Ralf Zhang：GitHub、Telegram、微信等。",
+    about: "Ralf Zhang，软件工程师，偏前端和全栈，工作经历包括 Tubi 和阿里巴巴。",
     title: "{page} — {name}",
   },
   nav: {
     home: "首页",
     works: "作品",
+    about: "关于",
     blog: "博客",
     contact: "联系",
     primary: "主导航",
@@ -24,7 +26,8 @@ export const zh: Messages = {
     copyright: "Copyright © {year} {name}。地图数据 © OpenStreetMap 贡献者。",
   },
   home: {
-    seeWork: "看看作品",
+    role: "软件工程师",
+    toAbout: "关于我",
     learnMore: "了解更多",
     sayHello: "打个招呼",
   },
@@ -46,6 +49,11 @@ export const zh: Messages = {
     credits: "致谢",
     next: "下一个",
     list: "、",
+  },
+  about: {
+    title: "关于",
+    intro: "我是一名软件工程师，偏前端和全栈，但不局限于某个技术栈，喜欢尝试不同的东西。",
+    experience: "经历",
   },
   contact: {
     title: "联系我",

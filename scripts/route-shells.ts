@@ -17,7 +17,7 @@ import { localePath, matchRoute } from "../src/lib/routes";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-const PATHS = ["/", "/works", "/contact", ...workSlugs.map((s) => `/works/${s}`)];
+const PATHS = ["/", "/works", "/about", "/contact", ...workSlugs.map((s) => `/works/${s}`)];
 
 function alternateLinks(path: string) {
   return alternates(path).map((a) => `<link rel="alternate" hreflang="${a.hreflang}" href="${esc(a.href)}" />`);

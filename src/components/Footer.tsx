@@ -10,6 +10,7 @@ export function Footer() {
       <div className="wrap footer__inner">
         <p>{fmt(t.footer.copyright, { year: new Date().getFullYear(), name: site.name })}</p>
         <nav className="footer__links" aria-label={t.footer.label}>
+          <Link to="/about">{t.nav.about}</Link>
           <Link to="/works">{t.nav.works}</Link>
           <a href={site.blog}>{t.nav.blog}</a>
           <a href={site.github} target="_blank" rel="noreferrer">

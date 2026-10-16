@@ -32,6 +32,8 @@ export function pageMeta(lang: Lang, route: Route): PageMeta {
       return { title: site.name, description: t.meta.description, path: "/" };
     case "works":
       return { title: titled(t.nav.works), description: t.works.lead, path: "/works" };
+    case "about":
+      return { title: titled(t.about.title), description: t.meta.about, path: "/about" };
     case "contact":
       return { title: titled(t.contact.title), description: t.meta.contact, path: "/contact" };
     case "work": {

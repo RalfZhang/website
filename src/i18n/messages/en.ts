@@ -8,11 +8,13 @@ export const en = {
   meta: {
     description: "Ralf Zhang — InkCity, File Template, Big Ben and other things I’ve made.",
     contact: "All the ways to reach Ralf Zhang: GitHub, Telegram, WeChat and more.",
+    about: "Ralf Zhang, software engineer — front end and full stack. Experience at Tubi and Alibaba.",
     title: "{page} — {name}",
   },
   nav: {
     home: "Home",
     works: "Works",
+    about: "About",
     blog: "Blog",
     contact: "Contact",
     primary: "Primary",
@@ -27,7 +29,8 @@ export const en = {
     copyright: "Copyright © {year} {name}. Map data © OpenStreetMap contributors.",
   },
   home: {
-    seeWork: "See the work",
+    role: "Software Engineer",
+    toAbout: "About me",
     learnMore: "Learn more",
     sayHello: "Say hello",
   },
@@ -49,6 +52,11 @@ export const en = {
     credits: "Credits",
     next: "Next",
     list: ", ",
+  },
+  about: {
+    title: "About",
+    intro: "I’m a software engineer, mostly on the front end and full stack — but not tied to any one stack. I like trying different things.",
+    experience: "Experience",
   },
   contact: {
     title: "Contact",

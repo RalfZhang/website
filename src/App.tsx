@@ -1,6 +1,7 @@
 import { Nav } from "./components/Nav";
 import { RouterProvider, useRouter } from "./lib/router";
 import { ThemeProvider } from "./lib/theme";
+import { About } from "./pages/about/About";
 import { Contact } from "./pages/contact/Contact";
 import { Home } from "./pages/home/Home";
 import { NotFound } from "./pages/NotFound";
@@ -16,6 +17,8 @@ function Page() {
       return <Works />;
     case "work":
       return <WorkPage slug={route.slug} />;
+    case "about":
+      return <About />;
     case "contact":
       return <Contact />;
     default:

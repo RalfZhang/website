@@ -10,6 +10,7 @@ export type Route =
   | { name: "home" }
   | { name: "works" }
   | { name: "work"; slug: string }
+  | { name: "about" }
   | { name: "contact" }
   | { name: "notfound" };
 
@@ -32,6 +33,7 @@ export const localePath = (lang: Lang, path: string) => `/${lang}${path === "/" 
 export function matchRoute(path: string): Route {
   if (path === "/") return { name: "home" };
   if (path === "/works") return { name: "works" };
+  if (path === "/about") return { name: "about" };
   if (path === "/contact") return { name: "contact" };
   const m = /^\/works\/([\w-]+)$/.exec(path);
   if (m && hasWork(m[1])) return { name: "work", slug: m[1] };

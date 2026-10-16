@@ -29,12 +29,18 @@
 .hero {
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 16px;
   padding: var(--nav-h) var(--gutter);
   text-align: center;
 }
 
 .hero__name {
   animation: hero-in 0.8s var(--ease) both;
+}
+
+.hero__role {
+  animation: hero-in 0.8s var(--ease) 80ms both;
 }
 
 .hero__next {
@@ -171,18 +177,31 @@
   }
 }
 
-/* ------------------------------------------------------------------ contact */
+/* ------------------------------------------------------------------ about, contact
+ * Words only, centred in the screen; the contact one has the footer under it.
+ */
+.home-about,
 .home-contact {
   display: flex;
   flex-direction: column;
 }
 
+.home-about__inner,
 .home-contact__inner {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding-block: calc(var(--nav-h) + 40px) 40px;
+}
+
+.home-about__intro {
+  max-width: 32em;
+  margin-top: 16px;
+}
+
+.home-about__jobs {
+  margin-top: clamp(32px, 6vh, 56px);
 }
 
 .home-contact__row {
@@ -209,7 +228,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__name {
+  .hero__name,
+  .hero__role {
     animation: none;
   }
 }
