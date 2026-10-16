@@ -6,7 +6,7 @@
  * every deep link. The app routes client-side from there.
  *
  * Each language's copy carries that page's own <html lang>, title,
- * description, Open Graph tags, canonical URL and hreflang alternates, so
+ * description, keywords, Open Graph tags, canonical URL and hreflang alternates, so
  * crawlers and link previews get them without running the bundle.
  */
 import type { Plugin } from "vite";
@@ -37,6 +37,7 @@ function localized(shell: string, lang: Lang, path: string) {
   let html = shell.replace(/<html lang="[^"]*"/, `<html lang="${LOCALES[lang].tag}"`);
   html = set(html, /(<title>)[^<]*(<\/title>)/, meta.title);
   html = set(html, /(<meta name="description" content=")[^"]*(")/, meta.description);
+  html = set(html, /(<meta name="keywords" content=")[^"]*(")/, meta.keywords);
   html = set(html, /(<meta property="og:title" content=")[^"]*(")/, meta.title);
   html = set(html, /(<meta property="og:description" content=")[^"]*(")/, meta.description);
   return inject(html, [

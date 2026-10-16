@@ -41,6 +41,8 @@ interface WorkSource {
   stats?: StatSource[];
   links: { label: Text; href: string }[];
   credits?: Text;
+  /** What people might search to find it, beyond its title, kind and stack (which its page lists too). */
+  keywords?: Localized<string[]>;
   featured?: boolean;
   visual?: VisualKind;
 }
@@ -93,6 +95,10 @@ const sources: WorkSource[] = [
     credits: {
       en: "App icon and map visual design by Jie Xu. Map data © OpenStreetMap contributors.",
       zh: "应用图标与地图视觉设计：Jie Xu。地图数据 © OpenStreetMap 贡献者。",
+    },
+    keywords: {
+      en: ["wallpaper app", "daily wallpaper", "map wallpaper", "city map", "road map", "OpenStreetMap", "Mondrian", "macOS", "Windows", "Linux"],
+      zh: ["壁纸软件", "桌面壁纸", "每日壁纸", "地图壁纸", "城市地图", "路网", "OpenStreetMap", "蒙德里安", "macOS", "Windows", "Linux"],
     },
     featured: true,
     visual: "roadmap",
@@ -147,6 +153,10 @@ const sources: WorkSource[] = [
       { label: { en: "Marketplace", zh: "扩展市场" }, href: "https://marketplace.visualstudio.com/items?itemName=RalfZhang.filetemplate" },
       { label: "GitHub", href: "https://github.com/RalfZhang/File-Template" },
     ],
+    keywords: {
+      en: ["VS Code", "Visual Studio Code", "file template", "file header", "boilerplate", "snippets"],
+      zh: ["VS Code", "VS Code 插件", "Visual Studio Code", "文件模板", "文件头", "代码模板", "代码片段"],
+    },
     featured: true,
     visual: "code",
   },
@@ -199,6 +209,10 @@ const sources: WorkSource[] = [
       en: "Inspired by Renren’s Big Ben and DoubanYearProgress.",
       zh: "灵感来自人人网的大笨钟和 DoubanYearProgress。",
     },
+    keywords: {
+      en: ["Big Ben bot", "Douban", "Threads", "Mastodon", "year progress", "Renren"],
+      zh: ["豆瓣大笨钟", "报时机器人", "豆瓣", "Threads", "Mastodon", "年度进度", "人人网"],
+    },
     featured: true,
     visual: "clock",
   },
@@ -221,6 +235,10 @@ const sources: WorkSource[] = [
       { label: "GitHub", href: "https://github.com/RalfZhang/Vdo" },
       { label: { en: "Write-up", zh: "教程" }, href: "https://blog.ralfz.com/2017/04/04/vdo/" },
     ],
+    keywords: {
+      en: ["Douban", "Douban Movie", "Material Design", "single-page app", "Vue tutorial"],
+      zh: ["豆瓣", "豆瓣电影", "Material Design", "单页应用", "Vue 教程"],
+    },
   },
   {
     slug: "zender",
@@ -234,6 +252,10 @@ const sources: WorkSource[] = [
     },
     stack: ["JavaScript"],
     links: [{ label: "GitHub", href: "https://github.com/RalfZhang/Zender" }],
+    keywords: {
+      en: ["MVVM", "data binding", "front-end framework"],
+      zh: ["MVVM", "数据绑定", "前端框架"],
+    },
   },
 ];
 
@@ -265,6 +287,7 @@ export interface Work {
   stats?: Stat[];
   links: WorkLink[];
   credits?: string;
+  keywords?: string[];
   featured?: boolean;
   visual?: VisualKind;
 }
@@ -287,6 +310,7 @@ function localize(w: WorkSource, lang: Lang): Work {
     })),
     links: w.links.map((l) => ({ ...l, label: pick(l.label, lang) })),
     credits: pickOpt(w.credits, lang),
+    keywords: w.keywords?.[lang],
   };
 }
 

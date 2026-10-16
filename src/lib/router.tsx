@@ -67,6 +67,7 @@ function syncHead(lang: Lang, route: Route) {
   document.documentElement.lang = LOCALES[lang].tag;
   document.title = meta.title;
   document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
+  document.querySelector('meta[name="keywords"]')?.setAttribute("content", meta.keywords);
   setLink("canonical", meta.path === null ? null : absoluteUrl(localePath(lang, meta.path)));
   document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((l) => l.remove());
   if (meta.path !== null) for (const a of alternates(meta.path)) setLink("alternate", a.href, a.hreflang);

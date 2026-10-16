@@ -10,6 +10,36 @@ export const en = {
     contact: "All the ways to reach Ralf Zhang: GitHub, Telegram, WeChat and more.",
     about: "Ralf Zhang, software engineer — front end and full stack. Experience at Tubi and Alibaba.",
     title: "{page} — {name}",
+    /**
+     * Each page's <meta name="keywords">, after the name and its spellings
+     * (src/data/site.ts). The works, work and contact pages also add what they
+     * list: titles and stacks from works.ts, platforms from contacts.ts.
+     */
+    keywords: {
+      home: [
+        "software engineer",
+        "front-end engineer",
+        "full-stack developer",
+        "web developer",
+        "personal website",
+        "portfolio",
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "Rust",
+        "Tauri",
+        "Vue",
+        "InkCity",
+        "File Template",
+        "Big Ben bot",
+        "VS Code extension",
+        "wallpaper app",
+      ],
+      works: ["portfolio", "side projects", "open source"],
+      about: ["software engineer", "front-end engineer", "full-stack developer", "Tubi", "Alibaba", "DingTalk", "DingTalk Docs"],
+      contact: ["contact"],
+    },
   },
   nav: {
     home: "Home",
