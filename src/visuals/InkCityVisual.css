@@ -65,26 +65,3 @@
   gap: 10px 20px;
 }
 
-.segmented {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: var(--radius);
-  background: var(--tile);
-}
-
-.segmented button {
-  min-width: 72px;
-  height: 32px;
-  padding: 0 14px;
-  border-radius: 2px;
-  font-size: 14px;
-  color: var(--muted);
-  transition:
-    background-color 0.15s var(--ease),
-    color 0.15s var(--ease);
-}
-
-.segmented button.is-on {
-  background: var(--fill);
-  color: var(--on-fill);
-}

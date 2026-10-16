@@ -109,6 +109,13 @@ export const zh: Messages = {
     dark: "深色",
     caption: "西安，以钟楼为中心。",
   },
+  cstu: {
+    pages: "页面",
+    home: "首页",
+    courses: "课程",
+    caption: "截自 short.cstu.cloud。",
+    alt: "CSTU 课程：{page}",
+  },
   bigben: {
     ring: "敲钟",
     face: "北京时间",

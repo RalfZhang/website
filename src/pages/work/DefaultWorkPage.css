@@ -54,6 +54,10 @@
   width: min(100%, 880px);
 }
 
+.detail__media--browser .site {
+  width: min(100%, 1000px);
+}
+
 .detail__media--clock .bigben {
   --watch-size: min(46%, 360px);
   max-width: 820px;

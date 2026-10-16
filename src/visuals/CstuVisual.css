@@ -1,0 +1,79 @@
+/* A browser window, flat like the editor's: a bar in ink, the site below it. */
+.site {
+  --s-bar: #363635;
+  --s-dim: rgba(238, 232, 214, 0.55);
+  --s-faint: rgba(238, 232, 214, 0.3);
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  container-type: inline-size;
+}
+
+:root[data-theme="dark"] .site {
+  --s-bar: #252523;
+}
+
+.site__window {
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--s-bar);
+  font-size: clamp(10px, 1.6cqi, 14px);
+}
+
+.site__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 2.8em;
+  padding: 0 1em;
+}
+
+.site__lights {
+  display: flex;
+  gap: 0.5em;
+}
+
+.site__lights i {
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  background: var(--s-faint);
+}
+
+.site__url {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  font-size: 0.9em;
+  color: var(--s-dim);
+  white-space: nowrap;
+}
+
+/* The screenshots, stacked; the picked one fades in over the rest. */
+.site__view {
+  position: relative;
+  aspect-ratio: 1440 / 945;
+  background: #1f1e1c;
+}
+
+.site__view img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.site__view img.is-shown {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ switch */
+.site__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+}

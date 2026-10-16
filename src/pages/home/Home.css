@@ -132,6 +132,18 @@
   --watch-size: min(42cqw, 360px);
 }
 
+.feature--cstu .site {
+  width: min(100%, 900px);
+}
+
+/* A work with no live visual: its poster, as a 4:3 board. */
+.feature__media .poster {
+  position: relative;
+  width: min(100%, 880px);
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
+}
+
 @media (min-height: 600px) {
   .feature__grid {
     grid-template-rows: minmax(0, 1fr);
@@ -153,6 +165,13 @@
   .feature--big-ben .bigben {
     --watch-size: min(100cqh, 400px, calc(100cqw - 330px));
   }
+  /* the window is ≈ 0.7 × its width tall, plus the switch below it */
+  .feature--cstu .site {
+    width: min(100cqw, 960px, calc((100cqh - 60px) * 1.4));
+  }
+  .feature__media .poster {
+    width: min(100cqw, 880px, calc(100cqh * 4 / 3));
+  }
 }
 
 /* Narrow: the dial over the year bar; the post moves to the work's own page. */
@@ -172,7 +191,8 @@
 }
 
 @container media (max-width: 520px) {
-  .feature--inkcity figcaption {
+  .feature--inkcity figcaption,
+  .feature--cstu figcaption {
     display: none;
   }
 }

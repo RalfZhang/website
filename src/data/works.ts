@@ -11,7 +11,7 @@
 import { pick, type Lang, type Localized, type Text } from "../i18n/locales";
 
 /** Which live visual a work gets; works without one get a typographic poster. */
-export type VisualKind = "roadmap" | "code" | "clock";
+export type VisualKind = "roadmap" | "code" | "clock" | "browser";
 
 /** One highlight: a short lead-in, set dark, followed by the detail, set grey. */
 export interface Feature {
@@ -48,6 +48,54 @@ interface WorkSource {
 }
 
 const sources: WorkSource[] = [
+  {
+    slug: "cstu",
+    title: { en: "CSTU Courses", zh: "CSTU 课程" },
+    kind: { en: "Course platform", zh: "课程平台" },
+    year: "2026",
+    tagline: {
+      en: "The course site for a Silicon Valley university — browse, enrol and pay in one place.",
+      zh: "一所硅谷大学的课程网站：选课、报名、付款，一站完成。",
+    },
+    summary: {
+      en: "A course site for California Science and Technology University (CSTU). Students browse short courses and bootcamps, enrol online or on the Milpitas campus and pay by card; staff run their courses from their own dashboards.",
+      zh: "为加州科技大学（CSTU）搭建的课程网站。学员在这里浏览短期课程和训练营，选择线上或米尔皮塔斯校区上课，直接刷卡付款；工作人员在各自的后台管理课程。",
+    },
+    features: {
+      en: [
+        { title: "Online or on campus.", text: "A course can run online, on campus or both, each with its own price." },
+        { title: "Pay by card.", text: "Checkout runs on Stripe, and every payment and refund is kept on record." },
+        {
+          title: "Pass it on.",
+          text: "Every student gets a referral link and QR code. A paid enrolment through it earns a commission, which is reversed if the course is refunded.",
+        },
+        {
+          title: "Roles, not one big admin.",
+          text: "A super admin creates courses and assigns them to admins, who join by email invite and manage the courses given to them.",
+        },
+      ],
+      zh: [
+        { title: "线上或到校。", text: "每门课可以线上、到校或两种都开，各自单独定价。" },
+        { title: "刷卡付款。", text: "结账走 Stripe，每笔付款和退款都有记录。" },
+        {
+          title: "人人都能推荐。",
+          text: "每位学员都有自己的推荐链接和二维码，经由它报名付款就记一笔佣金；课程退款时，佣金随之扣回。",
+        },
+        {
+          title: "分级管理。",
+          text: "超级管理员建课并把课程分配给管理员；管理员通过邮件邀请加入，管理分到自己名下的课程。",
+        },
+      ],
+    },
+    stack: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Stripe"],
+    links: [{ label: { en: "Visit site", zh: "访问网站" }, href: "https://short.cstu.cloud" }],
+    keywords: {
+      en: ["CSTU", "California Science and Technology University", "course website", "online courses", "course enrollment", "Stripe", "referral program", "Silicon Valley"],
+      zh: ["CSTU", "加州科技大学", "课程网站", "在线课程", "课程报名", "Stripe 支付", "推荐返佣", "硅谷"],
+    },
+    featured: true,
+    visual: "browser",
+  },
   {
     slug: "inkcity",
     title: "InkCity",

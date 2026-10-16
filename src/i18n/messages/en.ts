@@ -115,6 +115,14 @@ export const en = {
     dark: "Dark",
     caption: "Xi’an, centred on the Bell Tower.",
   },
+  cstu: {
+    pages: "Pages",
+    home: "Home",
+    courses: "Courses",
+    caption: "Screenshots of short.cstu.cloud.",
+    /** A screenshot's alt text; {page} is one of the two above. */
+    alt: "CSTU Courses: {page}",
+  },
   bigben: {
     ring: "Ring the bell",
     /** Under the hands: which time the clock keeps. {zone} is the visitor's, e.g. "PDT". */
