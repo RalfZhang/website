@@ -1,14 +1,15 @@
 /**
  * What goes in <head> for each page, in each language: title, description,
- * keywords, canonical URL and the hreflang alternates. The router keeps the live document
- * in step; the build writes the same tags into each page's static HTML, so
- * crawlers and link previews see them without running any script.
+ * keywords, canonical URL, the hreflang alternates and, on some pages, schema.org
+ * JSON-LD. The router keeps the live document in step; the build writes the
+ * same tags into each page's static HTML, so crawlers and link previews see
+ * them without running any script.
  */
 import { contactName, contacts } from "../data/contacts";
 import { site } from "../data/site";
 import { worksIn } from "../data/works";
 import { localePath, type Route } from "../lib/routes";
-import { LANGS, type Lang } from "./locales";
+import { LANGS, LOCALES, type Lang } from "./locales";
 import { messages } from "./messages";
 import { fmt } from "./fmt";
 
@@ -73,3 +74,63 @@ export function alternates(path: string): { hreflang: string; href: string }[] {
     { hreflang: "x-default", href: absoluteUrl(path) },
   ];
 }
+
+/* ------------------------------------------------------------------ structured data */
+
+/** One person behind every page: both languages' nodes share this id, so search engines merge them. */
+const PERSON_ID = `${site.origin}/#person`;
+
+function person(lang: Lang) {
+  const t = messages[lang];
+  return {
+    "@type": "Person",
+    "@id": PERSON_ID,
+    name: site.name,
+    alternateName: site.aliases,
+    url: absoluteUrl(localePath(lang, "/")),
+    jobTitle: t.home.role,
+    description: t.meta.about,
+    knowsAbout: [...new Set(worksIn(lang).all.flatMap((w) => w.stack))],
+    // Accounts only — a contact with a handle is a profile; WhatsApp's link is just a QR code.
+    sameAs: [site.blog, ...contacts.filter((c) => c.handle && c.href).map((c) => c.href!)],
+  };
+}
+
+/**
+ * schema.org JSON-LD for a page, or null for none. Home describes the site and
+ * who made it; About is the profile page, with the same person as its subject.
+ */
+export function structuredData(lang: Lang, route: Route): object | null {
+  const inLanguage = LOCALES[lang].tag;
+  switch (route.name) {
+    case "home":
+      return {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": `${site.origin}/#website`,
+            url: absoluteUrl("/"),
+            name: site.name,
+            alternateName: site.aliases,
+            inLanguage,
+            author: { "@id": PERSON_ID },
+          },
+          person(lang),
+        ],
+      };
+    case "about":
+      return {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        url: absoluteUrl(localePath(lang, "/about")),
+        inLanguage,
+        mainEntity: person(lang),
+      };
+    default:
+      return null;
+  }
+}
+
+/** JSON for a <script type="application/ld+json">, with "<" escaped so no string can close the tag. */
+export const jsonLd = (data: object) => JSON.stringify(data).replace(/</g, "\\u003c");

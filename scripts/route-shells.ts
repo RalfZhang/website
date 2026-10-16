@@ -6,12 +6,13 @@
  * every deep link. The app routes client-side from there.
  *
  * Each language's copy carries that page's own <html lang>, title,
- * description, keywords, Open Graph tags, canonical URL and hreflang alternates, so
- * crawlers and link previews get them without running the bundle.
+ * description, keywords, Open Graph tags, canonical URL, hreflang alternates
+ * and JSON-LD where it has any, so crawlers and link previews get them without
+ * running the bundle.
  */
 import type { Plugin } from "vite";
 import { workSlugs } from "../src/data/works";
-import { absoluteUrl, alternates, pageMeta } from "../src/i18n/head";
+import { absoluteUrl, alternates, jsonLd, pageMeta, structuredData } from "../src/i18n/head";
 import { LANGS, LOCALES, type Lang } from "../src/i18n/locales";
 import { localePath, matchRoute } from "../src/lib/routes";
 
@@ -32,7 +33,9 @@ const inject = (html: string, tags: string[]) => html.replace("</head>", `  ${ta
 
 /** index.html, as it should be for `path` in `lang`. */
 function localized(shell: string, lang: Lang, path: string) {
-  const meta = pageMeta(lang, matchRoute(path));
+  const route = matchRoute(path);
+  const meta = pageMeta(lang, route);
+  const data = structuredData(lang, route);
   const url = absoluteUrl(localePath(lang, path));
   let html = shell.replace(/<html lang="[^"]*"/, `<html lang="${LOCALES[lang].tag}"`);
   html = set(html, /(<title>)[^<]*(<\/title>)/, meta.title);
@@ -46,6 +49,7 @@ function localized(shell: string, lang: Lang, path: string) {
     ...LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${LOCALES[l].og}" />`),
     `<link rel="canonical" href="${esc(url)}" />`,
     ...alternateLinks(path),
+    ...(data ? [`<script type="application/ld+json">${jsonLd(data)}</script>`] : []),
   ]);
 }
 

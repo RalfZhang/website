@@ -16,7 +16,7 @@ import {
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
-import { absoluteUrl, alternates, pageMeta } from "../i18n/head";
+import { absoluteUrl, alternates, jsonLd, pageMeta, structuredData } from "../i18n/head";
 import { LOCALES, preferredLang, type Lang } from "../i18n/locales";
 import { localePath, matchRoute, normalizePath, splitLang, type Route } from "./routes";
 
@@ -61,7 +61,18 @@ function setLink(rel: string, href: string | null, hreflang?: string) {
   el.href = href;
 }
 
-/** Keep <html lang>, the title and the SEO links in step with the page (the build writes the same ones). */
+function setJsonLd(data: object | null) {
+  let el = document.head.querySelector<HTMLScriptElement>('script[type="application/ld+json"]');
+  if (!data) return el?.remove();
+  if (!el) {
+    el = document.createElement("script");
+    el.type = "application/ld+json";
+    document.head.append(el);
+  }
+  el.textContent = jsonLd(data);
+}
+
+/** Keep <html lang>, the title, the SEO links and the JSON-LD in step with the page (the build writes the same ones). */
 function syncHead(lang: Lang, route: Route) {
   const meta = pageMeta(lang, route);
   document.documentElement.lang = LOCALES[lang].tag;
@@ -71,6 +82,7 @@ function syncHead(lang: Lang, route: Route) {
   setLink("canonical", meta.path === null ? null : absoluteUrl(localePath(lang, meta.path)));
   document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((l) => l.remove());
   if (meta.path !== null) for (const a of alternates(meta.path)) setLink("alternate", a.href, a.hreflang);
+  setJsonLd(structuredData(lang, route));
 }
 
 type NavigateOptions = { keepScroll?: boolean };
