@@ -18,11 +18,10 @@ export type MapData = {
   lines: Paths & {
     kind: Uint8Array; // a road class, RAIL, TAXIWAY, or TAXIWAY + 1 for a runway
     cum: Float32Array; // distance along its line, at each vertex
-    d0: Float32Array; // how far the line starts from the centre
     box: Float32Array; // its bounds: minX, minY, maxX, maxY at 4i
   };
   /** Runways and taxiways mapped as their paved outline, nearest the centre first. */
-  areas: Paths & { d0: Float32Array; box: Float32Array };
+  areas: Paths & { box: Float32Array };
   /** Lakes, rivers and the sea: polygon j is rings polys[j] … polys[j + 1] - 1, its outline and then its holes. */
   water: Paths & { polys: Uint32Array };
   /** Waterways drawn as lines: 0 river, 1 canal, 2 the rest. */
@@ -70,17 +69,15 @@ function pack(src: Src[], q: number): Paths & { kind: Uint8Array } {
   return { xy, first, kind };
 }
 
-/** Each path's bounds, and its distance from the centre: of its first vertex, or of its nearest one. */
-function measure({ xy, first }: Paths, from: "start" | "nearest") {
+/** Each path's bounds. */
+function bounds({ xy, first }: Paths) {
   const n = first.length - 1;
   const box = new Float32Array(n * 4);
-  const d0 = new Float32Array(n);
   for (let i = 0; i < n; i++) {
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
     let maxY = -Infinity;
-    let d = Infinity;
     for (let k = first[i]; k < first[i + 1]; k++) {
       const x = xy[2 * k];
       const y = xy[2 * k + 1];
@@ -88,12 +85,10 @@ function measure({ xy, first }: Paths, from: "start" | "nearest") {
       minY = Math.min(minY, y);
       maxX = Math.max(maxX, x);
       maxY = Math.max(maxY, y);
-      if (from === "nearest" || k === first[i]) d = Math.min(d, Math.hypot(x, y));
     }
     box.set([minX, minY, maxX, maxY], 4 * i);
-    d0[i] = d;
   }
-  return { box, d0 };
+  return box;
 }
 
 export function decodeMap(raw: Raw): MapData {
@@ -124,8 +119,8 @@ export function decodeMap(raw: Raw): MapData {
   const water = pack(rings, q);
 
   return {
-    lines: { ...lines, cum, ...measure(lines, "start") },
-    areas: { xy: areas.xy, first: areas.first, ...measure(areas, "nearest") },
+    lines: { ...lines, cum, box: bounds(lines) },
+    areas: { xy: areas.xy, first: areas.first, box: bounds(areas) },
     water: { xy: water.xy, first: water.first, polys },
     waterLines: pack(raw.waterLines.map((a) => ({ a, at: 1, kind: a[0] })), q),
   };

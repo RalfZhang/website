@@ -150,8 +150,8 @@
   align-items: flex-start;
 }
 
-/* Opens like a drop of ink: a circle from the centre, out past the corners
-   (71% of the circle's reference length is the half-diagonal). */
+/* Opens the way the map came in (the section's inkscreen--left or --top): an
+   edge sweeping across from the left, or down from the top. */
 .inkscreen__panel {
   width: min(100%, 440px);
   padding: clamp(24px, 3vw, 40px);
@@ -159,12 +159,16 @@
   background: color-mix(in srgb, var(--bg) 70%, transparent);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  clip-path: circle(0 at 50% 50%);
+  clip-path: inset(0 100% 0 0);
   transition: clip-path 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+.inkscreen--top .inkscreen__panel {
+  clip-path: inset(0 0 100% 0);
+}
+
 .inkscreen.is-open .inkscreen__panel {
-  clip-path: circle(72% at 50% 50%);
+  clip-path: inset(0);
 }
 
 /* The words fade up as everywhere on the site ([data-reveal], base.css), but on
@@ -209,7 +213,7 @@
 
 /* No staging: the panel is open from the start; the map appears finished. */
 @media (prefers-reduced-motion: reduce) {
-  .inkscreen__panel {
+  .inkscreen .inkscreen__panel {
     clip-path: none;
     transition: none;
   }

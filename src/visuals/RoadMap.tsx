@@ -51,17 +51,32 @@ function mix(fg: string, bg: string, alpha: number) {
 /* ------------------------------------------------------------------ engine */
 
 const SPREAD_S = 2.4; // seconds until the farthest visible line starts drawing
-const SPREAD_CURVE = 0.85; // a line starts at SPREAD_S × (its distance / the corners' distance) ^ this
-/** The ink front's pace as a CSS easing — its distance from the centre goes as (t / SPREAD_S) ^ (1 / SPREAD_CURVE) — for the circle that lays one map over another. */
+const SPREAD_CURVE = 0.85; // a line starts at SPREAD_S × (the ink's way to it / its way to the farthest edge) ^ this
+/** The ink front's pace as a CSS easing — how far it has come goes as (t / SPREAD_S) ^ (1 / SPREAD_CURVE) — for the shape that lays one map over another. */
 const FRONT_EASE = `linear(${Array.from({ length: 11 }, (_, i) => ((i / 10) ** (1 / SPREAD_CURVE)).toFixed(3)).join(", ")})`;
 const MAX_PIXELS = 3840 * 2400; // per canvas: past this a huge screen gets a lower resolution, not more memory
 const RESIZE_SETTLE_MS = 150; // a drawn map redraws once its new size has held this long
+const START_STEPS = 256; // lines are put in order of when they start to within SPREAD_S / this: well under a frame
+
+/** Where the ink starts: the centre, spreading out to every edge, or the left or top edge, sweeping across to the other side. */
+export type From = "centre" | "left" | "top";
 
 /** Path i of `p` onto the current path, at `s` px per metre. */
 function trace(ctx: CanvasRenderingContext2D, { xy, first }: Paths, i: number, s: number) {
   let k = first[i];
   ctx.moveTo(xy[2 * k] * s, xy[2 * k + 1] * s);
   for (k++; k < first[i + 1]; k++) ctx.lineTo(xy[2 * k] * s, xy[2 * k + 1] * s);
+}
+
+/** `items` in order of when each starts, `start[i]` of 0 … `end` seconds, to within one of START_STEPS: a counting sort, one pass however big the city. */
+function byStart(items: number[], start: Float32Array, end: number) {
+  const step = (i: number) => Math.min(START_STEPS - 1, Math.floor((start[i] / end) * START_STEPS));
+  const at = new Uint32Array(START_STEPS + 1);
+  for (const i of items) at[step(i) + 1]++;
+  for (let k = 1; k <= START_STEPS; k++) at[k] += at[k - 1];
+  const out = new Array<number>(items.length);
+  for (const i of items) out[at[step(i)]++] = i;
+  return out;
 }
 
 class Engine {
@@ -73,8 +88,8 @@ class Engine {
   started = false;
   private raf = 0; // non-zero while growing
   private settling = 0;
-  private visible: number[][] = []; // the lines in view, by layer, nearest the centre first
-  private areas: number[] = []; // the paved runway areas in view
+  private visible: number[][] = []; // the lines in view, by layer: nearest the centre first, as built, or as grow() reorders them
+  private areas: number[] = []; // the paved runway areas in view, likewise
   private colors: string[] = []; // by layer
   private water = "";
   private spread = false;
@@ -144,7 +159,7 @@ class Engine {
     this.visible = LAYERS.map(() => []);
     for (let i = 0; i < lines.kind.length; i++) if (inView(lines.box, i)) this.visible[layerOf(lines.kind[i])].push(i);
     this.areas = [];
-    for (let i = 0; i < areas.d0.length; i++) if (inView(areas.box, i)) this.areas.push(i);
+    for (let i = 0; i + 1 < areas.first.length; i++) if (inView(areas.box, i)) this.areas.push(i);
   }
 
   /** A canvas, cleared — and only given its pixels once there's something to draw on it. */
@@ -249,8 +264,14 @@ class Engine {
     this.onDone();
   }
 
-  /** Ink spreading out from the centre: each line grows from its nearest point. */
-  grow() {
+  /**
+   * Ink spreading out from the centre, or sweeping across from an edge: each line
+   * grows from the end the ink reaches first. Lines come split at their vertex
+   * nearest the centre and running outward (mapData.ts), so from the centre that's
+   * always their first vertex; across, it's either end, and the line is drawn back
+   * from its last when that's the nearer. Each paved area starts with its nearest vertex.
+   */
+  grow(from: From) {
     if (!this.ready) return;
     if (prefersReducedMotion()) {
       this.paint();
@@ -258,19 +279,58 @@ class Engine {
     }
     this.started = true;
 
-    const { xy, cum, first, d0 } = this.data!.lines;
-    const areaD0 = this.data!.areas.d0;
+    const { lines, areas } = this.data!;
+    const { xy, cum, first } = lines;
     const s = this.scale;
-    const reach = Math.hypot(this.w / 2, this.h / 2) / s;
-    const delay = (d: number) => this.spreadS * Math.pow(Math.min(1, d / reach), SPREAD_CURVE);
-    // Each line grows as fast as the front moves out, at any scale.
+    const x0 = this.w / 2 / s;
+    const y0 = this.h / 2 / s;
+    // The ink's way to a point: out from the centre, or across from the left or top edge…
+    const dist: (x: number, y: number) => number =
+      from === "left" ? (x) => x + x0 : from === "top" ? (_, y) => y + y0 : (x, y) => Math.sqrt(x * x + y * y);
+    const distAt = (p: Paths, k: number) => dist(p.xy[2 * k], p.xy[2 * k + 1]);
+    // …and to the farthest corner, bottom right for each of them.
+    const reach = dist(x0, y0);
+    const delay = (d: number) => this.spreadS * Math.pow(Math.min(1, Math.max(0, d) / reach), SPREAD_CURVE);
+    // Each line grows as fast as the front moves on, at any scale.
     const speed = reach / this.spreadS;
+
+    const n = first.length - 1;
+    const begin = new Float32Array(n); // when each line starts…
+    const rev = new Uint8Array(n); // …whether from its last vertex…
+    const drawn = new Float32Array(n); // …how far along it is drawn…
+    const at = new Uint32Array(n); // …and the vertex that leaves it at
+    for (const bucket of this.visible)
+      for (const i of bucket) {
+        const last = first[i + 1] - 1;
+        const p = distAt(lines, first[i]);
+        const q = distAt(lines, last);
+        rev[i] = q < p ? 1 : 0;
+        at[i] = q < p ? last : first[i];
+        begin[i] = delay(Math.min(p, q));
+      }
+    const areaBegin = new Float32Array(areas.first.length - 1);
+    for (const j of this.areas) {
+      let d = Infinity;
+      for (let k = areas.first[j]; k < areas.first[j + 1]; k++) d = Math.min(d, distAt(areas, k));
+      areaBegin[j] = delay(d);
+    }
+    // In the order the ink reaches them, as the build has them already from the centre;
+    // painting whole layers, the order doesn't matter.
+    if (from !== "centre") {
+      this.visible = this.visible.map((bucket) => byStart(bucket, begin, this.spreadS));
+      this.areas = byStart(this.areas, areaBegin, this.spreadS);
+    }
 
     const ctx = this.ctx(this.roadCv);
     this.drawWater();
-    const begin = new Float32Array(d0.length); // when each line starts…
-    const drawn = new Float32Array(d0.length); // …how far along it is drawn…
-    const at = new Uint32Array(d0.length); // …and the vertex that leaves it at
+    // Onto the path, the point `c` along the line (its cum) between vertices v and w.
+    const to = (v: number, w: number, c: number, move: boolean) => {
+      const f = (c - cum[v]) / (cum[w] - cum[v] || 1);
+      const x = (xy[2 * v] + (xy[2 * w] - xy[2 * v]) * f) * s;
+      const y = (xy[2 * v + 1] + (xy[2 * w + 1] - xy[2 * v + 1]) * f) * s;
+      if (move) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    };
     const next = LAYERS.map(() => 0);
     const live: number[][] = LAYERS.map(() => []);
     let nextArea = 0;
@@ -282,18 +342,13 @@ class Engine {
       let waiting = false;
       for (let k = 0; k < LAYERS.length; k++) {
         if (k === PAVED) {
-          const from = nextArea;
-          while (nextArea < this.areas.length && delay(areaD0[this.areas[nextArea]]) <= t) nextArea++;
+          const filled = nextArea;
+          while (nextArea < this.areas.length && areaBegin[this.areas[nextArea]] <= t) nextArea++;
           if (nextArea < this.areas.length) pending = waiting = true;
-          this.fill(ctx, from, nextArea);
+          this.fill(ctx, filled, nextArea);
         }
         const bucket = this.visible[k];
-        while (next[k] < bucket.length && delay(d0[bucket[next[k]]]) <= t) {
-          const i = bucket[next[k]++];
-          begin[i] = delay(d0[i]);
-          at[i] = first[i];
-          live[k].push(i);
-        }
+        while (next[k] < bucket.length && begin[bucket[next[k]]] <= t) live[k].push(bucket[next[k]++]);
         if (next[k] < bucket.length) pending = waiting = true;
         const L = live[k];
         if (!L.length) continue;
@@ -302,25 +357,27 @@ class Engine {
         for (let j = L.length - 1; j >= 0; j--) {
           const i = L[j];
           const last = first[i + 1] - 1;
+          const len = cum[last];
           const a = drawn[i];
-          const b = Math.min(cum[last], (t - begin[i]) * speed);
+          const b = Math.min(len, (t - begin[i]) * speed);
           if (b > a) {
+            // a to b of the way it grows, as cum measures the line: walked up the buffer, or back down it.
+            const dir = rev[i] ? -1 : 1;
+            const end = rev[i] ? first[i] : last;
+            const ca = rev[i] ? len - a : a;
+            const cb = rev[i] ? len - b : b;
             let v = at[i];
-            while (v < last - 1 && cum[v + 1] <= a) v++;
-            const fa = (a - cum[v]) / (cum[v + 1] - cum[v] || 1);
-            ctx.moveTo((xy[2 * v] + (xy[2 * v + 2] - xy[2 * v]) * fa) * s, (xy[2 * v + 1] + (xy[2 * v + 3] - xy[2 * v + 1]) * fa) * s);
-            while (v < last && cum[v + 1] <= b) {
-              v++;
+            while (v + dir !== end && dir * (cum[v + dir] - ca) <= 0) v += dir;
+            to(v, v + dir, ca, true);
+            while (v !== end && dir * (cum[v + dir] - cb) <= 0) {
+              v += dir;
               ctx.lineTo(xy[2 * v] * s, xy[2 * v + 1] * s);
             }
-            if (v < last) {
-              const fb = (b - cum[v]) / (cum[v + 1] - cum[v] || 1);
-              ctx.lineTo((xy[2 * v] + (xy[2 * v + 2] - xy[2 * v]) * fb) * s, (xy[2 * v + 1] + (xy[2 * v + 3] - xy[2 * v + 1]) * fb) * s);
-            }
+            if (v !== end) to(v, v + dir, cb, false);
             at[i] = v;
             drawn[i] = b;
           }
-          if (b >= cum[last]) {
+          if (b >= len) {
             L[j] = L[L.length - 1];
             L.pop();
           } else pending = true;
@@ -364,12 +421,15 @@ type Props = {
   /** Draw once `start` turns true. */
   start: boolean;
   /**
-   * How the map appears: `grow` from the centre on blank paper; `still`, finished
-   * at once; or `over` whatever is beneath it — drawn finished, then uncovered by
-   * a circle of paper widening from the centre at the ink's pace, its water coming
-   * in once the circle is past the corners.
+   * How the map appears: `grow` on blank paper, the ink spreading from `from`;
+   * `still`, finished at once; or `over` whatever is beneath it — drawn finished,
+   * then uncovered from `from` at the ink's pace, by a circle of paper widening
+   * from the centre or an edge sweeping across, its water coming in once that's
+   * past the far side.
    */
   appear?: Appear;
+  /** Where the ink starts, growing or laid over: the centre, or the left or top edge. */
+  from?: From;
   /** Ground covered by the canvas's longer side. */
   spanKm?: number;
   /** Seconds for the ink to reach the edges. */
@@ -384,7 +444,7 @@ type Props = {
  * A city as an InkCity wallpaper, around its centre. It fills its positioned
  * container; maps laid over one another stack in the order they're mounted.
  */
-export function RoadMap({ src, palette, start, appear = "grow", spanKm = 9, spreadS = SPREAD_S, onSpread, onDone }: Props) {
+export function RoadMap({ src, palette, start, appear = "grow", from = "centre", spanKm = 9, spreadS = SPREAD_S, onSpread, onDone }: Props) {
   const wrap = useRef<HTMLDivElement>(null);
   const waterCv = useRef<HTMLCanvasElement>(null);
   const roadCv = useRef<HTMLCanvasElement>(null);
@@ -395,18 +455,18 @@ export function RoadMap({ src, palette, start, appear = "grow", spanKm = 9, spre
   // State, not classes toggled by hand: React owns className and would wipe them.
   const [done, setDone] = useState(false);
   const [opening, setOpening] = useState(false);
-  // The engine outlives renders: it starts in the current palette and calls the current callbacks.
-  const current = useRef({ palette, onSpread, onDone });
+  // The engine outlives renders: it starts in the current palette, from the current side, and calls the current callbacks.
+  const current = useRef({ palette, from, onSpread, onDone });
   useLayoutEffect(() => {
-    current.current = { palette, onSpread, onDone };
+    current.current = { palette, from, onSpread, onDone };
   });
 
   const kick = () => {
     const e = engine.current;
     if (!e?.ready || e.started || !want.current) return;
-    if (want.current === "grow") return e.grow();
+    if (want.current === "grow") return e.grow(current.current.from);
     e.paint();
-    // Laid over: the circle uncovers it (RoadMap.css), and its end is the map's.
+    // Laid over: the sweep uncovers it (RoadMap.css), and its end is the map's.
     if (want.current === "over" && !prefersReducedMotion()) setOpening(true);
     else e.finish();
   };
@@ -469,10 +529,10 @@ export function RoadMap({ src, palette, start, appear = "grow", spanKm = 9, spre
 
   return (
     <div
-      className={`roadmap${done ? " is-done" : appear === "over" ? " is-over" : ""}${opening ? " is-opening" : ""}`}
+      className={`roadmap roadmap--${from}${done ? " is-done" : appear === "over" ? " is-over" : ""}${opening ? " is-opening" : ""}`}
       ref={wrap}
       style={{ background: palette.bg, "--spread": `${spreadS}s`, "--front-ease": FRONT_EASE } as CSSProperties}
-      onAnimationEnd={(ev) => ev.animationName === "roadmap-open" && engine.current?.finish()}
+      onAnimationEnd={(ev) => ev.animationName.startsWith("roadmap-open") && engine.current?.finish()}
       aria-hidden
     >
       <canvas className="roadmap__water" ref={waterCv} />

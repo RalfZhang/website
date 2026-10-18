@@ -24,10 +24,12 @@
 }
 
 /* Laid over another map (appear="over"): hidden until it's drawn, then
-   uncovered by a circle of paper widening from the centre at the ink front's
-   pace, until it's past the corners (71% of the circle's reference length is the
-   half-diagonal). Hidden, not clipped, while it waits, so it still counts as on
-   screen; an animation, so its end can be the map's (RoadMap listens for it). */
+   uncovered from where the ink starts (RoadMap's `from`) at the ink front's pace:
+   by a circle of paper widening from the centre until it's past the corners (71%
+   of the circle's reference length is the half-diagonal), or by an edge sweeping
+   across from the left or down from the top. Hidden, not clipped, while it waits,
+   so it still counts as on screen; an animation, so its end can be the map's
+   (RoadMap listens for it). */
 .roadmap.is-over {
   visibility: hidden;
 }
@@ -37,11 +39,37 @@
   animation: roadmap-open var(--spread) var(--front-ease) both;
 }
 
+.roadmap--left.is-over.is-opening {
+  animation-name: roadmap-open-left;
+}
+
+.roadmap--top.is-over.is-opening {
+  animation-name: roadmap-open-top;
+}
+
 @keyframes roadmap-open {
   from {
     clip-path: circle(0 at 50% 50%);
   }
   to {
     clip-path: circle(71% at 50% 50%);
+  }
+}
+
+@keyframes roadmap-open-left {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes roadmap-open-top {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
   }
 }

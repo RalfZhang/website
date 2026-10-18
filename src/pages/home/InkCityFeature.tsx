@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CITIES, formatLatLon } from "../../data/cities";
 import type { Work } from "../../data/works";
-import { prefersReducedMotion, useInView, usePageVisible } from "../../lib/motion";
+import { prefersReducedMotion, useInView, useMediaQuery, usePageVisible } from "../../lib/motion";
 import { useTheme } from "../../lib/theme";
 import { preloadCity } from "../../visuals/cityMaps";
 import { RoadMap, WALLPAPER } from "../../visuals/RoadMap";
@@ -12,22 +12,24 @@ import "./InkCityFeature.css";
 const SPREAD_S = 1.1;
 /** Ground across the screen's longer side: InkCity's own wallpaper span. */
 const SPAN_KM = 20;
+/** InkCityFeature.css's narrow layout, where everything comes in from the top rather than the left: the maps, and the panel by the section's inkscreen--top. */
+const NARROW = "(max-width: 900px)";
 
 /**
  * InkCity's home screen is the wallpaper itself. It arrives blank, just the
- * paper (or the night), and the first time it's scrolled to, the roads grow out
- * from the centre to every edge of the screen. Only then do the words open over
- * them, on a frosted panel that spreads out from its centre.
+ * paper (or the night), and the first time it's scrolled to, the roads grow
+ * across the screen, left to right (top to bottom on a phone). Only then do the
+ * words open over them, on a frosted panel uncovered the same way.
  *
  * Then it changes city, as the app changes the wallpaper every day: each one
  * stays a few seconds, with InkCity's caption in its corner and its division of
- * the scale bar filling for the time it stays, until a circle of paper widens
- * from the centre over it, the next city's roads appearing with it; the new
- * water comes in once the circle is past the corners. Round the list in
- * src/data/cities.ts, only while the screen is in view, and not at all for
- * anyone who asks for reduced motion. The scale bar is the timer: the next city
- * starts when the current division is full, and it stops while the screen is
- * out of view, so the two never disagree.
+ * the scale bar filling for the time it stays, until an edge of paper sweeps
+ * over it the same way, the next city's roads appearing behind it; the new
+ * water comes in once the edge is across. Round the list in src/data/cities.ts,
+ * only while the screen is in view, and not at all for anyone who asks for
+ * reduced motion. The scale bar is the timer: the next city starts when the
+ * current division is full, and it stops while the screen is out of view, so
+ * the two never disagree.
  *
  * Each city is fetched only when it's about to be needed: the first once the
  * screen is a scroll away, the next while the current one shows. Until it's
@@ -48,6 +50,7 @@ export function InkCityFeature({ work }: { work: Work }) {
   const [under, setUnder] = useState<number | null>(null);
   const [done, setDone] = useState(false);
   const cycling = !prefersReducedMotion();
+  const from = useMediaQuery(NARROW) ? "top" : "left";
   const next = CITIES[(at + 1) % CITIES.length];
   // The caption keeps the old city's name until the new one is drawn.
   const caption = CITIES[under ?? at];
@@ -78,7 +81,7 @@ export function InkCityFeature({ work }: { work: Work }) {
     <section
       id={work.slug}
       ref={ref}
-      className={`screen inkscreen${open ? " is-open" : ""}`}
+      className={`screen inkscreen inkscreen--${from}${open ? " is-open" : ""}`}
       aria-labelledby={`${work.slug}-title`}
     >
       <div className="inkscreen__map" aria-hidden>
@@ -90,6 +93,7 @@ export function InkCityFeature({ work }: { work: Work }) {
             palette={WALLPAPER[theme]}
             start={seen}
             appear={i === at && under !== null ? "over" : "grow"}
+            from={from}
             spanKm={SPAN_KM}
             spreadS={SPREAD_S}
             onSpread={i === at ? () => setOpen(true) : undefined}
