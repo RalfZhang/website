@@ -1,0 +1,93 @@
+/* Big Ben's dial (Dial.tsx), in the colours of whoever draws it:
+ *   --w-face    the face, and the dot in the pin (by default --object)
+ *   --w-mark    numerals, markers, the hands, the pin (by default --on-object);
+ *               the minute ticks, the second hand and the zone under the pin
+ *               are it, fainter
+ * and as wide as --watch-size (by default its container, up to 400px).
+ * Flat: no rims, no shadows.
+ */
+.watch {
+  flex: none;
+  width: var(--watch-size, min(100%, 400px));
+  aspect-ratio: 1;
+  border-radius: 50%;
+  --face: var(--w-face, var(--object));
+  --mark: var(--w-mark, var(--on-object));
+}
+
+.watch svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.watch__face {
+  fill: var(--face);
+}
+
+.watch__marker,
+.watch__numeral,
+.watch__pin {
+  fill: var(--mark);
+}
+
+.watch__tick {
+  fill: color-mix(in srgb, var(--mark) 35%, transparent);
+}
+
+.watch__numeral {
+  font-family: var(--font);
+  font-size: 36px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+
+.watch__label {
+  fill: color-mix(in srgb, var(--mark) 55%, transparent);
+  font-family: var(--font);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-anchor: middle;
+}
+
+/* Rotate about the user-space origin — the dial's centre. (With view-box, the
+   reference box starts at the origin, not at the view box's min-x/min-y.) */
+.watch__hand {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+.watch__hand--hour,
+.watch__hand--minute {
+  fill: var(--mark);
+  transition: transform 0.3s var(--ease);
+}
+
+.watch__hand--second {
+  fill: color-mix(in srgb, var(--mark) 65%, transparent);
+  transition: transform 0.2s var(--ease);
+}
+
+.watch__pin-dot {
+  fill: var(--face);
+}
+
+/* Woken: the hands start at twelve and run round to the time, as a clock set
+   going does, --w-wake after the class is put on (0.35s unless the drawer
+   says). The class should stay on once it is: taken off midway, the hands
+   snap to the time. */
+.watch.is-waking .watch__hand {
+  animation: watch-wake 1s cubic-bezier(0.25, 0.6, 0.2, 1) var(--w-wake, 0.35s) backwards;
+}
+
+@keyframes watch-wake {
+  from {
+    transform: rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .watch.is-waking .watch__hand {
+    animation: none;
+  }
+}

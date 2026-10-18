@@ -46,10 +46,6 @@
 }
 
 /* Ordinary page (short screens): visuals sized by width. */
-.feature--big-ben .bigben {
-  --watch-size: min(42cqw, 360px);
-}
-
 .feature--cstu .site {
   width: min(100%, 900px);
 }
@@ -71,32 +67,12 @@
     min-height: 0;
     container: media / size;
   }
-  /* the dial, with the post beside it */
-  .feature--big-ben .bigben {
-    --watch-size: min(100cqh, 400px, calc(100cqw - 330px));
-  }
   /* the window is ≈ 0.7 × its width tall, plus the switch below it */
   .feature--cstu .site {
     width: min(100cqw, 960px, calc((100cqh - 60px) * 1.4));
   }
   .feature__media .poster {
     width: min(100cqw, 880px, calc(100cqh * 4 / 3));
-  }
-}
-
-/* Narrow: the dial over the year bar; the post moves to the work's own page. */
-@container media (max-width: 640px) {
-  .feature--big-ben .bigben {
-    --watch-size: min(78cqw, calc(100cqh - 80px), 360px);
-    flex-direction: column;
-    gap: 16px;
-  }
-  .feature--big-ben .notif {
-    display: none;
-  }
-  .feature--big-ben .bigben__side {
-    width: 100%;
-    max-width: 360px;
   }
 }
 

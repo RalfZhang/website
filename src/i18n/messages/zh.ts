@@ -123,5 +123,7 @@ export const zh: Messages = {
     strike: "咣！",
     post: "{strikes}豆瓣大笨钟提醒您：北京时间 {hour} 点整，{year} 年已悄悄溜走 {pct}%。",
     slipped: "{year} 年已悄悄溜走 {pct}。",
+    pixels: "也就是屏幕上 {total} 个像素中的 {n} 个。",
+    perPixel: "1 像素 ≈ {s} 秒",
   },
 };

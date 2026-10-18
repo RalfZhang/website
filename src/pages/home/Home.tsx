@@ -7,6 +7,7 @@ import { site } from "../../data/site";
 import type { Work } from "../../data/works";
 import { useI18n } from "../../i18n";
 import { d, prefersReducedMotion, useReveal } from "../../lib/motion";
+import { BigBenFeature } from "./BigBenFeature";
 import { Feature } from "./Feature";
 import { FileTemplateFeature } from "./FileTemplateFeature";
 import { InkCityFeature } from "./InkCityFeature";
@@ -16,6 +17,7 @@ import "./Home.css";
 const screens: Partial<Record<string, ComponentType<{ work: Work }>>> = {
   inkcity: InkCityFeature,
   "file-template": FileTemplateFeature,
+  "big-ben": BigBenFeature,
 };
 
 /**

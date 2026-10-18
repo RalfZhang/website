@@ -132,6 +132,10 @@ export const en = {
     strike: "BONG! ",
     post: "{strikes}Big Ben Bot here: it’s {time} {zone} — {year} is already {pct}% gone.",
     slipped: "{pct} of {year} has quietly slipped away.",
+    /** Under it on the home screen, where the year is the screen: {n} of its {total} pixels are inked. */
+    pixels: "That’s {n} of this screen’s {total} pixels.",
+    /** Under the loupe on the pixel being inked: how long each pixel's slice of the year is, as a map gives its scale. */
+    perPixel: "1 pixel ≈ {s} s",
   },
 };
 

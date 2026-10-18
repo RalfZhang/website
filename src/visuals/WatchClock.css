@@ -1,81 +1,15 @@
+/* The dial (Dial.tsx) as it's drawn here, an ink face with paper markings
+   (a near-black face at night), and the bot's last post beside it. */
 .bigben {
+  --w-face: #2d2d2d;
   display: flex;
   align-items: center;
   gap: clamp(24px, 3vw, 40px);
   width: 100%;
 }
 
-/* ------------------------------------------------------------------ the dial
- * Flat: an ink disc, paper markers and hands. */
-.watch {
-  flex: none;
-  width: var(--watch-size, min(100%, 400px));
-  aspect-ratio: 1;
-  border-radius: 50%;
-}
-
-.watch svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.watch__face {
-  fill: var(--watch-face, #2d2d2d);
-}
-
-:root[data-theme="dark"] .watch__face {
-  fill: #1c1c1a;
-}
-
-.watch__marker {
-  fill: var(--paper);
-}
-
-.watch__tick {
-  fill: rgba(238, 232, 214, 0.35);
-}
-
-.watch__numeral {
-  fill: var(--paper);
-  font-family: var(--font);
-  font-size: 36px;
-  font-weight: 500;
-  text-anchor: middle;
-}
-
-.watch__label {
-  fill: rgba(238, 232, 214, 0.55);
-  font-family: var(--font);
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-anchor: middle;
-}
-
-/* Rotate about the user-space origin — the dial's centre. (With view-box, the
-   reference box starts at the origin, not at the view box's min-x/min-y.) */
-.watch__hand {
-  transform-box: view-box;
-  transform-origin: 0 0;
-}
-
-.watch__hand--hour,
-.watch__hand--minute {
-  fill: var(--paper);
-  transition: transform 0.3s var(--ease);
-}
-
-.watch__hand--second {
-  fill: rgba(238, 232, 214, 0.65);
-  transition: transform 0.2s var(--ease);
-}
-
-.watch__pin {
-  fill: var(--paper);
-}
-
-.watch__pin-dot {
-  fill: #2d2d2d;
+:root[data-theme="dark"] .bigben {
+  --w-face: #1c1c1a;
 }
 
 /* ------------------------------------------------------------------ the post */
@@ -176,7 +110,7 @@
     flex-direction: column;
     align-items: stretch;
   }
-  .watch {
+  .bigben .watch {
     align-self: center;
   }
   .bigben__side {

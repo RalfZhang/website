@@ -71,13 +71,14 @@ export const customPages = {
 ## 给某个作品单独设计首页的一屏
 
 首页每个 `featured` 作品占一屏，默认是 [Feature](src/pages/home/Feature.tsx)：左边文字，右边动态视觉。要单独设计某一屏，
-在 `src/pages/home/` 里写一个组件和它自己的 CSS（如 `InkCityFeature`、`FileTemplateFeature`），然后在
+在 `src/pages/home/` 里写一个组件和它自己的 CSS（如 `InkCityFeature`、`FileTemplateFeature`、`BigBenFeature`），然后在
 [Home.tsx](src/pages/home/Home.tsx) 的 `screens` 里按 slug 注册：
 
 ```ts
 const screens = {
   inkcity: InkCityFeature,
   "file-template": FileTemplateFeature,
+  "big-ben": BigBenFeature,
 };
 ```
 
@@ -110,8 +111,10 @@ src/
   lib/          路由（routes.ts 不含 React，构建脚本也用）、主题（切换时交叉淡化）、淡入与可见性 hook、可暂停的脚本时钟
   i18n/         语言定义与检测、界面文案、各页面的 head 信息
   components/   导航、页脚、图标、联系方式图标行、二维码与弹窗
-  visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（窗口里的编辑器演示）、WatchClock（大笨钟）、Poster；
-                编辑器演示的脚本在 editorDemo.ts，文件、命令面板、键帽这些部件在 Editor.tsx，首页的全屏编辑器也用它们
+  visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（窗口里的编辑器演示）、WatchClock（大笨钟和它的帖子）、Poster；
+                编辑器演示的脚本在 editorDemo.ts，文件、命令面板、键帽这些部件在 Editor.tsx，首页的全屏编辑器也用它们；
+                大笨钟的时区、报时、指针和钟声在 bigBen.ts，表盘在 Dial.tsx（颜色由 --w-* 指定），首页的大笨钟一屏也用它们；
+                dotPrint.ts 是点阵打印机式的逐行入场（一张盖在内容上的画布，按打印头的顺序一点一点擦掉）
   pages/        home（含各作品单独设计的一屏）、works、work（作品详情）、about、contact、404
   data/         作品、联系方式、生成的数据
 scripts/        数据生成；route-shells.ts 是生成各路由 HTML 的 Vite 插件

@@ -1,0 +1,260 @@
+/* ------------------------------------------------------------------ Big Ben
+ * The screen is the year, drawn as a progress bar the size of the screen: its
+ * device pixels inked in order, down each column from the top-left (along
+ * each row on a screen taller than it's wide), as far as the year has gone.
+ * Its edge is left clear to be watched, with a loupe beside it on the pixel
+ * being inked; the words, the dial and the loupe each take the colours of the
+ * side of it they're on (data-on, set by BigBenFeature.tsx, which places
+ * them). The content clears the nav bar, as every screen's does; the ink
+ * fills the screen edge to edge.
+ */
+.bbscreen {
+  --bb-ink: var(--object);
+  --bb-on-ink: var(--on-object);
+  --bb-on-ink-muted: color-mix(in srgb, var(--bb-on-ink) 72%, var(--bb-ink));
+  /* the loupe's rules, between the ink and the paper so they show on both */
+  --bb-rule: color-mix(in srgb, var(--bb-ink) 45%, var(--bg));
+  /* the dial (visuals/Dial.css): a face of the same ink, so on the ink it's just its marks */
+  --w-face: var(--bb-ink);
+  display: flex;
+  flex-direction: column;
+  padding-block: calc(var(--nav-h) + 24px) 32px;
+  overflow: hidden;
+}
+
+/* At night, InkCity's ink laid thinly on the black, so most of the screen
+   isn't a bright grey; the loupe's rules in the ink at full strength. */
+:root[data-theme="dark"] .bbscreen {
+  --bb-ink: color-mix(in srgb, var(--object) 55%, var(--bg));
+  --bb-rule: var(--object);
+}
+
+/* On the ink: the site's colours, turned over. */
+.bbscreen [data-on="ink"] {
+  --text: var(--bb-on-ink);
+  --muted: var(--bb-on-ink-muted);
+  --fill: var(--bb-on-ink);
+  --on-fill: var(--bb-ink);
+  --fill-hover: color-mix(in srgb, #fff 45%, var(--bb-on-ink));
+  --tile: color-mix(in srgb, var(--bb-on-ink) 14%, var(--bb-ink));
+  --tile-hover: color-mix(in srgb, var(--bb-on-ink) 22%, var(--bb-ink));
+}
+
+/* ------------------------------------------------------------------ the year
+ * Two boxes of ink, sized by BigBenFeature.tsx in CSS pixels: the whole
+ * columns from the left (--full), and the one being inked, down from the top
+ * (--part), a device pixel wide (--px). On a tall screen, rows from the top
+ * and the row being inked, from the left.
+ */
+.bbscreen__field {
+  position: absolute;
+  inset: 0;
+  contain: strict;
+}
+
+.bbscreen__field > i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--bb-ink);
+}
+
+.bbscreen__full {
+  width: var(--full, 0);
+  height: 100%;
+}
+
+.bbscreen__part {
+  translate: var(--full, 0) 0;
+  width: var(--px, 1px);
+  height: var(--part, 0);
+}
+
+.bbscreen.is-rows .bbscreen__full {
+  width: 100%;
+  height: var(--full, 0);
+}
+
+.bbscreen.is-rows .bbscreen__part {
+  translate: 0 var(--full, 0);
+  width: var(--part, 0);
+  height: var(--px, 1px);
+}
+
+/* ------------------------------------------------------------------ the words, the dial
+ * Placed by BigBenFeature.tsx, in the screen's coordinates, within the
+ * content's box (.bbscreen__inner, which only marks it out). Across the
+ * screen they're centred on their place top to bottom.
+ */
+.bbscreen__inner {
+  flex: 1;
+  min-height: 0;
+}
+
+.bbscreen__copy,
+.bbscreen__clock,
+.bbscreen__lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--text);
+}
+
+.bbscreen.is-cols .bbscreen__copy,
+.bbscreen.is-cols .bbscreen__clock {
+  translate: 0 -50%;
+}
+
+.bbscreen__clock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Down a short screen, the dial beside its lines rather than over them. */
+.bbscreen__clock.is-beside {
+  flex-direction: row;
+}
+
+.bbscreen__clock.is-beside .bbscreen__readout {
+  flex: 1;
+  text-align: left;
+}
+
+/* The share of the year gone and the pixels it comes to. */
+.bbscreen__readout {
+  display: grid;
+  gap: 2px;
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  text-wrap: balance;
+  font-variant-numeric: tabular-nums;
+}
+
+.bbscreen__readout > span + span {
+  color: var(--muted);
+}
+
+.bbscreen__readout strong {
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------------ the loupe
+ * The pixel being inked, magnified with its neighbours: a cell each, ruled
+ * apart, in a frame that follows it down the edge (along, on a tall screen;
+ * BigBenFeature.tsx sets where). The one being inked fills down (along) as
+ * its slice of the year goes by (--f), ringed so it's the one to watch; when
+ * it's in, the strip of cells slides on by one (a cell beyond the frame on
+ * every side is there for that). Cells for pixels off the screen aren't
+ * there. Its scale beside it, as a map gives one, on the side facing the
+ * screen's middle (data-caption).
+ */
+.bbscreen__lens {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+  font-variant-numeric: tabular-nums;
+  transition: translate 0.6s var(--ease);
+}
+
+.bbloupe {
+  /* --side: cells a side, the frame's and one more each way (BigBenFeature.tsx) */
+  --cell: 12px;
+  --pitch: calc(var(--cell) + 1px);
+  width: calc((var(--side) - 2) * var(--pitch) + 1px);
+  height: calc((var(--side) - 2) * var(--pitch) + 1px);
+  overflow: hidden;
+  border: 1px solid var(--bb-rule);
+  border-radius: var(--radius);
+}
+
+.bbloupe__strip {
+  display: grid;
+  grid-template-columns: repeat(var(--side), var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: 1px;
+  translate: calc(-1 * var(--pitch)) calc(-1 * var(--pitch));
+  transition: translate 0.4s cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+
+.bbloupe__strip > i {
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--bb-rule);
+}
+
+.bbloupe__strip > .is-ink {
+  background: var(--bb-ink);
+}
+
+.bbloupe__strip > .is-out {
+  visibility: hidden;
+}
+
+.bbloupe__strip > .is-now {
+  background:
+    linear-gradient(var(--bb-ink), var(--bb-ink)) no-repeat 0 0 / 100% calc(var(--f, 0) * 100%),
+    var(--bg);
+  outline: 1px solid var(--bb-ink);
+  outline-offset: -1px;
+  transition: background-size 0.1s linear;
+}
+
+.bbscreen.is-rows .bbloupe__strip > .is-now {
+  background-size: calc(var(--f, 0) * 100%) 100%;
+}
+
+.bbscreen__lens figcaption {
+  position: absolute;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.bbscreen.is-cols .bbscreen__lens figcaption {
+  top: calc(100% + 6px);
+  left: 50%;
+  translate: -50% 0;
+}
+
+.bbscreen.is-cols .bbscreen__lens[data-caption="before"] figcaption {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+
+.bbscreen.is-rows .bbscreen__lens figcaption {
+  top: 50%;
+  left: calc(100% + 8px);
+  translate: 0 -50%;
+}
+
+.bbscreen.is-rows .bbscreen__lens[data-caption="before"] figcaption {
+  left: auto;
+  right: calc(100% + 8px);
+}
+
+/* ------------------------------------------------------------------ printed
+ * Hidden (and inert) until the year is in; then printed a line at a time
+ * through a sheet laid over it (BigBenFeature.tsx, visuals/dotPrint.ts), its
+ * dots square, as the screen's own pixels are.
+ */
+.bbscreen__inner[inert] {
+  clip-path: inset(0 100% 0 0);
+}
+
+.bbscreen__sheet {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbscreen__lens,
+  .bbloupe__strip,
+  .bbloupe__strip > .is-now {
+    transition: none;
+  }
+}
