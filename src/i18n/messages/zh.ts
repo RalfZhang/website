@@ -107,7 +107,7 @@ export const zh: Messages = {
     wallpaper: "壁纸",
     light: "浅色",
     dark: "深色",
-    caption: "西安，以钟楼为中心。",
+    caption: "{city}，以{centre}为中心。",
   },
   cstu: {
     pages: "页面",

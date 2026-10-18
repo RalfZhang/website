@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties, type MouseEvent } from "react"
 import { site } from "../data/site";
 import { useI18n } from "../i18n";
 import { LANGS, LOCALES, storeLang } from "../i18n/locales";
-import { prefersReducedMotion } from "../lib/motion";
+import { crossFade } from "../lib/motion";
 import { isPlainClick, Link, localePath, useRouter, type Route } from "../lib/router";
 import { useTheme } from "../lib/theme";
 import { ArrowUpRight, Close, Contrast, Menu } from "./icons";
@@ -24,9 +24,7 @@ function LangSwitch() {
     storeLang(other);
     if (!isPlainClick(e)) return;
     e.preventDefault();
-    const go = () => navigate(href + location.hash, { keepScroll: true });
-    if (prefersReducedMotion() || typeof document.startViewTransition !== "function") go();
-    else document.startViewTransition(go);
+    crossFade(() => navigate(href + location.hash, { keepScroll: true }));
   };
 
   return (
@@ -36,11 +34,44 @@ function LangSwitch() {
   );
 }
 
+/**
+ * Whether the bar should step aside: on the way down the home page, so each
+ * screen gets the whole screen, and back the moment the reader heads up (or
+ * reaches the top). It only watches the scroll position, passively, so paging
+ * stays the browser's own.
+ */
+function useTucked(active: boolean) {
+  const [tucked, setTucked] = useState(false);
+  useEffect(() => {
+    setTucked(false);
+    if (!active) return;
+    let last = scrollY;
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const y = scrollY;
+      if (y > 0 && Math.abs(y - last) < 8) return; // a nudge isn't a direction
+      setTucked(y > 0 && y > last);
+      last = y;
+    };
+    const onScroll = () => {
+      raf ||= requestAnimationFrame(check);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [active]);
+  return tucked;
+}
+
 export function Nav() {
   const { route, path } = useRouter();
   const { theme, toggle } = useTheme();
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
+  const tucked = useTucked(route.name === "home") && !open;
 
   useEffect(() => setOpen(false), [path]);
 
@@ -79,7 +110,7 @@ export function Nav() {
   const themeLabel = theme === "dark" ? t.nav.toLight : t.nav.toDark;
 
   return (
-    <header className={`nav${open ? " is-open" : ""}`}>
+    <header className={`nav${open ? " is-open" : ""}${tucked ? " is-tucked" : ""}`}>
       <div className="nav__bar">
         <Link to="/" className="nav__brand">
           {site.name}

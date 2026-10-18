@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
-import { prefersReducedMotion } from "./motion";
+import { crossFade } from "./motion";
 
 export type Theme = "light" | "dark";
 
@@ -47,9 +47,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       flushSync(() => setTheme(next));
       syncThemeColor(next);
     };
-    // A plain cross-fade where View Transitions exist; an instant swap otherwise.
-    if (prefersReducedMotion() || typeof document.startViewTransition !== "function") commit();
-    else document.startViewTransition(commit);
+    crossFade(commit);
   }, []);
 
   const toggle = useCallback(() => {

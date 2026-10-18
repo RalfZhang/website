@@ -1,9 +1,7 @@
-import type { CSSProperties } from "react";
 import { experienceIn } from "../data/experience";
 import { useI18n } from "../i18n";
+import { d } from "../lib/motion";
 import "./Jobs.css";
-
-const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 /**
  * "Experience" and where I've worked — on the About page and on its own home

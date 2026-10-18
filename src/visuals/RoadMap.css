@@ -1,7 +1,8 @@
+/* Fills its positioned container; maps laid over one another stack in the order
+   they're mounted. */
 .roadmap {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
 }
 
@@ -20,4 +21,27 @@
 
 .roadmap.is-done .roadmap__water {
   opacity: 1;
+}
+
+/* Laid over another map (appear="over"): hidden until it's drawn, then
+   uncovered by a circle of paper widening from the centre at the ink front's
+   pace, until it's past the corners (71% of the circle's reference length is the
+   half-diagonal). Hidden, not clipped, while it waits, so it still counts as on
+   screen; an animation, so its end can be the map's (RoadMap listens for it). */
+.roadmap.is-over {
+  visibility: hidden;
+}
+
+.roadmap.is-over.is-opening {
+  visibility: visible;
+  animation: roadmap-open var(--spread) var(--front-ease) both;
+}
+
+@keyframes roadmap-open {
+  from {
+    clip-path: circle(0 at 50% 50%);
+  }
+  to {
+    clip-path: circle(71% at 50% 50%);
+  }
 }

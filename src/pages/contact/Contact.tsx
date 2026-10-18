@@ -1,8 +1,8 @@
-import { useRef, type CSSProperties } from "react";
+import { useRef } from "react";
 import { Footer } from "../../components/Footer";
 import { SocialRow } from "../../components/SocialRow";
 import { useI18n } from "../../i18n";
-import { useReveal } from "../../lib/motion";
+import { d, useReveal } from "../../lib/motion";
 import "./Contact.css";
 
 export function Contact() {
@@ -16,7 +16,7 @@ export function Contact() {
         <h1 className="t-section" data-reveal>
           {t.contact.title}
         </h1>
-        <div className="contactpage__row" data-reveal style={{ "--d": "60ms" } as CSSProperties}>
+        <div className="contactpage__row" data-reveal style={d(60)}>
           <SocialRow size="lg" />
         </div>
       </section>

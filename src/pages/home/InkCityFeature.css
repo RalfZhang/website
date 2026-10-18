@@ -1,0 +1,216 @@
+/* ------------------------------------------------------------------ InkCity
+ * The whole screen is the wallpaper, laid out like a map sheet: the words on a
+ * frosted panel in the top-left corner, where a map's title goes, and its
+ * legend (InkCity's caption, and the cycle as a scale bar) in the opposite
+ * corner, with the city's centre clear between them. Narrowed to 440px, the
+ * panel's corner stays off every city's core: it covers New Jersey and a bit of
+ * the Hudson, Hong Kong's container port, Kuala Lumpur's northern suburbs and
+ * the hills above Monaco. On narrow screens the panel spans the foot and the
+ * legend moves to the top corner. The section is a .feature screen (Home.css),
+ * so it clears the nav bar like every other; the map fills it edge to edge.
+ */
+.inkscreen {
+  overflow: hidden;
+  &.screen {
+    padding-top: calc(var(--nav-h) + 128px);
+  }
+}
+
+.inkscreen__map {
+  position: absolute;
+  inset: 0;
+}
+
+/* ------------------------------------------------------------------ legend
+ * Sized off the screen's short side, as InkCity sizes its caption. --halo is
+ * InkCity's halo stroke (core/label.ts HALO): one width for every line, a fifth
+ * of the coordinates' size, so it stays a fine keyline that parts the letters
+ * from a road running through them. Centred on the glyph outline under the
+ * fill, half of it shows; the scale bar's ring is that half, so the two match.
+ */
+.inkscreen__legend {
+  --coords: max(11px, 1.25vmin);
+  --halo: calc(var(--coords) * 0.2);
+  position: absolute;
+  right: 4vmin;
+  bottom: 4vmin;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: max(10px, 1.4vmin);
+  pointer-events: none;
+}
+
+/* The caption InkCity prints in a wallpaper's corner (its core/label.ts), at its
+   proportions of the screen's short side: the city's own name, its English name
+   and country, where it is. In the ink, ringed by a paper halo, the cartographic
+   way to keep type legible over linework. It slips away as the next city starts
+   spreading, and comes back with the new name once that city is drawn. */
+.inkscreen__label {
+  display: grid;
+  justify-items: end;
+  margin: 0;
+  color: var(--text);
+  text-align: right;
+  line-height: normal;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+
+.inkscreen__label.is-shown {
+  opacity: 1;
+  transition: opacity 0.8s var(--ease);
+}
+
+.inkscreen__label > span {
+  -webkit-text-stroke: var(--halo) var(--bg);
+  paint-order: stroke fill;
+}
+
+/* Lines a font's own height apart (line-height: normal, its ascent + descent),
+   plus InkCity's extra gap below each: a tenth of the title, a fifth of the rest. */
+.inkscreen__title {
+  margin-bottom: 0.1em;
+  font-size: max(20px, 3.4vmin);
+  font-weight: 500;
+}
+
+.inkscreen__subtitle {
+  margin-bottom: 0.22em;
+  font-size: max(13px, 1.65vmin);
+}
+
+.inkscreen__coords {
+  font-size: var(--coords);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The cycle, drawn as the map's scale bar: one division per city, ruled in the
+   caption's ink on paper, with the same paper halo as its letters. The current
+   division fills with ink for as long as the city stays, 6 seconds (its
+   animation is the cycle's timer), the ones before it are full; paused, so is
+   the bar. It comes in with the first city's caption, and stays. */
+.inkscreen__progress {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  outline: calc(var(--halo) / 2) solid var(--bg);
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+
+.inkscreen__progress.is-on {
+  opacity: 1;
+}
+
+.inkscreen__progress li {
+  width: max(26px, 2.8vmin);
+  height: max(4px, 0.45vmin);
+  overflow: hidden;
+}
+
+.inkscreen__progress li + li {
+  border-left: 1px solid var(--text);
+}
+
+.inkscreen__progress span {
+  display: block;
+  height: 100%;
+  background: var(--text);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.inkscreen__progress .is-past span {
+  transform: none;
+}
+
+.inkscreen__progress .is-running span {
+  animation: inkscreen-hold 6s linear forwards;
+}
+
+.inkscreen__progress.is-paused span {
+  animation-play-state: paused;
+}
+
+@keyframes inkscreen-hold {
+  to {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ panel */
+.inkscreen__inner {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Opens like a drop of ink: a circle from the centre, out past the corners
+   (71% of the circle's reference length is the half-diagonal). */
+.inkscreen__panel {
+  width: min(100%, 440px);
+  padding: clamp(24px, 3vw, 40px);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  clip-path: circle(0 at 50% 50%);
+  transition: clip-path 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.inkscreen.is-open .inkscreen__panel {
+  clip-path: circle(72% at 50% 50%);
+}
+
+/* The words fade up as everywhere on the site ([data-reveal], base.css), but on
+   the panel's cue rather than on sight (its clip hides them from the observer
+   until it opens): once it opens, one after another. */
+.inkscreen [data-reveal] {
+  transition-delay: calc(var(--d, 0s) + 0.25s);
+}
+
+.inkscreen.is-open [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .inkscreen:not(.is-open) [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (max-width: 900px) {
+  .inkscreen__inner {
+    align-items: flex-end;
+  }
+  .inkscreen__panel {
+    width: 100%;
+  }
+  /* The panel has the foot, so the legend takes the top corner, under the bar,
+     its progress first so the line stays put whatever the caption's length. */
+  .inkscreen__legend {
+    top: calc(var(--nav-h) + 4vmin);
+    bottom: auto;
+  }
+  .inkscreen__progress {
+    order: -1;
+  }
+}
+
+/* No staging: the panel is open from the start; the map appears finished. */
+@media (prefers-reduced-motion: reduce) {
+  .inkscreen__panel {
+    clip-path: none;
+    transition: none;
+  }
+  .inkscreen__label.is-shown {
+    transition: none;
+  }
+}

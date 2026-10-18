@@ -120,10 +120,6 @@
 }
 
 /* Ordinary page (short screens): visuals sized by width. */
-.feature--inkcity .inkcity {
-  width: min(100%, 900px);
-}
-
 .feature--file-template .editor {
   width: min(100%, 880px);
 }
@@ -152,10 +148,6 @@
     align-self: stretch;
     min-height: 0;
     container: media / size;
-  }
-  /* monitor ≈ 0.725 × its width tall, plus the switch below it */
-  .feature--inkcity .inkcity {
-    width: min(100cqw, 1000px, calc((100cqh - 60px) * 1.37));
   }
   /* the editor is ≈ 0.45 × its width tall */
   .feature--file-template .editor {
@@ -191,7 +183,6 @@
 }
 
 @container media (max-width: 520px) {
-  .feature--inkcity figcaption,
   .feature--cstu figcaption {
     display: none;
   }

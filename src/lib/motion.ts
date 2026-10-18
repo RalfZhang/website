@@ -1,7 +1,17 @@
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useState, type CSSProperties, type RefObject } from "react";
 
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * Make a change as a plain cross-fade where View Transitions exist, at once
+ * otherwise (or for anyone who asks for reduced motion). `update` must have
+ * changed the page by the time it returns: wrap a React update in flushSync.
+ */
+export function crossFade(update: () => void) {
+  if (prefersReducedMotion() || typeof document.startViewTransition !== "function") update();
+  else document.startViewTransition(update);
+}
 
 /**
  * Fade-up on first sight: every `[data-reveal]` under `ref` gets `.is-in` once
@@ -32,10 +42,16 @@ export function useReveal(ref: RefObject<HTMLElement | null>, key?: unknown) {
   }, [ref, key]);
 }
 
-/** True while the element is in view — or, with `once`, from the first time it is. */
+/** A `[data-reveal]` element's stagger: its fade-up starts `ms` later (the `--d` in base.css). */
+export const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
+
+/**
+ * True while the element is in view — or, with `once`, from the first time it is.
+ * `rootMargin` widens the view, e.g. "100% 0px" for "within a screen of it".
+ */
 export function useInView<T extends Element>(
   ref: RefObject<T | null>,
-  { once = false, threshold = 0.25 }: { once?: boolean; threshold?: number } = {},
+  { once = false, threshold = 0.25, rootMargin = "0px" }: { once?: boolean; threshold?: number; rootMargin?: string } = {},
 ) {
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -46,10 +62,21 @@ export function useInView<T extends Element>(
         setInView(entry.isIntersecting);
         if (entry.isIntersecting && once) io.disconnect();
       },
-      { threshold },
+      { threshold, rootMargin },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [ref, once, threshold]);
+  }, [ref, once, threshold, rootMargin]);
   return inView;
+}
+
+/** False while the page is in a background tab or a minimised window. */
+export function usePageVisible() {
+  const [visible, setVisible] = useState(() => document.visibilityState === "visible");
+  useEffect(() => {
+    const update = () => setVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+  return visible;
 }

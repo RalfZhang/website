@@ -3,13 +3,11 @@ import { Footer } from "../../components/Footer";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "../../components/icons";
 import type { Work } from "../../data/works";
 import { useI18n } from "../../i18n";
-import { useReveal } from "../../lib/motion";
+import { d, useReveal } from "../../lib/motion";
 import { Link } from "../../lib/router";
 import { WorkVisual } from "../../visuals/WorkVisual";
 import { formatStat } from "../works/Works";
 import "./DefaultWorkPage.css";
-
-const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 /** The page every work gets until it has a bespoke one (see ./custom). */
 export function DefaultWorkPage({ work }: { work: Work }) {

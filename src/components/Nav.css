@@ -5,6 +5,14 @@
   height: var(--nav-h);
   margin-bottom: calc(-1 * var(--nav-h));
   background: var(--bg);
+  transition: translate 0.3s var(--ease);
+}
+
+/* Out of the way while paging down the home page (useTucked), but back for
+   anyone tabbing into it. The menu is never open while tucked, so the
+   transform can't trap the fixed menu inside the bar. */
+.nav.is-tucked:not(:has(:focus-visible)) {
+  translate: 0 -100%;
 }
 
 .nav__bar {
@@ -146,5 +154,11 @@
   }
   .nav__burger {
     display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav {
+    transition: none;
   }
 }

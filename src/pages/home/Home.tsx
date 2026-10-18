@@ -1,52 +1,20 @@
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, type ComponentType } from "react";
 import { Footer } from "../../components/Footer";
 import { Jobs } from "../../components/Jobs";
-import { ArrowDown, ArrowRight, ArrowUpRight } from "../../components/icons";
+import { ArrowDown } from "../../components/icons";
 import { SocialRow } from "../../components/SocialRow";
 import { site } from "../../data/site";
 import type { Work } from "../../data/works";
 import { useI18n } from "../../i18n";
-import { prefersReducedMotion, useReveal } from "../../lib/motion";
-import { Link } from "../../lib/router";
-import { WorkVisual } from "../../visuals/WorkVisual";
+import { d, prefersReducedMotion, useReveal } from "../../lib/motion";
+import { Feature } from "./Feature";
+import { InkCityFeature } from "./InkCityFeature";
 import "./Home.css";
 
-const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
-
-function Feature({ work }: { work: Work }) {
-  const { t } = useI18n();
-  const primary = work.links[0];
-  return (
-    <section id={work.slug} className={`screen feature feature--${work.slug}`} aria-labelledby={`${work.slug}-title`}>
-      <div className="wrap feature__grid">
-        <div className="feature__copy">
-          <p className="t-label" data-reveal>
-            {work.kind} · {work.year}
-          </p>
-          <h2 id={`${work.slug}-title`} className="t-headline" data-reveal style={d(40)}>
-            {work.title}
-          </h2>
-          <p className="t-lead muted" data-reveal style={d(80)}>
-            {work.tagline}
-          </p>
-          <div className="feature__ctas" data-reveal style={d(120)}>
-            <Link to={`/works/${work.slug}`} className="button">
-              {t.home.learnMore} <ArrowRight />
-            </Link>
-            {primary && (
-              <a className="button button--quiet" href={primary.href} target="_blank" rel="noreferrer">
-                {primary.label} <ArrowUpRight />
-              </a>
-            )}
-          </div>
-        </div>
-        <div className="feature__media" data-reveal style={d(80)}>
-          <WorkVisual work={work} variant="stage" />
-        </div>
-      </div>
-    </section>
-  );
-}
+/** Works whose home screen is designed on its own, by slug; the rest get Feature. */
+const screens: Partial<Record<string, ComponentType<{ work: Work }>>> = {
+  inkcity: InkCityFeature,
+};
 
 /**
  * Home: the name, then who I am and where I've worked, then one featured work
@@ -100,9 +68,10 @@ export function Home() {
         </div>
       </section>
 
-      {works.featured.map((w) => (
-        <Feature key={w.slug} work={w} />
-      ))}
+      {works.featured.map((w) => {
+        const Screen = screens[w.slug] ?? Feature;
+        return <Screen key={w.slug} work={w} />;
+      })}
 
       <section id="contact" className="screen home-contact" aria-labelledby="contact-title">
         <div className="wrap home-contact__inner">

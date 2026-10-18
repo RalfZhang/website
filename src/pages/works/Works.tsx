@@ -1,14 +1,12 @@
-import { useRef, type CSSProperties } from "react";
+import { useRef } from "react";
 import { Footer } from "../../components/Footer";
 import { ArrowRight, ArrowUpRight } from "../../components/icons";
 import type { Stat, Work } from "../../data/works";
 import { useI18n } from "../../i18n";
-import { useReveal } from "../../lib/motion";
+import { d, useReveal } from "../../lib/motion";
 import { Link } from "../../lib/router";
 import { WorkVisual } from "../../visuals/WorkVisual";
 import "./Works.css";
-
-const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 export const formatStat = (s: Stat, formatNumber: (n: number) => string) =>
   `${s.prefix ?? ""}${s.format === "plain" ? s.value : formatNumber(s.value)}${s.suffix ?? ""}`;

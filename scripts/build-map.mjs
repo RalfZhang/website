@@ -1,35 +1,51 @@
 #!/usr/bin/env node
 /**
- * Builds src/data/xian-map.json — the road network behind the InkCity visual.
+ * Builds src/data/maps/<slug>.json — one city for the InkCity visuals, with the
+ * layers InkCity's own `standard` wallpaper draws (../ink-city/src/core/render.ts):
  *
- * Source is one of InkCity's road-test payloads (OpenStreetMap data, the same
- * `{ v, elements, water, railways, … }` shape the app renders). The output is a
- * square crop around the city centre, simplified and quantised so it ships as a
- * small lazy-loaded chunk instead of 17 MB of lat/lon objects.
+ *   roads    every class the standard preset strokes, by weight
+ *   rails    surface railways (drawn in InkCity's "plain" mode)
+ *   runways  runways and taxiways, as filled areas and as centrelines
+ *   water    lakes, rivers and the sea
  *
- * Every road is split at its vertex nearest the centre and oriented outward, and
- * the list is sorted by that distance — so the client can "spread the ink" from
- * the centre just by drawing each polyline from its first point, delayed by how
- * far that first point is.
+ * Source is an InkCity payload — OpenStreetMap data for a square around the
+ * centre, `{ v, elements, water, airports, railways, …, km, city }` — as InkCity
+ * fetches it for the app:
  *
- *   node scripts/build-map.mjs [path/to/payload.json]
+ *   (in ../ink-city) pnpm render <lat>/<lon> --fetch-only --km 20 -o road-test/json
+ *
+ * The output is that square simplified and quantised, so a city ships as a few
+ * hundred KB that the page fetches only when it's about to show it, instead of
+ * tens of MB of lat/lon objects. The site's cities, and the payload each was
+ * built from, are listed in src/data/cities.ts.
+ *
+ * Every line is split at its vertex nearest the centre and oriented outward, and
+ * each list (the runway outlines too) is sorted by that distance — so the client
+ * can "spread the ink" from the centre just by drawing each polyline from its
+ * first point, delayed by how far that first point is.
+ *
+ *   node scripts/build-map.mjs <payload.json> <slug>
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const SRC =
-  process.argv[2] ??
-  path.resolve(ROOT, "../ink-city/road-test/json/34.2690176_108.9471409_20260912-180617.json");
-const OUT = path.resolve(ROOT, "src/data/xian-map.json");
+const [SRC, SLUG] = process.argv.slice(2);
+if (!SRC || !SLUG) {
+  console.error("usage: node scripts/build-map.mjs <payload.json> <slug>");
+  process.exit(1);
+}
+const OUT = path.resolve(ROOT, `src/data/maps/${SLUG}.json`);
 
-const HALF = 6500; // half the side of the square crop, metres
 const Q = 2; // quantisation step, metres per unit
 const TOL = 3.5; // Douglas–Peucker tolerance, metres
 
-// Road classes, heaviest first. `_link` ramps fold into their base class, as in
-// InkCity's widthFor(). Anything not listed is not drawn (footways, service…).
+// Road classes as indices into the client's ROAD_WEIGHTS (src/visuals/RoadMap.tsx),
+// heaviest first — InkCity's `standard` preset. `_link` ramps fold into their base
+// class, as in InkCity's widthFor(); anything not listed isn't drawn (footways,
+// paths, steps…). Area-mapped highways never reach here: InkCity drops them when
+// it fetches.
 const ROAD_CLASS = {
   motorway: 0,
   trunk: 1,
@@ -38,15 +54,20 @@ const ROAD_CLASS = {
   tertiary: 4,
   residential: 5,
   unclassified: 5,
-  living_street: 5,
-  pedestrian: 5,
-  road: 5,
+  track: 6,
+  road: 6,
+  living_street: 6,
+  service: 7,
+  pedestrian: 7,
+  cycleway: 8,
 };
-const RAIL_CLASS = 6;
+const RUNWAY_KIND = { taxiway: 0, runway: 1 };
 const WATER_LINE_CLASS = { river: 0, canal: 1 }; // others → 2
 
 const payload = JSON.parse(fs.readFileSync(SRC, "utf8"));
 const { lat: lat0, lon: lon0 } = payload.city;
+const KM = payload.km ?? 20; // the side of the square
+const HALF = KM * 500; // half of it, metres
 const R = 6378137;
 const kx = (Math.PI / 180) * R * Math.cos((lat0 * Math.PI) / 180);
 const ky = (Math.PI / 180) * R;
@@ -54,7 +75,7 @@ const project = (p) => [(p.lon - lon0) * kx, -(p.lat - lat0) * ky];
 
 // ---------------------------------------------------------------- geometry
 
-/** Clip a polyline to the crop square; returns the runs that stay inside. */
+/** Clip a polyline to the square; returns the runs that stay inside. */
 function clipPolyline(pts) {
   const runs = [];
   let run = [];
@@ -166,7 +187,7 @@ function orientOutward(pts) {
   return parts.filter((p) => p.length > 1);
 }
 
-/** [cls, x0, y0, dx1, dy1, …] — first point absolute, the rest as deltas. */
+/** [prefix, x0, y0, dx1, dy1, …] — first point absolute, the rest as deltas. */
 function encode(prefix, pts) {
   const out = prefix === null ? [] : [prefix];
   let px = 0;
@@ -185,53 +206,73 @@ function prepLine(latlon) {
     .filter((run) => run.length > 1);
 }
 
+/** A closed ring, simplified and quantised like every line. */
+const ring = (latlon) => quantize(simplify(latlon.map(project), TOL));
+
+/** An outline, unless it lies wholly outside the square (a cheap bbox test). */
+function prepRing(latlon) {
+  const r = ring(latlon);
+  const lim = HALF / Q;
+  const xs = r.map((p) => p[0]);
+  const ys = r.map((p) => p[1]);
+  const spans = Math.min(...xs) < lim && Math.max(...xs) > -lim && Math.min(...ys) < lim && Math.max(...ys) > -lim;
+  return r.length > 2 && spans ? r : null;
+}
+
+/** Lines split outward and nearest-first, each tagged with its class (or none). */
+function outward(items) {
+  const out = [];
+  for (const { cls, line } of items)
+    for (const run of prepLine(line)) for (const pts of orientOutward(run)) out.push({ cls, pts, d: dist(pts[0]) });
+  return out.sort((a, b) => a.d - b.d).map((r) => encode(r.cls, r.pts));
+}
+
 // ---------------------------------------------------------------- layers
 
-const roads = [];
-for (const el of payload.elements) {
-  if (el.type !== "way" || !el.geometry || el.geometry.length < 2) continue;
-  const cls = ROAD_CLASS[(el.tags?.highway ?? "").replace(/_link$/, "")];
-  if (cls === undefined) continue;
-  for (const run of prepLine(el.geometry))
-    for (const part of orientOutward(run)) roads.push({ cls, pts: part, d: dist(part[0]) });
-}
-for (const rail of payload.railways ?? []) {
-  for (const run of prepLine(rail.line))
-    for (const part of orientOutward(run)) roads.push({ cls: RAIL_CLASS, pts: part, d: dist(part[0]) });
-}
-roads.sort((a, b) => a.d - b.d);
+const roads = outward(
+  payload.elements
+    .filter((el) => el.type === "way" && el.geometry?.length >= 2)
+    .map((el) => ({ cls: ROAD_CLASS[(el.tags?.highway ?? "").replace(/_link$/, "")], line: el.geometry }))
+    .filter((r) => r.cls !== undefined),
+);
+
+const rails = outward((payload.railways ?? []).map((r) => ({ cls: null, line: r.line })));
+
+const airports = payload.airports ?? [];
+const runways = {
+  lines: outward(airports.filter((f) => f.line).map((f) => ({ cls: RUNWAY_KIND[f.kind], line: f.line }))),
+  // drawn in the centrelines' colour, so a paved area is just its outline
+  areas: airports
+    .filter((f) => f.area)
+    .map((f) => prepRing(f.area))
+    .filter(Boolean)
+    .map((r) => ({ r, d: Math.min(...r.map(dist)) }))
+    .sort((a, b) => a.d - b.d)
+    .map(({ r }) => encode(null, r)),
+};
 
 const waterAreas = [];
 const waterLines = [];
 for (const w of payload.water ?? []) {
-  if (w.kind === "area") {
-    const rings = [w.polygon.outer, ...(w.polygon.holes ?? [])];
-    const projected = rings.map((ring) => quantize(simplify(ring.map(project), TOL)));
-    // Skip polygons entirely outside the crop (cheap bbox test on the outer ring).
-    const outer = projected[0];
-    const lim = HALF / Q;
-    const inside = outer.some(([x, y]) => Math.abs(x) <= lim && Math.abs(y) <= lim);
-    const spans =
-      Math.min(...outer.map((p) => p[0])) < lim &&
-      Math.max(...outer.map((p) => p[0])) > -lim &&
-      Math.min(...outer.map((p) => p[1])) < lim &&
-      Math.max(...outer.map((p) => p[1])) > -lim;
-    if (!inside && !spans) continue;
-    if (outer.length < 3) continue;
-    waterAreas.push(projected.filter((r) => r.length > 2).map((r) => encode(null, r)));
-  } else if (w.kind === "line") {
-    const cls = WATER_LINE_CLASS[w.cls] ?? 2;
-    for (const run of prepLine(w.line)) waterLines.push(encode(cls, run));
+  if (w.kind === "line") {
+    for (const run of prepLine(w.line)) waterLines.push(encode(WATER_LINE_CLASS[w.cls] ?? 2, run));
+    continue;
   }
+  // a lake or river area, or the sea ("ocean", traced from the coastline)
+  const outer = prepRing(w.polygon.outer);
+  if (!outer) continue;
+  const holes = (w.polygon.holes ?? []).map(ring).filter((r) => r.length > 2);
+  waterAreas.push([outer, ...holes].map((r) => encode(null, r)));
 }
 
 const out = {
-  v: 1,
-  name: "Xi'an",
+  v: 2,
   center: { lat: lat0, lon: lon0 },
+  km: KM,
   q: Q,
-  half: HALF / Q,
-  roads: roads.map((r) => encode(r.cls, r.pts)),
+  roads,
+  rails,
+  runways,
   waterAreas,
   waterLines,
 };
@@ -240,10 +281,10 @@ fs.mkdirSync(path.dirname(OUT), { recursive: true });
 const json = JSON.stringify(out);
 fs.writeFileSync(OUT, json);
 
-const points = roads.reduce((n, r) => n + r.pts.length, 0);
-const byClass = roads.reduce((m, r) => ((m[r.cls] = (m[r.cls] ?? 0) + 1), m), {});
+const byClass = roads.reduce((m, r) => ((m[r[0]] = (m[r[0]] ?? 0) + 1), m), {});
 console.log(
-  `wrote ${path.relative(ROOT, OUT)}: ${(json.length / 1024).toFixed(0)} KB, ` +
-    `${roads.length} polylines / ${points} points, ${waterAreas.length} water areas, ` +
-    `${waterLines.length} waterways; by class ${JSON.stringify(byClass)}`,
+  `wrote ${path.relative(ROOT, OUT)}: ${(json.length / 1024).toFixed(0)} KB — ` +
+    `${roads.length} road lines ${JSON.stringify(byClass)}, ${rails.length} rail lines, ` +
+    `${runways.lines.length + runways.areas.length} runway/taxiway shapes, ` +
+    `${waterAreas.length} water areas, ${waterLines.length} waterways`,
 );

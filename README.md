@@ -70,8 +70,12 @@ export const customPages = {
 
 ## 数据脚本
 
-- `pnpm data:map` — 从 `../ink-city/road-test/json/` 里的西安路网数据裁剪、简化出 `src/data/xian-map.json`
-  （约 230 KB，gzip 后约 80 KB，按需加载）。每条路在离钟楼最近的点切开并朝外定向，前端按这个距离依次绘制，
+- `pnpm data:map <payload.json> <slug>` — 把 InkCity 抓取的 20 km × 20 km OSM 数据（在 `../ink-city` 里运行
+  `pnpm render <lat>/<lon> --fetch-only --km 20 -o road-test/json` 得到）裁剪、简化成 `src/data/maps/<slug>.json`，
+  图层和 InkCity 的 standard 样式一致：道路（含小路）、铁路、机场跑道和滑行道、湖泊河流和海面。
+  现在有纽约、香港、吉隆坡、摩纳哥四座城市，首页按这个顺序循环；城市列表、中心点和各自用的数据文件都在
+  `src/data/cities.ts`。每座城市 brotli 压缩后 140–700 KB，页面滚到前一屏时才加载第一座，之后在当前城市展示时
+  加载下一座，解析放在 Web Worker 里。每条线在离中心最近的点切开并朝外定向，前端按这个距离依次绘制，
   就形成了墨从中心晕开的效果。地图数据 © OpenStreetMap contributors（ODbL）。
 - `pnpm data:qr` — 生成 `src/data/qr.json`，即二维码的模块矩阵，前端用 SVG 绘制。现在只有微信需要
   （其他平台都有网页链接）；内容是从旧站二维码图片里解出来的链接。

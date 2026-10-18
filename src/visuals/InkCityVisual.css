@@ -29,17 +29,6 @@
   background: #000;
 }
 
-.monitor__display .roadmap {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.4s var(--ease);
-}
-
-.monitor__display .roadmap.is-shown {
-  opacity: 1;
-}
-
 .monitor__neck {
   width: 13%;
   height: 0;

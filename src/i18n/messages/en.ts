@@ -113,7 +113,7 @@ export const en = {
     wallpaper: "Wallpaper",
     light: "Light",
     dark: "Dark",
-    caption: "Xi’an, centred on the Bell Tower.",
+    caption: "{city}, centred on {centre}.",
   },
   cstu: {
     pages: "Pages",
