@@ -78,7 +78,7 @@ export function InkCityFeature({ work }: { work: Work }) {
     <section
       id={work.slug}
       ref={ref}
-      className={`screen feature inkscreen${open ? " is-open" : ""}`}
+      className={`screen inkscreen${open ? " is-open" : ""}`}
       aria-labelledby={`${work.slug}-title`}
     >
       <div className="inkscreen__map" aria-hidden>

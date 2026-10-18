@@ -68,6 +68,27 @@ export const customPages = {
 
 组件会收到 `{ work }`，即 works.ts 里对应的、已经是当前语言的数据；其余文案用 `useI18n()` 取。
 
+## 给某个作品单独设计首页的一屏
+
+首页每个 `featured` 作品占一屏，默认是 [Feature](src/pages/home/Feature.tsx)：左边文字，右边动态视觉。要单独设计某一屏，
+在 `src/pages/home/` 里写一个组件和它自己的 CSS（如 `InkCityFeature`、`FileTemplateFeature`），然后在
+[Home.tsx](src/pages/home/Home.tsx) 的 `screens` 里按 slug 注册：
+
+```ts
+const screens = {
+  inkcity: InkCityFeature,
+  "file-template": FileTemplateFeature,
+};
+```
+
+各屏之间只共用下面几样，其余样式都写在各自的 CSS 里，改一屏不会影响别的屏：
+
+- `screen` 类（Home.css）：整屏吸附滚动，高度 100svh。屏里的内容要给导航栏留出 `--nav-h`。
+- `FeatureCopy`（Feature.tsx）：作品的文字和按钮。默认随滚动淡入；传 `reveal={false}` 由这一屏自己安排入场，
+  传 `words` 自己绘制每一段文字（File Template 用它做打字机效果）。
+- `useTimeline`（[src/lib/timeline.ts](src/lib/timeline.ts)）：可暂停的脚本时钟。传入的 `playing` 为假时暂停（通常是屏幕离开视口
+  或标签页隐藏），回来后从停下的地方接着播。编辑器演示的 `useEditorDemo`（editorDemo.ts）已经接好了这些。
+
 ## 数据脚本
 
 - `pnpm data:map <payload.json> <slug>` — 把 InkCity 抓取的 20 km × 20 km OSM 数据（在 `../ink-city` 里运行
@@ -86,11 +107,12 @@ export const customPages = {
 
 ```
 src/
-  lib/          路由（routes.ts 不含 React，构建脚本也用）、主题（切换时交叉淡化）、淡入与可见性 hook
+  lib/          路由（routes.ts 不含 React，构建脚本也用）、主题（切换时交叉淡化）、淡入与可见性 hook、可暂停的脚本时钟
   i18n/         语言定义与检测、界面文案、各页面的 head 信息
   components/   导航、页脚、图标、联系方式图标行、二维码与弹窗
-  visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（编辑器演示）、WatchClock（大笨钟）、Poster
-  pages/        home、works、work（作品详情）、about、contact、404
+  visuals/      InkCityVisual（显示器 + 路网壁纸）、CodeWindow（窗口里的编辑器演示）、WatchClock（大笨钟）、Poster；
+                编辑器演示的脚本在 editorDemo.ts，文件、命令面板、键帽这些部件在 Editor.tsx，首页的全屏编辑器也用它们
+  pages/        home（含各作品单独设计的一屏）、works、work（作品详情）、about、contact、404
   data/         作品、联系方式、生成的数据
 scripts/        数据生成；route-shells.ts 是生成各路由 HTML 的 Vite 插件
 ```

@@ -6,6 +6,11 @@
   --e-text: #eee8d6;
   --e-dim: rgba(238, 232, 214, 0.55);
   --e-faint: rgba(238, 232, 214, 0.3);
+  --e-line: rgba(238, 232, 214, 0.06);
+  --e-sel: rgba(238, 232, 214, 0.22);
+  --e-hit: rgba(238, 232, 214, 0.14);
+  --e-key: var(--paper);
+  --e-on-key: var(--ink);
   position: relative;
   width: 100%;
   text-align: left;
@@ -61,108 +66,13 @@
 
 .editor__body {
   position: relative;
-  height: calc(9 * 1.7em + 1.6em); /* nine lines: the longest template shown */
   padding: 0.8em 0;
   overflow: hidden;
 }
 
-.editor__line {
-  display: grid;
-  grid-template-columns: 3.6em 1fr;
-  white-space: pre;
-}
-
-.editor__line.is-current {
-  background: rgba(238, 232, 214, 0.06);
-}
-
-.editor__line.is-new {
-  animation: editor-line-in 0.35s var(--ease) both;
-}
-
-.editor__ln {
-  padding-right: 1.3em;
-  text-align: right;
-  color: var(--e-faint);
-}
-
-.editor__line.is-current .editor__ln {
-  color: var(--e-dim);
-}
-
-.editor__src.is-comment {
-  color: var(--e-dim);
-}
-
-.tk-doc,
-.tk-kw {
-  color: var(--e-text);
-  font-weight: 500;
-}
-
-.tk-str {
-  color: var(--e-text);
-}
-
-.editor__sel {
-  background: rgba(238, 232, 214, 0.22);
-}
-
-.editor__caret {
-  display: inline-block;
-  width: 2px;
-  height: 1.2em;
-  margin-left: 1px;
-  vertical-align: -0.22em;
-  background: var(--e-text);
-  animation: editor-blink 1.05s steps(1) infinite;
-}
-
-/* ---------------------------------------------------- command palette */
-.editor__palette {
-  position: absolute;
+.editor .editor__palette {
   top: 0.6em;
-  left: 50%;
   width: min(88%, 40em);
-  overflow: hidden;
-  border-radius: var(--radius);
-  background: var(--e-pop);
-  opacity: 0;
-  translate: -50% 0;
-  transition: opacity 0.15s var(--ease);
-}
-
-.editor__palette.is-open {
-  opacity: 1;
-}
-
-.editor__query {
-  margin: 0.5em;
-  padding: 0.35em 0.7em;
-  border-radius: 2px;
-  background: var(--e-bg);
-  white-space: pre;
-}
-
-.editor__prompt {
-  margin-right: 0.6em;
-  color: var(--e-dim);
-}
-
-.editor__results {
-  padding: 0 0.4em 0.45em;
-}
-
-.editor__results li {
-  padding: 0.25em 0.7em;
-  border-radius: 2px;
-  color: var(--e-dim);
-  white-space: nowrap;
-}
-
-.editor__results li.is-active {
-  background: rgba(238, 232, 214, 0.14);
-  color: var(--e-text);
 }
 
 .editor__status {
@@ -178,52 +88,10 @@
   color: var(--e-dim);
 }
 
-/* ---------------------------------------------------- keycaps (inside the window) */
-.editor__keys {
+/* Keycaps, in the window's corner. */
+.editor .editor__keys {
   position: absolute;
   right: 1.2em;
   bottom: 3.6em;
-  display: flex;
-  gap: 0.4em;
   font-size: clamp(11px, 2cqi, 16px);
-  pointer-events: none;
-}
-
-.editor__keys kbd {
-  display: grid;
-  place-items: center;
-  min-width: 2.4em;
-  height: 2.4em;
-  padding: 0 0.5em;
-  border-radius: var(--radius);
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font);
-  font-weight: 500;
-  animation: editor-key 0.2s var(--ease) both;
-}
-
-@keyframes editor-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes editor-line-in {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes editor-key {
-  from {
-    opacity: 0;
-    transform: translateY(0.3em);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .editor__caret {
-    animation: none;
-  }
 }

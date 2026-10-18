@@ -8,12 +8,14 @@ import type { Work } from "../../data/works";
 import { useI18n } from "../../i18n";
 import { d, prefersReducedMotion, useReveal } from "../../lib/motion";
 import { Feature } from "./Feature";
+import { FileTemplateFeature } from "./FileTemplateFeature";
 import { InkCityFeature } from "./InkCityFeature";
 import "./Home.css";
 
 /** Works whose home screen is designed on its own, by slug; the rest get Feature. */
 const screens: Partial<Record<string, ComponentType<{ work: Work }>>> = {
   inkcity: InkCityFeature,
+  "file-template": FileTemplateFeature,
 };
 
 /**

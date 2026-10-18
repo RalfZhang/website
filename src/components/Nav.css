@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   gap: 28px;
-  width: min(100% - 2 * var(--gutter), var(--wrap));
+  width: calc(100% - 2 * var(--wrap-inset));
   height: var(--nav-h);
   margin-inline: auto;
 }

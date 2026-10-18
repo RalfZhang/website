@@ -1,32 +1,58 @@
+import type { ReactNode } from "react";
 import { ArrowRight, ArrowUpRight } from "../../components/icons";
 import type { Work } from "../../data/works";
 import { useI18n } from "../../i18n";
 import { d } from "../../lib/motion";
 import { Link } from "../../lib/router";
 import { WorkVisual } from "../../visuals/WorkVisual";
+import "./Feature.css";
 
-/** A featured work's words: what it is, its name, one line, and the way in. They fade up as they come into view. */
-export function FeatureCopy({ work }: { work: Work }) {
+/** The words FeatureCopy shows, in reading order: what it is, its name, one line, then each button's label. */
+export function copyWords(work: Work, learnMore: string): string[] {
+  const primary = work.links[0];
+  return [`${work.kind} · ${work.year}`, work.title, work.tagline, learnMore, ...(primary ? [primary.label] : [])];
+}
+
+/**
+ * A featured work's words: what it is, its name, one line, and the way in.
+ * By default they fade up as they come into view, like everything on the site;
+ * a screen with an entrance of its own turns `reveal` off and can draw each
+ * run of words its own way with `words` (given each one's index in copyWords),
+ * handing in as `text` the copyWords it works from, so the two never differ.
+ */
+export function FeatureCopy({
+  work,
+  text: given,
+  reveal = true,
+  words = (text) => text,
+}: {
+  work: Work;
+  text?: string[];
+  reveal?: boolean;
+  words?: (text: string, i: number) => ReactNode;
+}) {
   const { t } = useI18n();
   const primary = work.links[0];
+  const text = given ?? copyWords(work, t.home.learnMore);
+  const fade = (ms: number) => (reveal ? { "data-reveal": true, style: d(ms) } : {});
   return (
     <div className="feature__copy">
-      <p className="t-label" data-reveal>
-        {work.kind} · {work.year}
+      <p className="t-label" {...fade(0)}>
+        {words(text[0], 0)}
       </p>
-      <h2 id={`${work.slug}-title`} className="t-headline" data-reveal style={d(40)}>
-        {work.title}
+      <h2 id={`${work.slug}-title`} className="t-headline" {...fade(40)}>
+        {words(text[1], 1)}
       </h2>
-      <p className="t-lead muted" data-reveal style={d(80)}>
-        {work.tagline}
+      <p className="t-lead muted" {...fade(80)}>
+        {words(text[2], 2)}
       </p>
-      <div className="feature__ctas" data-reveal style={d(120)}>
+      <div className="feature__ctas" {...fade(120)}>
         <Link to={`/works/${work.slug}`} className="button">
-          {t.home.learnMore} <ArrowRight />
+          {words(text[3], 3)} <ArrowRight />
         </Link>
         {primary && (
           <a className="button button--quiet" href={primary.href} target="_blank" rel="noreferrer">
-            {primary.label} <ArrowUpRight />
+            {words(text[4], 4)} <ArrowUpRight />
           </a>
         )}
       </div>

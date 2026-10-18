@@ -1,0 +1,209 @@
+/* ------------------------------------------------------------------ File Template
+ * The screen is VS Code in full-screen mode, drawn in the site's own colours:
+ * its tab bar where the nav bar goes (and as tall, so the bar covers exactly
+ * that when it comes back), the file below, the status bar along the foot.
+ * The code starts where the site's content does, the line numbers out in the
+ * margin. The words sit in the opposite corner from the code, the keycaps in
+ * the middle between them.
+ */
+.ftscreen {
+  /* the editor's colours (visuals/Editor.css) */
+  --e-bg: var(--bg);
+  --e-text: var(--text);
+  --e-dim: var(--muted);
+  --e-faint: color-mix(in srgb, var(--muted) 55%, var(--bg));
+  --e-pop: var(--tile);
+  --e-line: color-mix(in srgb, var(--text) 4%, transparent);
+  --e-sel: color-mix(in srgb, var(--text) 15%, transparent);
+  --e-hit: var(--tile-hover);
+  --e-key: var(--fill);
+  --e-on-key: var(--on-fill);
+  --code: clamp(13px, 1vw + 0.8vh, 24px);
+  /* the code starts where .wrap does (base.css), with room for the line numbers at the least */
+  --e-gutter: max(var(--wrap-inset), 2.8 * var(--code));
+  display: grid;
+  grid-template-rows: var(--nav-h) minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------ chrome */
+.ftscreen__tabs {
+  display: flex;
+  padding-left: calc(var(--wrap-inset) - 16px);
+  background: var(--tile);
+}
+
+.ftscreen__tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px 0 16px;
+  background: var(--bg);
+  font-size: 14px;
+}
+
+.ftscreen__tab svg {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+}
+
+/* Unsaved: the dot that stands in for the close button. */
+.ftscreen__dirty {
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.ftscreen__status {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  padding: 7px var(--wrap-inset);
+  background: var(--tile);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ the file, the keys, the words
+ * Stacked in one cell: the file from the top, the words at the foot, the
+ * keycaps in the middle.
+ */
+.ftscreen__body {
+  display: grid;
+  grid-template-areas: "stack";
+  min-height: 0;
+}
+
+.ftscreen__body > * {
+  grid-area: stack;
+}
+
+.ftscreen__file {
+  position: relative;
+  align-self: start;
+  padding-top: 1.1em;
+  font-family: var(--font-mono);
+  font-size: var(--code);
+  line-height: 1.7;
+}
+
+.ftscreen .editor__palette {
+  top: 0.5em;
+  width: min(36em, 100% - 2 * var(--gutter));
+  border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  font-family: var(--font);
+  font-size: max(14px, 0.8em);
+}
+
+.ftscreen .editor__results li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Under .ftscreen, as the palette is, to outrank .editor__keys whichever stylesheet loads last. */
+.ftscreen .ftscreen__keys {
+  --cap: clamp(48px, 7vmin, 76px);
+  align-self: center;
+  justify-self: center;
+  gap: calc(var(--cap) * 0.14);
+}
+
+.ftscreen .ftscreen__keys kbd {
+  min-width: var(--cap);
+  height: var(--cap);
+  padding: 0 0.6em;
+  font-size: calc(var(--cap) * 0.44);
+}
+
+.ftscreen .ftscreen__keys kbd.is-word {
+  font-size: calc(var(--cap) * 0.3);
+}
+
+.ftscreen__words {
+  align-self: end;
+  justify-self: end;
+  width: min(440px, 100% - 2 * var(--gutter));
+  margin: 0 var(--wrap-inset) clamp(28px, 7vh, 72px) 0;
+}
+
+/* ------------------------------------------------------------------ typed
+ * A run of words typing itself out: what's typed, the caret, and the rest,
+ * laid out but unseen. The caret is the editor's own, sized to the words'
+ * text, and takes no room (an inline box adds no break between letters), so
+ * a line wraps where it will once it's whole.
+ */
+.typed__rest {
+  opacity: 0;
+}
+
+.typed__caret {
+  position: relative;
+}
+
+.typed__caret::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: max(2px, 0.05em);
+  background: currentColor;
+  animation: editor-blink 1.05s steps(1) infinite;
+}
+
+/* Still, like the editor's own (Editor.css), for whoever turns motion down mid-visit. */
+@media (prefers-reduced-motion: reduce) {
+  .typed__caret::after {
+    animation: none;
+  }
+}
+
+/* A button is put down as the caret reaches it, its arrow once it's typed. */
+.ftscreen .button:has(> [data-typed="wait"]) {
+  opacity: 0;
+}
+
+.ftscreen .button:has(> .typed:not([data-typed="done"])) svg {
+  opacity: 0;
+}
+
+/* Wide but short (a small laptop, a phone on its side): the words reach up past
+   the middle, so the keycaps take the corner they leave free, under the code. */
+@media (min-width: 761px) and (max-width: 1140px) and (max-height: 720px) {
+  .ftscreen .ftscreen__keys {
+    align-self: end;
+    justify-self: start;
+    margin: 0 0 clamp(28px, 7vh, 72px) var(--e-gutter);
+  }
+}
+
+/* ------------------------------------------------------------------ narrow
+ * The words take the foot, full width, and the keycaps the room between them
+ * and the code.
+ */
+@media (max-width: 760px) {
+  .ftscreen__body {
+    grid-template-areas: "file" "keys" "words";
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+  .ftscreen__file {
+    grid-area: file;
+  }
+  .ftscreen .ftscreen__keys {
+    grid-area: keys;
+  }
+  .ftscreen__words {
+    grid-area: words;
+    justify-self: stretch;
+    width: auto;
+    margin: 0 var(--gutter) 28px;
+  }
+  .ftscreen__wide {
+    display: none;
+  }
+}

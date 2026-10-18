@@ -6,14 +6,14 @@
  * panel's corner stays off every city's core: it covers New Jersey and a bit of
  * the Hudson, Hong Kong's container port, Kuala Lumpur's northern suburbs and
  * the hills above Monaco. On narrow screens the panel spans the foot and the
- * legend moves to the top corner. The section is a .feature screen (Home.css),
- * so it clears the nav bar like every other; the map fills it edge to edge.
+ * legend moves to the top corner. The panel clears the nav bar, as every
+ * screen's content does; the map fills the screen edge to edge.
  */
 .inkscreen {
+  display: flex;
+  flex-direction: column;
+  padding-block: calc(var(--nav-h) + 128px) 32px;
   overflow: hidden;
-  &.screen {
-    padding-top: calc(var(--nav-h) + 128px);
-  }
 }
 
 .inkscreen__map {
@@ -187,6 +187,9 @@
 }
 
 @media (max-width: 900px) {
+  .inkscreen {
+    padding-bottom: 24px;
+  }
   .inkscreen__inner {
     align-items: flex-end;
   }

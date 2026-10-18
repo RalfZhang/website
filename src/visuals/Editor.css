@@ -1,0 +1,176 @@
+/* The editor's parts (Editor.tsx), in the colours of whoever draws them:
+ *   --e-bg     the editor's ground          --e-pop    the palette's ground
+ *   --e-text   code and what's lit          --e-line   the current line's band
+ *   --e-dim    comments, the palette        --e-sel    a selected placeholder
+ *   --e-faint  line numbers                 --e-hit    the palette's pick
+ *   --e-key, --e-on-key                     a keycap, and the key on it
+ * and optionally --e-gutter, the line numbers' column (3.6em). How far down
+ * the palette sits and how wide it is, and where the keycaps sit, is the
+ * drawer's to say too.
+ */
+
+/* ---------------------------------------------------- the file */
+/* As tall as the longest template from the start (--e-rows, Editor.tsx), so what's around it never moves. */
+.editor__lines {
+  min-height: calc(var(--e-rows) * 1lh);
+}
+
+.editor__line {
+  display: grid;
+  grid-template-columns: var(--e-gutter, 3.6em) 1fr;
+  white-space: pre;
+}
+
+.editor__line.is-current {
+  background: var(--e-line);
+}
+
+.editor__line.is-new {
+  animation: editor-line-in 0.35s var(--ease) both;
+}
+
+.editor__ln {
+  padding-right: 1.3em;
+  text-align: right;
+  color: var(--e-faint);
+}
+
+.editor__line.is-current .editor__ln {
+  color: var(--e-dim);
+}
+
+.editor__src.is-comment {
+  color: var(--e-dim);
+}
+
+.tk-doc,
+.tk-kw {
+  color: var(--e-text);
+  font-weight: 500;
+}
+
+.tk-str {
+  color: var(--e-text);
+}
+
+.editor__sel {
+  background: var(--e-sel);
+}
+
+.editor__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  margin-left: 1px;
+  vertical-align: -0.22em;
+  background: var(--e-text);
+  animation: editor-blink 1.05s steps(1) infinite;
+}
+
+/* ---------------------------------------------------- command palette */
+.editor__palette {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--e-pop);
+  opacity: 0;
+  transition: opacity 0.15s var(--ease);
+}
+
+.editor__palette.is-open {
+  opacity: 1;
+}
+
+.editor__query {
+  margin: 0.5em;
+  padding: 0.35em 0.7em;
+  border-radius: 2px;
+  background: var(--e-bg);
+  white-space: pre;
+}
+
+.editor__prompt {
+  margin-right: 0.6em;
+  color: var(--e-dim);
+}
+
+.editor__results {
+  padding: 0 0.4em 0.45em;
+}
+
+.editor__results li {
+  padding: 0.25em 0.7em;
+  border-radius: 2px;
+  color: var(--e-dim);
+  white-space: nowrap;
+}
+
+.editor__results li.is-active {
+  background: var(--e-hit);
+  color: var(--e-text);
+}
+
+.editor__results b {
+  font-weight: 500;
+  color: var(--e-text);
+}
+
+/* ---------------------------------------------------- keycaps */
+.editor__keys {
+  display: flex;
+  gap: 0.4em;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+}
+
+.editor__keys.is-on {
+  opacity: 1;
+}
+
+.editor__keys kbd {
+  display: grid;
+  place-items: center;
+  min-width: 2.4em;
+  height: 2.4em;
+  padding: 0 0.5em;
+  border-radius: var(--radius);
+  background: var(--e-key);
+  color: var(--e-on-key);
+  font-family: var(--font);
+  font-weight: 500;
+  animation: editor-key 0.2s var(--ease) both;
+}
+
+/* ↩ and ⇥, drawn (Editor.tsx): as wide and as tall as the font's own ⇧. */
+.editor__keys svg {
+  width: 0.84em;
+  height: 0.72em;
+}
+
+@keyframes editor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes editor-line-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes editor-key {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor__caret {
+    animation: none;
+  }
+}

@@ -14,6 +14,8 @@
   --nav-h: 56px;
   --gutter: max(20px, 4vw);
   --wrap: 1200px;
+  /* the room either side of .wrap: the gutter, or more once the screen is wider than --wrap */
+  --wrap-inset: max(var(--gutter), (100% - var(--wrap)) / 2);
   --radius: 4px;
   --paper: #eee8d6;
   --ink: #2d2d2d;
@@ -176,7 +178,7 @@ canvas {
 }
 
 .wrap {
-  width: min(100% - 2 * var(--gutter), var(--wrap));
+  width: calc(100% - 2 * var(--wrap-inset));
   margin-inline: auto;
 }
 
