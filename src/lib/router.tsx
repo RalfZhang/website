@@ -19,6 +19,7 @@ import { flushSync } from "react-dom";
 import { absoluteUrl, alternates, jsonLd, pageMeta, structuredData } from "../i18n/head";
 import { LOCALES, preferredLang, type Lang } from "../i18n/locales";
 import { localePath, matchRoute, normalizePath, splitLang, type Route } from "./routes";
+import { scrollPageToTop } from "./scroll";
 
 export { localePath, type Route };
 
@@ -45,7 +46,7 @@ function withLang(lang: Lang, to: string): string {
 function scrollToHash(hash: string, behavior: ScrollBehavior) {
   const el = hash.length > 1 ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
   if (el) el.scrollIntoView({ behavior });
-  else window.scrollTo({ top: 0, behavior });
+  else scrollPageToTop(behavior);
 }
 
 function setLink(rel: string, href: string | null, hreflang?: string) {

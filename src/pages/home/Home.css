@@ -8,18 +8,53 @@
  * Mandatory snapping is only safe when every screen's content fits, so it's
  * on where the layout below guarantees that (viewports ≥ 600px tall, i.e.
  * phones in portrait and up). Shorter ones scroll as an ordinary page.
+ *
+ * On iPhones and iPads (WebKit, which every browser there is; the only place
+ * -webkit-touch-callout exists) the page scrolls inside <body> instead. When
+ * the window scrolls there, the browser folds its toolbar away and back, and
+ * the screen changes height in the middle of a snap: Safari stops short or
+ * jumps back (WebKit's snapping on the root has these bugs; a scrolling
+ * element doesn't), Firefox resizes the whole page, and the room the toolbar
+ * leaves shows the next screen. A scrolling <body> leaves the toolbar alone,
+ * so each screen is exactly what's on screen; 100dvh, in case the toolbar was
+ * already folded on arrival. (Chrome on Android would treat a full-screen
+ * scrolling <body> as the window again, so there it stays the window.)
  */
+.home {
+  --screen: 100svh;
+}
+
 .screen {
   position: relative;
-  min-height: 100svh;
+  min-height: var(--screen);
+}
+
+@supports (-webkit-touch-callout: none) {
+  html.fullpage {
+    overflow: hidden;
+  }
+  html.fullpage body {
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+  /* and holds still under a sheet, as the window does (QrSheet.css) */
+  html.fullpage.sheet-open body {
+    overflow-y: hidden;
+  }
+  .home {
+    --screen: 100dvh;
+  }
 }
 
 @media (min-height: 600px) {
-  html.fullpage {
+  /* whichever of the two scrolls */
+  html.fullpage,
+  html.fullpage body {
     scroll-snap-type: y mandatory;
   }
   .screen {
-    height: 100svh;
+    height: var(--screen);
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }

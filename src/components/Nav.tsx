@@ -4,6 +4,7 @@ import { useI18n } from "../i18n";
 import { LANGS, LOCALES, storeLang } from "../i18n/locales";
 import { crossFade } from "../lib/motion";
 import { isPlainClick, Link, localePath, useRouter, type Route } from "../lib/router";
+import { pageScrollY } from "../lib/scroll";
 import { useTheme } from "../lib/theme";
 import { ArrowUpRight, Close, Contrast, Menu } from "./icons";
 import "./Nav.css";
@@ -45,11 +46,11 @@ function useTucked(active: boolean) {
   useEffect(() => {
     setTucked(false);
     if (!active) return;
-    let last = scrollY;
+    let last = pageScrollY();
     let raf = 0;
     const check = () => {
       raf = 0;
-      const y = scrollY;
+      const y = pageScrollY();
       if (y > 0 && Math.abs(y - last) < 8) return; // a nudge isn't a direction
       setTucked(y > 0 && y > last);
       last = y;
@@ -57,9 +58,10 @@ function useTucked(active: boolean) {
     const onScroll = () => {
       raf ||= requestAnimationFrame(check);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
+    // Captured, to hear <body> scroll as well as the window: an element's scroll events don't bubble.
+    document.addEventListener("scroll", onScroll, { capture: true, passive: true });
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("scroll", onScroll, { capture: true });
       cancelAnimationFrame(raf);
     };
   }, [active]);

@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties, type RefObject } from "react";
+import { scrollParent } from "./scroll";
 
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -48,6 +49,7 @@ export const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 /**
  * True while the element is in view — or, with `once`, from the first time it is.
  * `rootMargin` widens the view, e.g. "100% 0px" for "within a screen of it".
+ * The view is that of whatever the element scrolls in (scrollParent).
  */
 export function useInView<T extends Element>(
   ref: RefObject<T | null>,
@@ -62,7 +64,7 @@ export function useInView<T extends Element>(
         setInView(entry.isIntersecting);
         if (entry.isIntersecting && once) io.disconnect();
       },
-      { threshold, rootMargin },
+      { root: scrollParent(el), threshold, rootMargin },
     );
     io.observe(el);
     return () => io.disconnect();

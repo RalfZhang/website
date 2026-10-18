@@ -84,7 +84,9 @@ const screens = {
 
 各屏之间只共用下面几样，其余样式都写在各自的 CSS 里，改一屏不会影响别的屏：
 
-- `screen` 类（Home.css）：整屏吸附滚动，高度 100svh。屏里的内容要给导航栏留出 `--nav-h`。
+- `screen` 类（Home.css）：整屏吸附滚动，高度是一屏（`--screen`：一般是 100svh；iPhone/iPad 上首页改在 `<body>` 里滚动，
+  好让浏览器的工具栏不在翻页时收起展开，高度是 100dvh，原因见 Home.css）。屏里的内容要给导航栏留出 `--nav-h`。
+  读写页面的滚动位置用 [src/lib/scroll.ts](src/lib/scroll.ts)，别直接用 `window`。
 - `FeatureCopy`（Feature.tsx）：作品的文字和按钮。默认随滚动淡入；传 `reveal={false}` 由这一屏自己安排入场，
   传 `words` 自己绘制每一段文字（File Template 用它做打字机效果）。
 - `useTimeline`（[src/lib/timeline.ts](src/lib/timeline.ts)）：可暂停的脚本时钟。传入的 `playing` 为假时暂停（通常是屏幕离开视口

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ComponentType } from "react";
+import { useLayoutEffect, useRef, type ComponentType } from "react";
 import { Footer } from "../../components/Footer";
 import { Jobs } from "../../components/Jobs";
 import { ArrowDown } from "../../components/icons";
@@ -31,7 +31,9 @@ export function Home() {
   const { lang, t, works } = useI18n();
   useReveal(root, lang);
 
-  useEffect(() => {
+  // A layout effect, so the page scrolls where it will (Home.css) before any
+  // screen's own effects start watching it.
+  useLayoutEffect(() => {
     const html = document.documentElement;
     html.classList.add("fullpage");
     // A deep link like /#big-ben: the section didn't exist when the browser
