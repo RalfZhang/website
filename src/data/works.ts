@@ -138,7 +138,7 @@ const sources: WorkSource[] = [
     ],
     links: [
       { label: { en: "Download", zh: "下载" }, href: "https://github.com/RalfZhang/ink-city/releases/latest" },
-      { label: "GitHub", href: "https://github.com/RalfZhang/ink-city" },
+      { label: { en: "Visit site", zh: "访问网站" }, href: "https://inkcity.ralfz.com/" },
     ],
     credits: {
       en: "App icon and map visual design by Jie Xu. Map data © OpenStreetMap contributors.",
